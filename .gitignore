@@ -1,0 +1,12 @@
+.gradle/
+**/build/
+**/node_modules/
+**/dist/
+.env
+.idea/
+*.iml
+*.log
+.local/
+artifacts/
+results/
+!docs/results/

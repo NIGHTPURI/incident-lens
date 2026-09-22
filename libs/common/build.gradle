@@ -1,0 +1,11 @@
+plugins { id 'java-library' }
+dependencies {
+    api 'org.springframework.boot:spring-boot-starter-web'
+    api 'org.springframework.boot:spring-boot-starter-validation'
+    api 'org.springframework.boot:spring-boot-starter-data-redis'
+    api 'org.springframework.boot:spring-boot-starter-actuator'
+    api 'io.micrometer:micrometer-registry-prometheus'
+    api 'io.opentelemetry:opentelemetry-api:1.49.0'
+    api 'io.opentelemetry:opentelemetry-context:1.49.0'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+}

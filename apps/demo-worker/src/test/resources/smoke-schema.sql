@@ -1,0 +1,2 @@
+CREATE TABLE IF NOT EXISTS processed_event(event_id VARCHAR(36) PRIMARY KEY,payload_fingerprint VARCHAR(100) NOT NULL,delivery_token VARCHAR(36) NOT NULL,processed_at TIMESTAMP(6) NOT NULL);
+CREATE TABLE IF NOT EXISTS fulfillment(order_id VARCHAR(36) PRIMARY KEY,event_id VARCHAR(36) UNIQUE NOT NULL,product_id BIGINT NOT NULL,quantity INT NOT NULL,fulfilled_at TIMESTAMP(6) NOT NULL,FOREIGN KEY(event_id) REFERENCES processed_event(event_id));

@@ -1,0 +1,66 @@
+server:
+  port: ${SERVER_PORT:8082}
+  max-http-request-header-size: 16KB
+spring:
+  application:
+    name: demo-worker
+  datasource:
+    url: ${DB_URL:jdbc:mysql://localhost:3306/demo_worker?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC}
+    username: ${DB_USER:incidentlens}
+    password: ${DB_PASSWORD:incidentlens-local}
+    hikari:
+      maximum-pool-size: 6
+      connection-timeout: 3000
+  flyway:
+    enabled: true
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+      timeout: 500ms
+      connect-timeout: 500ms
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
+    admin:
+      fail-fast: true
+    consumer:
+      group-id: incidentlens-fulfillment-v1
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      auto-offset-reset: earliest
+      enable-auto-commit: false
+      max-poll-records: 10
+      properties:
+        max.poll.interval.ms: 120000
+    listener:
+      ack-mode: record
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+      acks: all
+      properties:
+        enable.idempotence: true
+        delivery.timeout.ms: 5000
+        request.timeout.ms: 3000
+        max.block.ms: 3000
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus
+  endpoint:
+    health:
+      probes:
+        enabled: true
+  metrics:
+    tags:
+      service: ${spring.application.name}
+logging:
+  structured:
+    json:
+      add:
+        service: ${spring.application.name}
+    format:
+      console: logstash
+  level:
+    org.apache.kafka: WARN

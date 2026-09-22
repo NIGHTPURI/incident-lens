@@ -1,0 +1,3 @@
+pluginManagement { repositories { gradlePluginPortal(); mavenCentral() } }
+rootProject.name = 'incidentlens'
+include 'libs:common', 'apps:control-plane', 'apps:demo-api', 'apps:demo-worker'
