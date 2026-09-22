@@ -1,6 +1,6 @@
 # IncidentLens dashboard
 
-React, TypeScript, and Vite client for the control plane. All telemetry comes from `/api`; missing measurements display **Unavailable**, while an experiment phase that has not completed displays **Pending**.
+React, TypeScript, and Vite client for the control plane. All telemetry comes from `/api`; missing measurements display **확인 불가 / Unavailable**, while an experiment phase that has not completed displays **대기 중 / Pending**.
 
 ```powershell
 npm ci
@@ -18,7 +18,7 @@ npx playwright install chromium
 npm run test:browser
 ```
 
-The 14 unit/component tests cover API failures, missing telemetry, fault ownership, evidence citations, phase provenance, and measurement formatting. Browser tests exercise the session → fault → evidence → RCA → experiment flow on desktop and mobile with explicitly labelled route fixtures. These verify the client contract, not real backend behavior or performance. The separate offline browser test refuses API connections and captures `screenshots/dashboard-empty.png`; it contains no invented telemetry.
+The 27 unit/component tests cover API failures, missing telemetry, fault ownership, evidence citations, phase provenance, and measurement formatting. Browser tests exercise the session → fault → evidence → RCA → experiment flow on desktop and mobile with explicitly labelled route fixtures. The bilingual cases additionally visit every populated page in Korean and English, inspect mobile containment, preserve machine values and raw evidence/RCA, and verify Korean → English → reload → English plus a new-tab revisit. These verify the client contract, not real backend behavior or performance. The separate offline browser test refuses API connections and captures `screenshots/dashboard-empty.png`; it contains no invented telemetry.
 
 The full repository verification and integration tests cover the real backend. Frontend dependencies are locked by `package-lock.json`; `npm audit` can be run separately to check the current advisory database. Chromium browser tests require a browser download, while unit tests and the production build do not.
 
@@ -29,3 +29,17 @@ node scripts/capture-live.mjs http://localhost:3000 <session-uuid>
 ```
 
 Use the configured web port if it differs. This command reads existing API records, navigates the live dashboard, checks citation targets and browser errors, and saves four screenshots plus `screenshots/live-capture.json` with their measurement provenance. It does not create traffic or change faults. The `*-live.png` images are real local observations; they are separate from the deliberately disconnected `dashboard-empty.png` test capture.
+
+## Korean / English UI
+
+Korean is the default. The compact selector at the top right offers **한국어** and **English**. Selection updates the current screen immediately and saves `ko` or `en` under `incidentlens.locale` in localStorage. Reloads and later visits restore that preference; unsupported stored values fall back to Korean. When the browser denies storage, switching still works for the mounted app. The provider also sets the document language, title and description.
+
+`src/i18n/translations.ts` contains the two dictionaries, typed keys and simple named interpolation. `I18nProvider.tsx` supplies `useI18n()` / `t("nav.overview")` through React Context. There is no new dependency. `format.ts` uses the selected language for dates, numbers and missing-data labels. Add UI copy to both dictionaries; TypeScript checks key parity, and tests check nonempty translations and matching interpolation parameters.
+
+Navigation, overview, all four scenarios, fault controls, incident detail/timeline, evidence/RCA framing, comparisons, forms, notices, errors, empty states, status badges, table headings and accessible labels are localized. Switching does not reset selected sessions, typed names or scenarios and does not issue API mutations. Existing English workflows explicitly choose English in their browser context.
+
+Backend-provided evidence explanations, RCA narratives/actions/uncertainties, server error details, user-entered session names, service/provider/source names and technical identifiers remain original. Evidence types retain their existing readable technical formatting. Kafka/Redis/API/RCA/Trace, IDs, units and generated PowerShell commands are not translated. Known scenario/status/phase values use presentation mappings; REST paths, JSON fields, enum values and backend/infrastructure files are unchanged. The actual database fault identifier remains `DATABASE_DEGRADATION`.
+
+**BEFORE means the fault is active in this project's existing experiment protocol.** Its Korean label is **변경 전**, with **장애 상태** beneath it; AFTER is **복구 후**. Calling BEFORE a healthy baseline would misrepresent the measured experiment. All machine phase values stay BEFORE/AFTER.
+
+The original layout is retained, with a small selector, Korean OS font fallbacks, word-preserving Korean heading wrapping and a wrapping mobile header. Existing mobile navigation and wide comparison tables retain their bounded horizontal scrolling. Browser-generated localization captures are kept in ignored `test-results/`; fixture screenshots are not measurements. On a minimal Linux browser image, install a Korean system font for visual review; Windows 11 uses Malgun Gothic. The live-capture script deliberately selects English to retain the repository's existing English screenshot workflow.

@@ -50,6 +50,7 @@ describe("control plane client", () => {
     await expect(api.setFault("session", true, 350)).rejects.toMatchObject({
       status: 409,
       message: "A different session owns the active fault.",
+      detail: "A different session owns the active fault.",
     });
   });
 
@@ -62,7 +63,12 @@ describe("control plane client", () => {
           new Response("<html>Gateway error</html>", { status: 502 }),
         ),
     );
-    await expect(request("/overview")).rejects.toBeInstanceOf(ApiError);
+    const failure = request("/overview");
+    await expect(failure).rejects.toBeInstanceOf(ApiError);
+    await expect(failure).rejects.toMatchObject({
+      status: 502,
+      detail: undefined,
+    });
   });
 
   it("does not add credentials or an LLM secret to a request", async () => {

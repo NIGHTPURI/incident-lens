@@ -28,4 +28,22 @@ describe("measurement presentation", () => {
     expect(date(null)).toBe("Unavailable");
     expect(date("not-a-date")).toBe("Unavailable");
   });
+
+  it("localizes missing data while preserving zero, units and comparison arithmetic", () => {
+    expect(number(null, 0, "ko")).toBe("확인 불가");
+    expect(percent(undefined, "ko")).toBe("확인 불가");
+    expect(milliseconds(Number.NaN, "ko")).toBe("확인 불가");
+    expect(date("invalid", "ko")).toBe("확인 불가");
+    expect(number(1234, 0, "ko")).toBe("1,234");
+    expect(percent(0, "ko")).toBe("0%");
+    expect(milliseconds(125.45, "ko")).toBe("125.5 ms");
+    expect(change(200, 100, "ko")).toBe("-50%");
+    expect(change(null, 0, "ko")).toBe("—");
+  });
+
+  it("uses the chosen language for dates independently of browser language", () => {
+    const instant = "2026-09-22T12:00:00Z";
+    expect(date(instant, "ko")).toContain("9월");
+    expect(date(instant, "en")).toContain("Sep");
+  });
 });

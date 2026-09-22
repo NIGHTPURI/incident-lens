@@ -37,6 +37,10 @@ try {
     viewport: { width: 1440, height: 1150 },
     deviceScaleFactor: 1,
   });
+  // Documentation captures intentionally use English in an isolated browser context.
+  await page.addInitScript(() =>
+    localStorage.setItem("incidentlens.locale", "en"),
+  );
   page.on("pageerror", (error) => errors.push(error.message));
   page.on("console", (message) => {
     if (message.type() === "error") errors.push(message.text());
@@ -69,6 +73,7 @@ try {
   }
 
   await page.goto(baseUrl, { waitUntil: "networkidle" });
+  assert.equal(await page.getByLabel("Select language").inputValue(), "en");
   await page
     .getByRole("heading", { name: "Recent incident sessions" })
     .waitFor();
@@ -124,7 +129,10 @@ try {
   );
   await page.getByRole("button", { name: "Overview", exact: true }).click();
   assert.equal(
-    await page.evaluate((width) => document.documentElement.scrollWidth <= width, page.viewportSize().width),
+    await page.evaluate(
+      (width) => document.documentElement.scrollWidth <= width,
+      page.viewportSize().width,
+    ),
     true,
     "Populated mobile overview has no horizontal document overflow",
   );
@@ -142,6 +150,7 @@ try {
   const manifest = {
     capturedAt: new Date().toISOString(),
     source: baseUrl,
+    locale: "en",
     sessionId,
     experimentId: experiment.id,
     scenario: detail.session.scenario,

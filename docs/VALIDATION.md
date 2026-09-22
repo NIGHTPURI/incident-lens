@@ -20,9 +20,9 @@ This document records execution in the development workspace on **2026-09-22**. 
 | `pwsh -NoProfile -File scripts/verify.ps1 -Integration` | Final primary verification workflow passes, including runner protocol checks and infrastructure tests |
 | `pwsh -NoProfile -File scripts/tests/compare-protocol.tests.ps1` | Idle gating, phase completion, failure cleanup, missing telemetry and existing-run rejection pass |
 | `npm --prefix apps/web ci` | Clean lockfile installation succeeds; audit reports 0 vulnerabilities |
-| `npm --prefix apps/web test -- --run` | 14 frontend tests pass |
+| `npm --prefix apps/web test -- --run` | 27 frontend tests pass after Korean/English localization |
 | `npm --prefix apps/web run build` | TypeScript check and Vite production build pass |
-| `npm --prefix apps/web run test:browser` | 4 Playwright desktop/mobile tests passed with installed Chromium; API fixtures explicitly labelled |
+| `npm --prefix apps/web run test:browser` | 8 Playwright desktop/mobile tests passed after Korean/English localization with installed Chromium; API fixtures explicitly labelled |
 | `docker compose --profile observability --profile loadtest config --quiet` | All profiles validate |
 | `docker compose build` | Web and all three Java runtime images build |
 | `docker compose up -d --wait --wait-timeout 600` | Core MySQL/Redis/Kafka/API/worker/control/web healthy after host-port configuration |
@@ -66,3 +66,11 @@ The separate [instrumented timeout experiment](results/instrumented-timeout/expe
 - First-run Grafana SQLite migrations took several minutes: added real readiness probes and disabled optional plugin downloads; successful telemetry ingestion was verified.
 
 No unresolved application test failure is hidden as a skipped test. Full comparisons and runtime telemetry are recorded in [results](results/README.md) and the final [session state](../SESSION_STATE.md).
+
+## UI localization follow-up
+
+Only frontend presentation and its tests/documentation changed. The 27 frontend tests include Korean/English rendering, storage fallback and persistence, localized dates/errors, unchanged machine values, preserved form inputs and existing business interaction assertions. The eight Chromium cases cover desktop/mobile, all four populated pages in both languages, raw evidence/RCA, citation targets, offline/empty states, language switching, reload/new-tab persistence and bounded layout containment. Korean fonts for WSL visual checks came from existing Windows system fonts via temporary fontconfig; no font dependency was added. The earlier backend/runtime measurements remain the original verification, not a claim of rerunning backend suites for localization.
+
+Optional localization image rebuild: `docker compose build web` was interrupted during slow base-image resolution (metadata requests alone took about 142 seconds). It is not a successful Docker-image validation for this follow-up. Existing containers were unchanged; the npm production build and all mandatory frontend/browser checks passed.
+
+Real frontend integration was separately checked through a temporary Vite proxy to the unchanged running control plane, without fixtures: four services UP; Korean default → English → reload persistence; a real saved session timeline; no browser errors, API writes or horizontal overflow. Provenance and screenshots are in ignored `apps/web/test-results/live-localization*`; the temporary server was stopped.

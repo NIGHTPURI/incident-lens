@@ -8,6 +8,8 @@ The project explores a common backend problem: the request returned successfully
 
 ![Real local BEFORE/AFTER experiment in IncidentLens](apps/web/screenshots/comparison-live.png)
 
+Screenshots use English. The dashboard now defaults to Korean; select **한국어 / English** at the top right, and the browser remembers your choice. [Localization details](apps/web/README.md#korean--english-ui).
+
 Actual local measurements, not sample dashboard data. [Capture provenance](apps/web/screenshots/live-capture.json) · [Evidence-grounded report](apps/web/screenshots/rca-live.png).
 
 ## Run it
@@ -175,7 +177,7 @@ This checks required files, Gradle build/tests, infrastructure integration tests
 - Frontend: API failures, absent metrics, fault ownership, citations, comparisons and browser interactions.
 - CI: build/test, Docker image build, full Compose startup and a degraded/recovered experiment; no LLM key or paid service needed.
 
-Executed locally: **35 backend unit/application tests, 15 real-container integration tests, 14 frontend tests and 4 browser tests passed**. The complete PowerShell verification script passed under WSL with PowerShell 7. See [validation evidence](docs/VALIDATION.md) for commands and [SESSION_STATE.md](SESSION_STATE.md) for the current environment. Synthetic test fixture values are not benchmark results.
+Executed locally: **35 backend unit/application tests, 15 real-container integration tests, 27 frontend tests and 8 browser tests passed**. The complete PowerShell verification script passed under WSL with PowerShell 7. See [validation evidence](docs/VALIDATION.md) for commands and [SESSION_STATE.md](SESSION_STATE.md) for the current environment. Synthetic test fixture values are not benchmark results.
 
 ## Tradeoffs and limitations
 

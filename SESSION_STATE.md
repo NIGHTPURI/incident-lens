@@ -2,6 +2,20 @@
 
 Updated: 2026-09-22. **The local core is implemented, running and verified.** No external blocker remains.
 
+## Current task: Korean / English UI localization
+
+Frontend-only follow-up requested after the original backend handoff. Existing backend implementations, REST paths, wire fields, scenario/phase machine values and all infrastructure configuration remain unchanged.
+
+Completed: typed two-language dictionaries in `apps/web/src/i18n/translations.ts`; React Context provider; default Korean; accessible top-right selector; `incidentlens.locale` localStorage persistence; document language/title/description; localized numeric/date/missing-data presentation. All four dashboard pages, incident detail/timeline, controls, notices, error/empty states, badges and comparison headings use the dictionary. No package or lockfile changes. CSS changes are limited to the selector, Korean font fallbacks, heading word wrapping and mobile header containment.
+
+Raw evidence explanations, RCA text, API problem details and technical identifiers remain original. BEFORE remains the fault-active machine phase and is labelled 변경 전 / 장애 상태, not a healthy baseline; AFTER is 복구 후. `DATABASE_DEGRADATION` remains the existing identifier. Switching language preserves typed form values and selection, and issues no API mutation.
+
+Current verification: `npm --prefix apps/web test -- --run` passes **27 tests** (8 App, 8 provider/dictionary, 6 formatting, 5 API). TypeScript and Vite production build pass. Full Chromium desktop/mobile suite passes **8 tests**, including both languages on every populated page, citations, raw data preservation, empty/offline states, unchanged machine values, Korean → English → reload → English and new-tab revisit. The final eight-case run after the Korean heading typography adjustment also passed (0 failures, about 1.1 minutes). Korean/English desktop and mobile screenshots were visually checked; no document overflow or clipped cards/buttons/badges. Backend tests listed below are the previous verified baseline and were not rerun for this UI-only task.
+
+Resolved development checks: a Testing Library assertion initially used `toHaveValue` on a radio; corrected to the actual value attribute plus checked-state assertion. Browser development HMR during simultaneous edits invalidated one Context execution; rerunning with source frozen passed. Comprehensive bilingual browser cases have a bounded 60-second deadline (eight screens plus reload/new-tab checks), no retries and no weakened assertions. Minimal Linux browser lacked Korean fonts; temporary fontconfig exposes the existing Windows fonts for screenshot review, without adding a shipped dependency.
+
+All required localization checks pass. An optional `docker compose build web` was interrupted during unusually slow base-image resolution after metadata requests took about 142 seconds; no new runtime image was produced and existing containers were not changed. This optional Docker image check is not counted as a pass. The existing container still serves the earlier UI until `docker compose up -d --build --no-deps web` succeeds. The source builds normally with npm. A real Chromium check through a temporary Vite frontend proxy also passed without fixtures: control-plane/demo-api/demo-worker/redis UP, Korean → English → reload persistence, and an existing saved session timeline. No browser errors, API mutations or layout overflow occurred. Its ignored provenance is `apps/web/test-results/live-localization.json`; the temporary Vite process was stopped. Localization is complete as one logical changeset, ready for the requested commit; Git history/status records the resulting commit. No implementation or required verification task remains. Ignored browser captures are under `apps/web/test-results/`; existing measured screenshots are preserved. No backend work is pending or authorized in this follow-up.
+
 ## Completed work and architecture
 
 - Java 21 / Spring Boot 3.5.16 / Gradle 8.14.3: `control-plane`, `demo-api`, `demo-worker`; narrow shared contracts/telemetry in `libs/common`.
@@ -20,8 +34,8 @@ Updated: 2026-09-22. **The local core is implemented, running and verified.** No
 | `./gradlew integrationTest --no-daemon` | 15 real MySQL/Kafka/Redis integration tests pass; 0 failures/errors/skips |
 | `bash scripts/verify.sh` | Pass |
 | `pwsh -NoLogo -NoProfile -File scripts/verify.ps1 -Integration` | Final aggregate pass, including runner protocol regressions; actual PowerShell 7.5.2 under WSL |
-| `npm --prefix apps/web ci`, `npm --prefix apps/web test -- --run`, `npm --prefix apps/web run build` | Pass; 14 frontend tests; clean install/audit reports 0 vulnerabilities |
-| `npm --prefix apps/web run test:browser` | 4 desktop/mobile Playwright tests pass with explicitly labelled fixtures; rerun after mobile containment fix |
+| `npm --prefix apps/web ci`, `npm --prefix apps/web test -- --run`, `npm --prefix apps/web run build` | Pass; latest localization run: 27 frontend tests; clean install/audit reports 0 vulnerabilities |
+| `npm --prefix apps/web run test:browser` | Latest localization run: 8 desktop/mobile Playwright tests pass with explicitly labelled fixtures |
 | Real Playwright capture | Actual completed experiment, every RCA citation resolves, no browser errors/API mutations, no overview/comparison mobile document overflow |
 | `docker compose --profile observability --profile loadtest config --quiet` | All profiles valid |
 | `pwsh -NoProfile -File scripts/dev-up.ps1 -Observability` | Final runtime images build; core and optional observability start |

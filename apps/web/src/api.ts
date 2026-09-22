@@ -1,3 +1,4 @@
+import { translate } from "./i18n/translations";
 import type {
   Experiment,
   IncidentSession,
@@ -13,6 +14,7 @@ export class ApiError extends Error {
   constructor(
     message: string,
     public readonly status: number,
+    public readonly detail?: string,
   ) {
     super(message);
   }
@@ -37,12 +39,11 @@ export async function request<T>(
       message?: string;
       title?: string;
     } | null;
+    const detail = problem?.detail ?? problem?.message ?? problem?.title;
     throw new ApiError(
-      problem?.detail ??
-        problem?.message ??
-        problem?.title ??
-        `Request failed (${response.status}).`,
+      detail ?? translate("en", "error.http", { status: response.status }),
       response.status,
+      detail,
     );
   }
   if (response.status === 204) return undefined as T;

@@ -1,5 +1,12 @@
 import { expect, test } from "@playwright/test";
 
+test.beforeEach(async ({ page }) => {
+  // Preserve the existing English workflow contract independently of the Korean default.
+  await page.addInitScript(() =>
+    localStorage.setItem("incidentlens.locale", "en"),
+  );
+});
+
 test("a developer can create a fault session, inspect evidence, and prepare a repeatable experiment", async ({
   page,
 }) => {

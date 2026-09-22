@@ -1,16 +1,26 @@
 import {
   act,
   fireEvent,
-  render,
+  render as renderUi,
   screen,
   waitFor,
 } from "@testing-library/react";
-import { afterEach, describe, expect, it, vi } from "vitest";
+import type { ReactNode } from "react";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import App, { EvidenceCard, ExperimentCard, RcaReport } from "./App";
-import { api } from "./api";
+import { api, ApiError } from "./api";
+import { I18nProvider, LOCALE_STORAGE_KEY } from "./i18n/I18nProvider";
 import type { Evidence, Experiment, Overview, Report } from "./types";
 
-afterEach(() => vi.restoreAllMocks());
+function render(ui: ReactNode) {
+  return renderUi(<I18nProvider>{ui}</I18nProvider>);
+}
+
+beforeEach(() => localStorage.setItem(LOCALE_STORAGE_KEY, "en"));
+afterEach(() => {
+  vi.restoreAllMocks();
+  localStorage.clear();
+});
 
 const emptyOverview: Overview = {
   services: [{ name: "demo-api", status: "UP" }],
@@ -62,15 +72,92 @@ describe("incident dashboard", () => {
 
   it("displays an actionable connection error", async () => {
     vi.spyOn(api, "overview").mockRejectedValue(
-      new Error("Network unavailable"),
+      new TypeError("Failed to fetch"),
     );
     vi.spyOn(api, "sessions").mockResolvedValue([]);
     render(<App />);
     expect(await screen.findByRole("alert")).toHaveTextContent(
-      "Network unavailable",
+      "Unable to reach the control plane.",
     );
     expect(screen.getByRole("alert")).toHaveTextContent(
       "Check that the local stack is running",
+    );
+  });
+
+  it("defaults to Korean and switches the current view without resetting form input or fetching again", async () => {
+    localStorage.clear();
+    const overview = vi.spyOn(api, "overview").mockResolvedValue(emptyOverview);
+    const sessions = vi.spyOn(api, "sessions").mockResolvedValue([]);
+    render(<App />);
+    await screen.findByText("demo-api");
+    expect(
+      screen.getByRole("heading", {
+        name: "장애 전후에 무엇이 달라졌는지 확인하세요.",
+      }),
+    ).toBeInTheDocument();
+    expect(screen.getAllByText("확인 불가")).toHaveLength(5);
+    fireEvent.click(screen.getByRole("button", { name: "장애 실험실" }));
+    fireEvent.change(screen.getByLabelText("세션 이름"), {
+      target: { value: "내 실험 이름" },
+    });
+    fireEvent.click(
+      screen.getByRole("radio", { name: /데이터베이스 성능 저하/ }),
+    );
+    const calls = [overview.mock.calls.length, sessions.mock.calls.length];
+    fireEvent.change(screen.getByLabelText("언어 선택"), {
+      target: { value: "en" },
+    });
+    expect(
+      screen.getByRole("heading", { name: "Make failure reproducible." }),
+    ).toBeInTheDocument();
+    expect(screen.getByLabelText("Session name")).toHaveValue("내 실험 이름");
+    expect(
+      screen.getByRole("radio", { name: /Database degradation/ }),
+    ).toBeChecked();
+    expect(
+      screen.getByRole("radio", { name: /Database degradation/ }),
+    ).toHaveAttribute("value", "DATABASE_DEGRADATION");
+    expect([overview.mock.calls.length, sessions.mock.calls.length]).toEqual(
+      calls,
+    );
+    expect(localStorage.getItem(LOCALE_STORAGE_KEY)).toBe("en");
+    expect(document.documentElement.lang).toBe("en");
+  });
+
+  it("translates an existing HTTP error while retaining server-provided diagnostic text", async () => {
+    localStorage.clear();
+    const detail = "A different session owns the active fault.";
+    vi.spyOn(api, "overview").mockRejectedValue(
+      new ApiError(detail, 409, detail),
+    );
+    vi.spyOn(api, "sessions").mockResolvedValue([]);
+    render(<App />);
+    expect(await screen.findByRole("alert")).toHaveTextContent(
+      `서버 응답: ${detail}`,
+    );
+    fireEvent.change(screen.getByLabelText("언어 선택"), {
+      target: { value: "en" },
+    });
+    expect(screen.getByRole("alert")).toHaveTextContent(
+      `Server response: ${detail}`,
+    );
+  });
+
+  it("localizes proxy failures without exposing the proxy response body", async () => {
+    localStorage.clear();
+    vi.spyOn(api, "overview").mockRejectedValue(
+      new ApiError("Request failed (502).", 502),
+    );
+    vi.spyOn(api, "sessions").mockResolvedValue([]);
+    render(<App />);
+    expect(await screen.findByRole("alert")).toHaveTextContent(
+      "요청에 실패했습니다 (502).",
+    );
+    fireEvent.change(screen.getByLabelText("언어 선택"), {
+      target: { value: "en" },
+    });
+    expect(screen.getByRole("alert")).toHaveTextContent(
+      "Request failed (502).",
     );
   });
 });

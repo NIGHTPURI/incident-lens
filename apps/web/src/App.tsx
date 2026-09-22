@@ -1,7 +1,9 @@
 import { useCallback, useEffect, useState } from "react";
 import type { FormEvent, ReactNode } from "react";
-import { api } from "./api";
-import { change, date, milliseconds, number, percent } from "./format";
+import { api, ApiError } from "./api";
+import * as format from "./format";
+import { useI18n } from "./i18n/I18nProvider";
+import type { TranslationKey } from "./i18n/translations";
 import type {
   Evidence,
   Experiment,
@@ -15,60 +17,97 @@ import type {
 
 const scenarios: {
   value: Scenario;
-  title: string;
-  description: string;
+  title: TranslationKey;
+  description: TranslationKey;
   symbol: string;
-  parameter: string;
+  parameter: TranslationKey;
   defaultParameter: number;
 }[] = [
   {
     value: "DOWNSTREAM_LATENCY",
-    title: "Downstream latency",
-    description:
-      "Delay a dependency in the request path and inspect its effect on tail latency.",
+    title: "scenario.downstream.title",
+    description: "scenario.downstream.description",
     symbol: "01",
-    parameter: "Added latency (ms)",
+    parameter: "scenario.downstream.parameter",
     defaultParameter: 350,
   },
   {
     value: "DATABASE_DEGRADATION",
-    title: "Database degradation",
-    description:
-      "Switch to an inefficient query path and compare database lookup duration.",
+    title: "scenario.database.title",
+    description: "scenario.database.description",
     symbol: "02",
-    parameter: "Scenario parameter",
+    parameter: "scenario.parameter",
     defaultParameter: 0,
   },
   {
     value: "KAFKA_SLOWDOWN",
-    title: "Consumer slowdown",
-    description:
-      "Slow asynchronous processing, build a backlog, then watch the worker recover.",
+    title: "scenario.kafka.title",
+    description: "scenario.kafka.description",
     symbol: "03",
-    parameter: "Processing delay (ms)",
+    parameter: "scenario.kafka.parameter",
     defaultParameter: 500,
   },
   {
     value: "CACHE_DEGRADATION",
-    title: "Cache degradation",
-    description:
-      "Bypass the cache and measure the extra database work under the same traffic.",
+    title: "scenario.cache.title",
+    description: "scenario.cache.description",
     symbol: "04",
-    parameter: "Scenario parameter",
+    parameter: "scenario.parameter",
     defaultParameter: 0,
   },
 ];
 
 type Page = "overview" | "lab" | "evidence" | "comparison";
-const pages: { id: Page; label: string; symbol: string }[] = [
-  { id: "overview", label: "Overview", symbol: "◫" },
-  { id: "lab", label: "Incident lab", symbol: "⌁" },
-  { id: "evidence", label: "Evidence & RCA", symbol: "≡" },
-  { id: "comparison", label: "Experiments", symbol: "⇄" },
+const pages: { id: Page; label: TranslationKey; symbol: string }[] = [
+  { id: "overview", label: "nav.overview", symbol: "◫" },
+  { id: "lab", label: "nav.lab", symbol: "⌁" },
+  { id: "evidence", label: "nav.evidence", symbol: "≡" },
+  { id: "comparison", label: "nav.comparison", symbol: "⇄" },
 ];
 
-function scenarioName(value: Scenario) {
-  return scenarios.find((s) => s.value === value)?.title ?? value;
+type Translator = ReturnType<typeof useI18n>["t"];
+type DisplayError = { cause: unknown; fallback: TranslationKey };
+
+function scenarioName(value: Scenario, t: Translator) {
+  const scenario = scenarios.find((s) => s.value === value);
+  return scenario ? t(scenario.title) : value;
+}
+
+function usePresentation() {
+  const context = useI18n();
+  return {
+    ...context,
+    scenarioName: (value: Scenario) => scenarioName(value, context.t),
+    number: (value: number | null | undefined, digits = 0) =>
+      format.number(value, digits, context.locale),
+    percent: (value: number | null | undefined) =>
+      format.percent(value, context.locale),
+    milliseconds: (value: number | null | undefined) =>
+      format.milliseconds(value, context.locale),
+    date: (value: string | null | undefined) =>
+      format.date(value, context.locale),
+    change: (
+      before: number | null | undefined,
+      after: number | null | undefined,
+    ) => format.change(before, after, context.locale),
+  };
+}
+
+function errorText(error: DisplayError, t: Translator) {
+  if (error.cause instanceof ApiError) {
+    return error.cause.detail
+      ? `${t("error.serverDetail")} ${error.cause.detail}`
+      : t("error.http", { status: error.cause.status });
+  }
+  if (error.cause instanceof TypeError) return t("error.network");
+  if (error.cause instanceof SyntaxError) return t("error.invalidResponse");
+  if (
+    error.cause instanceof DOMException &&
+    error.cause.name === "TimeoutError"
+  ) {
+    return t("error.timeout");
+  }
+  return t(error.fallback);
 }
 function Empty({ title, children }: { title: string; children: ReactNode }) {
   return (
@@ -79,7 +118,39 @@ function Empty({ title, children }: { title: string; children: ReactNode }) {
     </div>
   );
 }
+const statusKeys: Record<string, TranslationKey> = {
+  UP: "status.up",
+  DOWN: "status.down",
+  HEALTHY: "status.healthy",
+  UNHEALTHY: "status.unhealthy",
+  UNKNOWN: "status.unknown",
+  UNAVAILABLE: "status.unavailable",
+  COMPLETED: "status.completed",
+  COMPLETE: "status.complete",
+  DISABLED: "status.disabled",
+  ENABLED: "status.enabled",
+  CREATED: "status.created",
+  ACTIVE: "status.active",
+  OPEN: "status.open",
+  INVESTIGATING: "status.investigating",
+  RESOLVED: "status.resolved",
+  BEFORE_RUNNING: "status.beforeRunning",
+  BEFORE_COMPLETE: "status.beforeComplete",
+  AFTER_RUNNING: "status.afterRunning",
+  ABORTED: "status.aborted",
+  FAULT_ACTIVE: "status.faultActive",
+  FAULT_DISABLED: "status.faultDisabled",
+};
+const phaseKeys: Record<string, TranslationKey> = {
+  BEFORE: "phase.before",
+  AFTER: "phase.after",
+  FAULT: "phase.fault",
+  NONE: "phase.none",
+  ALL: "phase.all",
+};
+
 function Status({ value }: { value: string }) {
+  const { t } = useI18n();
   const healthy = [
     "UP",
     "HEALTHY",
@@ -90,7 +161,9 @@ function Status({ value }: { value: string }) {
   return (
     <span className={`status ${healthy ? "good" : "neutral"}`}>
       <span />
-      {value.toLowerCase().replaceAll("_", " ")}
+      {statusKeys[value.toUpperCase()]
+        ? t(statusKeys[value.toUpperCase()])
+        : value}
     </span>
   );
 }
@@ -103,10 +176,13 @@ function Stat({
   value: string;
   detail: string;
 }) {
+  const { t } = useI18n();
   return (
     <article className="stat">
       <span className="eyebrow">{label}</span>
-      <strong className={value === "Unavailable" ? "unavailable" : ""}>
+      <strong
+        className={value === t("common.unavailable") ? "unavailable" : ""}
+      >
         {value}
       </strong>
       <span className="stat-detail">{detail}</span>
@@ -115,13 +191,23 @@ function Stat({
 }
 
 export default function App() {
+  const {
+    t,
+    locale,
+    setLocale,
+    number,
+    percent,
+    milliseconds,
+    date,
+    scenarioName,
+  } = usePresentation();
   const [page, setPage] = useState<Page>("overview");
   const [overview, setOverview] = useState<Overview | null>(null);
   const [sessions, setSessions] = useState<IncidentSession[]>([]);
   const [selectedId, setSelectedId] = useState("");
   const [detail, setDetail] = useState<SessionDetail | null>(null);
-  const [error, setError] = useState("");
-  const [notice, setNotice] = useState("");
+  const [error, setError] = useState<DisplayError | null>(null);
+  const [notice, setNotice] = useState<TranslationKey | "">("");
   const [busy, setBusy] = useState(false);
   const [loading, setLoading] = useState(true);
   const [updatedAt, setUpdatedAt] = useState<string | null>(null);
@@ -138,13 +224,9 @@ export default function App() {
       setOverview(nextOverview);
       setSessions(nextSessions);
       setUpdatedAt(new Date().toISOString());
-      setError("");
+      setError(null);
     } catch (cause) {
-      setError(
-        cause instanceof Error
-          ? cause.message
-          : "Unable to reach the control plane.",
-      );
+      setError({ cause, fallback: "error.controlPlane" });
     } finally {
       setLoading(false);
     }
@@ -169,12 +251,7 @@ export default function App() {
         const next = await api.session(selectedId);
         if (alive) setDetail(next);
       } catch (cause) {
-        if (alive)
-          setError(
-            cause instanceof Error
-              ? cause.message
-              : "Unable to load the incident.",
-          );
+        if (alive) setError({ cause, fallback: "error.incident" });
       }
     };
     void load();
@@ -187,9 +264,12 @@ export default function App() {
     };
   }, [selectedId]);
 
-  async function action(operation: () => Promise<unknown>, success: string) {
+  async function action(
+    operation: () => Promise<unknown>,
+    success: TranslationKey,
+  ) {
     setBusy(true);
-    setError("");
+    setError(null);
     setNotice("");
     try {
       await operation();
@@ -197,9 +277,7 @@ export default function App() {
       if (selectedId) setDetail(await api.session(selectedId));
       setNotice(success);
     } catch (cause) {
-      setError(
-        cause instanceof Error ? cause.message : "The operation failed.",
-      );
+      setError({ cause, fallback: "error.operation" });
     } finally {
       setBusy(false);
     }
@@ -207,17 +285,15 @@ export default function App() {
 
   async function createSession(name: string, scenario: Scenario) {
     setBusy(true);
-    setError("");
+    setError(null);
     setNotice("");
     try {
       const created = await api.createSession(name, scenario);
       await refresh();
       setSelectedId(created.id);
-      setNotice("Incident session created. Enable the fault when ready.");
+      setNotice("notice.sessionCreated");
     } catch (cause) {
-      setError(
-        cause instanceof Error ? cause.message : "Unable to create a session.",
-      );
+      setError({ cause, fallback: "error.createSession" });
     } finally {
       setBusy(false);
     }
@@ -226,9 +302,9 @@ export default function App() {
   const active = overview?.activeFault?.enabled ? overview.activeFault : null;
   const selection = (
     <label className="session-select">
-      <span>Incident session</span>
+      <span>{t("common.incidentSession")}</span>
       <select
-        aria-label="Incident session"
+        aria-label={t("common.incidentSession")}
         disabled={busy}
         value={selectedId}
         onChange={(event) => {
@@ -236,7 +312,9 @@ export default function App() {
           setNotice("");
         }}
       >
-        {sessions.length === 0 && <option value="">No sessions yet</option>}
+        {sessions.length === 0 && (
+          <option value="">{t("common.noSessions")}</option>
+        )}
         {sessions.map((session) => (
           <option key={session.id} value={session.id}>
             {session.name} · {scenarioName(session.scenario)}
@@ -257,16 +335,16 @@ export default function App() {
             event.preventDefault();
             setPage("overview");
           }}
-          aria-label="IncidentLens home"
+          aria-label={t("shell.home")}
         >
           <span className="brand-mark">iL</span>
           <span>
             Incident<span className="brand-light">Lens</span>
-            <small>ENGINEERING WORKSPACE</small>
+            <small>{t("shell.engineeringWorkspace")}</small>
           </span>
         </a>
-        <span className="nav-label">WORKSPACE</span>
-        <nav aria-label="Main navigation">
+        <span className="nav-label">{t("shell.workspace").toUpperCase()}</span>
+        <nav aria-label={t("shell.navigation")}>
           {pages.map((item) => (
             <button
               key={item.id}
@@ -275,42 +353,55 @@ export default function App() {
               onClick={() => setPage(item.id)}
             >
               <span aria-hidden="true">{item.symbol}</span>
-              {item.label}
+              {t(item.label)}
             </button>
           ))}
         </nav>
         <div className="sidebar-note">
           <span className="live-dot" />
-          <strong>Local incident laboratory</strong>
+          <strong>{t("shell.localLab")}</strong>
           <p>
-            Controlled failures.
+            {t("shell.controlledFailures")}
             <br />
-            Observable consequences.
+            {t("shell.observableConsequences")}
             <br />
-            Evidence before inference.
+            {t("shell.evidenceFirst")}
           </p>
         </div>
         <div className="sidebar-footer">
-          Java · Kafka · OpenTelemetry<span>Evidence-grounded by design</span>
+          {t("shell.technologies")}
+          <span>{t("shell.evidenceGrounded")}</span>
         </div>
       </aside>
 
       <main>
         <header className="topbar">
           <span className="breadcrumb">
-            Workspace <span>/</span> {currentPage.label}
+            {t("shell.workspace")}
+            <span>/</span> {t(currentPage.label)}
           </span>
           <div className="topbar-right">
-            <span className="local-tag">LOCAL ENVIRONMENT</span>
+            <select
+              className="language-select"
+              aria-label={t("language.label")}
+              value={locale}
+              onChange={(event) =>
+                setLocale(event.target.value === "en" ? "en" : "ko")
+              }
+            >
+              <option value="ko">{t("language.korean")}</option>
+              <option value="en">{t("language.english")}</option>
+            </select>
+            <span className="local-tag">{t("shell.localEnvironment")}</span>
             <button
               className="button ghost compact"
               onClick={() => {
                 void refresh();
               }}
               disabled={busy || loading}
-              aria-label="Refresh dashboard"
+              aria-label={t("shell.refreshLabel")}
             >
-              ↻ Refresh
+              {t("shell.refresh")}
             </button>
           </div>
         </header>
@@ -320,11 +411,15 @@ export default function App() {
               <span className="warning-icon">!</span>
               <div>
                 <strong>
-                  Fault injection is active · {scenarioName(active.scenario)}
+                  {t("fault.activeWarning", {
+                    scenario: scenarioName(active.scenario),
+                  })}
                 </strong>
                 <span>
-                  Expires {date(active.expiresAt)} · session{" "}
-                  {active.sessionId.slice(0, 8)}
+                  {t("fault.expires", {
+                    date: date(active.expiresAt),
+                    session: active.sessionId.slice(0, 8),
+                  })}
                 </span>
               </div>
               <button
@@ -334,58 +429,55 @@ export default function App() {
                   void action(
                     () =>
                       api.setFault(active.sessionId, false, active.parameter),
-                    "Fault disabled. Recovery can now be measured.",
+                    "notice.faultDisabledRecovery",
                   );
                 }}
               >
-                Disable fault
+                {t("fault.disable")}
               </button>
             </div>
           )}
           {error && (
             <div className="message error" role="alert">
-              <strong>Request could not be completed.</strong> {error}{" "}
-              <span>
-                Check that the local stack is running. Previously loaded values
-                may be stale.
-              </span>
+              <strong>{t("error.heading")}</strong> {errorText(error, t)}{" "}
+              <span>{t("error.help")}</span>
             </div>
           )}
           {notice && (
             <div className="message success" role="status">
-              {notice}
+              {t(notice)}
             </div>
           )}
           <div className="page-heading">
             <div>
               <span className="eyebrow">
-                INCIDENTLENS / {currentPage.label.toUpperCase()}
+                INCIDENTLENS / {t(currentPage.label).toUpperCase()}
               </span>
               <h1>
                 {page === "overview"
-                  ? "Understand what changed."
+                  ? t("overview.title")
                   : page === "lab"
-                    ? "Make failure reproducible."
+                    ? t("lab.title")
                     : page === "evidence"
-                      ? "Follow the evidence."
-                      : "Measure the recovery."}
+                      ? t("evidence.title")
+                      : t("experiment.title")}
               </h1>
               <p>
                 {page === "overview"
-                  ? "A focused view of service health, runtime signals, and your latest investigations."
+                  ? t("overview.description")
                   : page === "lab"
-                    ? "Create a session, apply one controlled fault, and observe the system response."
+                    ? t("lab.description")
                     : page === "evidence"
-                      ? "Observed signals, explicit provenance, and hypotheses you can verify."
-                      : "Run an identical workload before and after disabling a fault."}
+                      ? t("evidence.description")
+                      : t("experiment.description")}
               </p>
             </div>
             <span className="last-updated">
               {loading
-                ? "Connecting to control plane…"
+                ? t("shell.connecting")
                 : updatedAt
-                  ? `Updated ${date(updatedAt)}`
-                  : "Waiting for telemetry"}
+                  ? t("shell.updated", { date: date(updatedAt) })
+                  : t("shell.waitingTelemetry")}
             </span>
           </div>
 
@@ -393,12 +485,12 @@ export default function App() {
             <>
               <div className="stats-grid">
                 <Stat
-                  label="Request count"
+                  label={t("metric.requestCount")}
                   value={number(overview?.metrics.requestCount)}
-                  detail="Cumulative across retained session scopes"
+                  detail={t("overview.requestCountDetail")}
                 />
                 <Stat
-                  label="Request error rate"
+                  label={t("metric.requestErrorRate")}
                   value={percent(
                     overview?.metrics.requestCount &&
                       overview.metrics.errorCount != null
@@ -406,32 +498,30 @@ export default function App() {
                           overview.metrics.requestCount
                       : null,
                   )}
-                  detail={`${number(overview?.metrics.errorCount)} errors across retained session scopes`}
+                  detail={t("overview.errorCountDetail", {
+                    count: number(overview?.metrics.errorCount),
+                  })}
                 />
                 <Stat
-                  label="Sampled p95 latency"
+                  label={t("metric.sampledP95")}
                   value={milliseconds(overview?.metrics.p95Ms)}
-                  detail="Bounded sample across retained session scopes"
+                  detail={t("overview.latencyDetail")}
                 />
                 <Stat
-                  label="Consumer lag"
+                  label={t("metric.consumerLag")}
                   value={number(overview?.metrics.kafkaLag)}
-                  detail="Events waiting for processing"
+                  detail={t("overview.lagDetail")}
                 />
               </div>
-              <p className="telemetry-scope">
-                Overview uses retained in-memory diagnostics and resets on
-                service restart. Counts are cumulative; use experiments for
-                workload throughput and comparable phase measurements.
-              </p>
+              <p className="telemetry-scope">{t("overview.telemetryScope")}</p>
               <div className="overview-grid">
                 <section className="panel">
                   <div className="panel-header">
                     <div>
-                      <span className="eyebrow">RUNTIME</span>
-                      <h2>Service connectivity</h2>
+                      <span className="eyebrow">{t("overview.runtime")}</span>
+                      <h2>{t("overview.connectivity")}</h2>
                     </div>
-                    <span className="tag">ENDPOINT CHECKS</span>
+                    <span className="tag">{t("overview.endpointChecks")}</span>
                   </div>
                   {overview?.services.length ? (
                     <div className="services">
@@ -442,10 +532,10 @@ export default function App() {
                             <strong>{service.name}</strong>
                             <span>
                               {service.name === "redis"
-                                ? "Shared fault store connectivity"
+                                ? t("overview.redisConnectivity")
                                 : service.name === "control-plane"
-                                  ? "Control plane API responding"
-                                  : "Telemetry endpoint connectivity"}
+                                  ? t("overview.controlPlaneConnectivity")
+                                  : t("overview.telemetryConnectivity")}
                             </span>
                           </div>
                           <Status value={service.status} />
@@ -453,47 +543,41 @@ export default function App() {
                       ))}
                     </div>
                   ) : (
-                    <Empty title="No health data yet">
-                      Start the stack to connect the backend services.
+                    <Empty title={t("overview.noHealthTitle")}>
+                      {t("overview.noHealthDescription")}
                     </Empty>
                   )}
                   <div className="panel-footer">
-                    <span>Cache hit rate</span>
+                    <span>{t("metric.cacheHitRate")}</span>
                     <strong>{percent(overview?.metrics.cacheHitRate)}</strong>
                   </div>
                 </section>
                 <section className="panel workflow">
-                  <span className="eyebrow">THE EXPERIMENT LOOP</span>
-                  <h2>A hypothesis is a starting point.</h2>
-                  <p>
-                    Use controlled failures and repeatable traffic to
-                    distinguish the symptom from its cause.
-                  </p>
+                  <span className="eyebrow">
+                    {t("overview.experimentLoop")}
+                  </span>
+                  <h2>{t("overview.hypothesis")}</h2>
+                  <p>{t("overview.hypothesisDescription")}</p>
                   <ol>
                     <li>
                       <span>01</span>
                       <div>
-                        <strong>Inject a failure</strong>
-                        <p>Select a scenario and a bounded fault parameter.</p>
+                        <strong>{t("overview.inject")}</strong>
+                        <p>{t("overview.injectDescription")}</p>
                       </div>
                     </li>
                     <li>
                       <span>02</span>
                       <div>
-                        <strong>Collect and correlate</strong>
-                        <p>
-                          Build a structured evidence package with source
-                          references.
-                        </p>
+                        <strong>{t("overview.collect")}</strong>
+                        <p>{t("overview.collectDescription")}</p>
                       </div>
                     </li>
                     <li>
                       <span>03</span>
                       <div>
-                        <strong>Recover and compare</strong>
-                        <p>
-                          Repeat the workload and inspect measured differences.
-                        </p>
+                        <strong>{t("overview.recover")}</strong>
+                        <p>{t("overview.recoverDescription")}</p>
                       </div>
                     </li>
                   </ol>
@@ -501,21 +585,24 @@ export default function App() {
                     className="button primary"
                     onClick={() => setPage("lab")}
                   >
-                    Open incident lab <span>→</span>
+                    {t("overview.openLab")}
+                    <span>→</span>
                   </button>
                 </section>
               </div>
               <section className="panel">
                 <div className="panel-header">
                   <div>
-                    <span className="eyebrow">INVESTIGATIONS</span>
-                    <h2>Recent incident sessions</h2>
+                    <span className="eyebrow">
+                      {t("overview.investigations")}
+                    </span>
+                    <h2>{t("overview.recentSessions")}</h2>
                   </div>
                   <button
                     className="button ghost compact"
                     onClick={() => setPage("lab")}
                   >
-                    New session +
+                    {t("overview.newSession")}
                   </button>
                 </div>
                 {sessions.length ? (
@@ -523,12 +610,12 @@ export default function App() {
                     <table>
                       <thead>
                         <tr>
-                          <th>Session</th>
-                          <th>Scenario</th>
-                          <th>Status</th>
-                          <th>Created</th>
+                          <th>{t("common.session")}</th>
+                          <th>{t("common.scenario")}</th>
+                          <th>{t("common.status")}</th>
+                          <th>{t("common.created")}</th>
                           <th>
-                            <span className="sr-only">Open</span>
+                            <span className="sr-only">{t("common.open")}</span>
                           </th>
                         </tr>
                       </thead>
@@ -554,7 +641,7 @@ export default function App() {
                                   setPage("evidence");
                                 }}
                               >
-                                Inspect →
+                                {t("common.inspect")}
                               </button>
                             </td>
                           </tr>
@@ -563,9 +650,8 @@ export default function App() {
                     </table>
                   </div>
                 ) : (
-                  <Empty title="Your first investigation starts here">
-                    Create an incident session in the lab. Real measurements
-                    appear once you run traffic.
+                  <Empty title={t("overview.emptyTitle")}>
+                    {t("overview.emptyDescription")}
                   </Empty>
                 )}
               </section>
@@ -578,8 +664,8 @@ export default function App() {
               <section className="panel">
                 <div className="panel-header">
                   <div>
-                    <span className="eyebrow">FAULT CONTROL</span>
-                    <h2>Selected incident</h2>
+                    <span className="eyebrow">{t("lab.faultControl")}</span>
+                    <h2>{t("lab.selectedIncident")}</h2>
                   </div>
                   {selection}
                 </div>
@@ -594,8 +680,8 @@ export default function App() {
                         () =>
                           api.setFault(detail.session.id, enabled, parameter),
                         enabled
-                          ? "Fault enabled. Run traffic to collect evidence."
-                          : "Fault disabled. Run the same workload to measure recovery.",
+                          ? "notice.faultEnabled"
+                          : "notice.faultDisabledWorkload",
                       );
                     }}
                   />
@@ -603,12 +689,11 @@ export default function App() {
                   <Empty
                     title={
                       selectedId
-                        ? "Loading incident…"
-                        : "Create a session to begin"
+                        ? t("common.loadingIncident")
+                        : t("lab.startTitle")
                     }
                   >
-                    Each session keeps its fault history, evidence, and
-                    experiment results together.
+                    {t("lab.sessionDescription")}
                   </Empty>
                 )}
               </section>
@@ -621,7 +706,7 @@ export default function App() {
                 {selection}
                 <div className="toolbar-actions">
                   <label className="phase-select">
-                    Observation phase
+                    {t("evidence.phase")}
                     <select
                       value={collectionPhase}
                       onChange={(event) =>
@@ -630,8 +715,8 @@ export default function App() {
                         )
                       }
                     >
-                      <option value="BEFORE">BEFORE · fault active</option>
-                      <option value="AFTER">AFTER · fault disabled</option>
+                      <option value="BEFORE">{t("phase.beforeActive")}</option>
+                      <option value="AFTER">{t("phase.afterDisabled")}</option>
                     </select>
                   </label>
                   <button
@@ -640,11 +725,11 @@ export default function App() {
                     onClick={() => {
                       void action(
                         () => api.collect(selectedId, collectionPhase),
-                        "Evidence collected from the observation window.",
+                        "notice.evidenceCollected",
                       );
                     }}
                   >
-                    Collect evidence
+                    {t("evidence.collect")}
                   </button>
                   <button
                     className="button primary"
@@ -652,11 +737,11 @@ export default function App() {
                     onClick={() => {
                       void action(
                         () => api.analyze(selectedId),
-                        "RCA report generated. Review the citations and uncertainties.",
+                        "notice.rcaGenerated",
                       );
                     }}
                   >
-                    {busy ? "Working…" : "Generate RCA"}
+                    {busy ? t("common.working") : t("evidence.generateRca")}
                   </button>
                 </div>
               </div>
@@ -666,8 +751,10 @@ export default function App() {
                     <section className="panel">
                       <div className="panel-header">
                         <div>
-                          <span className="eyebrow">OBSERVED EVIDENCE</span>
-                          <h2>Correlated signals</h2>
+                          <span className="eyebrow">
+                            {t("evidence.observed")}
+                          </span>
+                          <h2>{t("evidence.signals")}</h2>
                         </div>
                         <span className="count">{detail.evidence.length}</span>
                       </div>
@@ -678,23 +765,24 @@ export default function App() {
                           ))}
                         </div>
                       ) : (
-                        <Empty title="No evidence collected">
-                          Run traffic with the fault enabled, then collect
-                          evidence. Missing telemetry stays unavailable.
+                        <Empty title={t("evidence.emptyTitle")}>
+                          {t("evidence.emptyDescription")}
                         </Empty>
                       )}
                     </section>
                     <section className="panel timeline-panel">
                       <div className="panel-header">
                         <div>
-                          <span className="eyebrow">INCIDENT HISTORY</span>
-                          <h2>Timeline</h2>
+                          <span className="eyebrow">
+                            {t("timeline.history")}
+                          </span>
+                          <h2>{t("timeline.title")}</h2>
                         </div>
                       </div>
                       <ol className="timeline">
                         <li>
                           <span className="timeline-point" />
-                          <strong>Session created</strong>
+                          <strong>{t("timeline.sessionCreated")}</strong>
                           <time>{date(detail.session.createdAt)}</time>
                           <p>{scenarioName(detail.session.scenario)}</p>
                         </li>
@@ -704,17 +792,24 @@ export default function App() {
                               className={`timeline-point ${activation.enabled ? "orange" : ""}`}
                             />
                             <strong>
-                              Fault{" "}
-                              {activation.enabled ? "enabled" : "disabled"}
+                              {t(
+                                activation.enabled
+                                  ? "fault.enabled"
+                                  : "fault.disabled",
+                              )}
                             </strong>
                             <time>{date(activation.occurredAt)}</time>
-                            <p>Parameter: {activation.parameter}</p>
+                            <p>
+                              {t("common.parameter", {
+                                value: number(activation.parameter),
+                              })}
+                            </p>
                           </li>
                         ))}
                         {detail.report && (
                           <li>
                             <span className="timeline-point" />
-                            <strong>RCA generated</strong>
+                            <strong>{t("timeline.rcaGenerated")}</strong>
                             <time>{date(detail.report.generatedAt)}</time>
                             <p>{detail.report.provider}</p>
                           </li>
@@ -729,12 +824,11 @@ export default function App() {
                   <Empty
                     title={
                       selectedId
-                        ? "Loading incident…"
-                        : "Select an incident session"
+                        ? t("common.loadingIncident")
+                        : t("common.selectSession")
                     }
                   >
-                    Start an investigation in the incident lab to collect
-                    evidence and generate a report.
+                    {t("evidence.selectDescription")}
                   </Empty>
                 </section>
               )}
@@ -752,7 +846,7 @@ export default function App() {
                     create={(workload) => {
                       void action(
                         () => api.createExperiment(detail.session.id, workload),
-                        "Experiment created. Run the displayed command to execute both phases.",
+                        "notice.experimentCreated",
                       );
                     }}
                   />
@@ -771,26 +865,24 @@ export default function App() {
                   ))}
                   {detail.experiments.length === 0 && (
                     <section className="panel">
-                      <Empty title="No experiments recorded">
-                        Create an experiment, then run the generated command.
-                        Both phases use the same virtual users and duration.
+                      <Empty title={t("experiment.emptyTitle")}>
+                        {t("experiment.emptyDescription")}
                       </Empty>
                     </section>
                   )}
                 </>
               ) : (
                 <section className="panel">
-                  <Empty title="Select an incident session">
-                    Experiment measurements are stored with the incident they
-                    investigate.
+                  <Empty title={t("common.selectSession")}>
+                    {t("experiment.selectDescription")}
                   </Empty>
                 </section>
               )}
             </>
           )}
           <footer className="page-footer">
-            <span>IncidentLens</span>Controlled local experiments · Missing data
-            is never replaced with sample measurements.
+            <span>IncidentLens</span>
+            {t("shell.footer")}
           </footer>
         </div>
       </main>
@@ -805,12 +897,14 @@ function IncidentLab({
   busy: boolean;
   createSession: (name: string, scenario: Scenario) => Promise<void>;
 }) {
+  const { t, scenarioName } = usePresentation();
   const [scenario, setScenario] = useState<Scenario>("DOWNSTREAM_LATENCY");
   const [name, setName] = useState("");
   const submit = (event: FormEvent) => {
     event.preventDefault();
     void createSession(
-      name.trim() || `${scenarioName(scenario)} investigation`,
+      name.trim() ||
+        t("lab.defaultSessionName", { scenario: scenarioName(scenario) }),
       scenario,
     );
   };
@@ -818,14 +912,14 @@ function IncidentLab({
     <section className="panel">
       <div className="panel-header">
         <div>
-          <span className="eyebrow">CREATE AN INVESTIGATION</span>
-          <h2>Choose a failure scenario</h2>
+          <span className="eyebrow">{t("lab.createInvestigation")}</span>
+          <h2>{t("lab.chooseScenario")}</h2>
         </div>
-        <span className="tag">4 CONTROLLED SCENARIOS</span>
+        <span className="tag">{t("lab.scenarioCount")}</span>
       </div>
       <form onSubmit={submit}>
         <fieldset className="scenario-grid">
-          <legend className="sr-only">Failure scenario</legend>
+          <legend className="sr-only">{t("lab.failureScenario")}</legend>
           {scenarios.map((item) => (
             <label
               key={item.value}
@@ -839,23 +933,25 @@ function IncidentLab({
                 onChange={() => setScenario(item.value)}
               />
               <span className="scenario-number">{item.symbol}</span>
-              <strong>{item.title}</strong>
-              <span>{item.description}</span>
+              <strong>{t(item.title)}</strong>
+              <span>{t(item.description)}</span>
             </label>
           ))}
         </fieldset>
         <div className="create-session-row">
           <label>
-            Session name
+            {t("lab.sessionName")}
             <input
               maxLength={120}
               value={name}
               onChange={(event) => setName(event.target.value)}
-              placeholder={`${scenarioName(scenario)} investigation`}
+              placeholder={t("lab.defaultSessionName", {
+                scenario: scenarioName(scenario),
+              })}
             />
           </label>
           <button className="button primary" disabled={busy} type="submit">
-            Create session +
+            {t("lab.createSession")}
           </button>
         </div>
       </form>
@@ -874,6 +970,7 @@ function FaultControl({
   busy: boolean;
   setFault: (enabled: boolean, parameter: number) => void;
 }) {
+  const { t } = useI18n();
   const scenario = scenarios.find(
     (item) => item.value === detail.session.scenario,
   )!;
@@ -887,19 +984,14 @@ function FaultControl({
     <div className="fault-control">
       <div>
         <h3>{detail.session.name}</h3>
-        <p>{scenario.description}</p>
+        <p>{t(scenario.description)}</p>
         <span className="mono muted">{detail.session.id}</span>
-        {conflicting && (
-          <p className="warning-text">
-            Another session has an active fault. Disable it before activating
-            this one.
-          </p>
-        )}
+        {conflicting && <p className="warning-text">{t("fault.conflict")}</p>}
       </div>
       <div className="fault-actions">
         {usesParameter && (
           <label>
-            {scenario.parameter}
+            {t(scenario.parameter)}
             <input
               type="number"
               min={0}
@@ -921,23 +1013,27 @@ function FaultControl({
           }
           onClick={() => setFault(!active, parameter)}
         >
-          {active ? "Disable fault" : "Enable fault"}
+          {active ? t("fault.disable") : t("fault.enable")}
         </button>
-        <span className="muted">
-          Faults expire automatically. Disabling a fault during an experiment
-          aborts its active run.
-        </span>
+        <span className="muted">{t("fault.expiryHelp")}</span>
       </div>
     </div>
   );
 }
 
 export function EvidenceCard({ evidence }: { evidence: Evidence }) {
+  const { t, number, date } = usePresentation();
   return (
     <article className="evidence-card" id={`evidence-${evidence.id}`}>
       <div className="evidence-title">
         <span className="tag">{evidence.service}</span>
-        {evidence.phase && <span className="tag">{evidence.phase}</span>}
+        {evidence.phase && (
+          <span className="tag">
+            {phaseKeys[evidence.phase]
+              ? t(phaseKeys[evidence.phase])
+              : evidence.phase}
+          </span>
+        )}
         <strong>
           {number(evidence.value, 3)}{" "}
           {evidence.value == null ? "" : evidence.unit}
@@ -947,22 +1043,22 @@ export function EvidenceCard({ evidence }: { evidence: Evidence }) {
       <p>{evidence.explanation}</p>
       <dl>
         <div>
-          <dt>Source</dt>
+          <dt>{t("evidence.source")}</dt>
           <dd>{evidence.source}</dd>
         </div>
         <div>
-          <dt>Window</dt>
+          <dt>{t("evidence.window")}</dt>
           <dd>
             {date(evidence.windowStart)} — {date(evidence.windowEnd)}
           </dd>
         </div>
         <div>
-          <dt>Evidence ID</dt>
+          <dt>{t("evidence.id")}</dt>
           <dd className="mono">{evidence.id}</dd>
         </div>
         {evidence.traceId && (
           <div>
-            <dt>Trace ID</dt>
+            <dt>{t("common.traceId")}</dt>
             <dd className="mono">{evidence.traceId}</dd>
           </div>
         )}
@@ -972,12 +1068,13 @@ export function EvidenceCard({ evidence }: { evidence: Evidence }) {
 }
 
 export function RcaReport({ report }: { report: Report | null }) {
+  const { t, percent, date } = usePresentation();
   return (
     <section className="panel rca-panel">
       <div className="panel-header">
         <div>
-          <span className="eyebrow">EVIDENCE-GROUNDED ANALYSIS</span>
-          <h2>Root cause report</h2>
+          <span className="eyebrow">{t("rca.analysis")}</span>
+          <h2>{t("rca.title")}</h2>
         </div>
         {report && <span className="tag">{report.provider}</span>}
       </div>
@@ -986,16 +1083,16 @@ export function RcaReport({ report }: { report: Report | null }) {
           <p className="report-summary">{report.summary}</p>
           <div className="hypothesis">
             <div>
-              <span className="eyebrow">ROOT CAUSE HYPOTHESIS · INFERENCE</span>
+              <span className="eyebrow">{t("rca.hypothesis")}</span>
               <h3>{report.suspectedRootCause}</h3>
             </div>
             <div className="confidence">
               <strong>{percent(report.confidence)}</strong>
-              <span>provider confidence</span>
+              <span>{t("rca.confidence")}</span>
             </div>
           </div>
           <div className="report-citations">
-            <strong>Supporting evidence</strong>
+            <strong>{t("rca.supportingEvidence")}</strong>
             {report.evidenceIds.map((id) => (
               <a key={id} className="citation mono" href={`#evidence-${id}`}>
                 {id.slice(0, 12)} ↗
@@ -1004,9 +1101,9 @@ export function RcaReport({ report }: { report: Report | null }) {
           </div>
           <div className="report-grid">
             <div>
-              <h3>Observed impact</h3>
+              <h3>{t("rca.impact")}</h3>
               <p>{report.impact}</p>
-              <h3>Recommended actions</h3>
+              <h3>{t("rca.actions")}</h3>
               <ul>
                 {report.recommendedActions.map((action, i) => (
                   <li key={i}>{action}</li>
@@ -1014,25 +1111,21 @@ export function RcaReport({ report }: { report: Report | null }) {
               </ul>
             </div>
             <div className="uncertainties">
-              <h3>Uncertainties</h3>
+              <h3>{t("rca.uncertainties")}</h3>
               <ul>
                 {report.uncertainties.map((uncertainty, i) => (
                   <li key={i}>{uncertainty}</li>
                 ))}
               </ul>
-              <p>
-                Confidence is the provider's assessment, not a calibrated
-                probability. Validate the hypothesis with a recovery experiment.
-              </p>
+              <p>{t("rca.confidenceHelp")}</p>
             </div>
           </div>
-          <span className="muted">Generated {date(report.generatedAt)}</span>
+          <span className="muted">
+            {t("rca.generated", { date: date(report.generatedAt) })}
+          </span>
         </div>
       ) : (
-        <Empty title="No RCA report yet">
-          Collect evidence, then generate an analysis. Rule-based RCA works
-          without an API key.
-        </Empty>
+        <Empty title={t("rca.emptyTitle")}>{t("rca.emptyDescription")}</Empty>
       )}
     </section>
   );
@@ -1047,31 +1140,33 @@ function ExperimentSetup({
   busy: boolean;
   create: (workload: { vus: number; durationSeconds: number }) => void;
 }) {
+  const { t, scenarioName } = usePresentation();
   const [vus, setVus] = useState(2);
   const [duration, setDuration] = useState(20);
   if (detail.experiments.length > 0)
     return (
-      <div className="experiment-guidance">
-        This session already has an experiment. Create a new incident session to
-        run a separate comparison with independent telemetry windows.
-      </div>
+      <div className="experiment-guidance">{t("experiment.existing")}</div>
     );
   return (
     <section className="panel">
       <div className="panel-header">
         <div>
-          <span className="eyebrow">REPEATABLE WORKLOAD</span>
-          <h2>Prepare an experiment</h2>
+          <span className="eyebrow">{t("experiment.repeatable")}</span>
+          <h2>{t("experiment.prepare")}</h2>
         </div>
         <span className="tag">{scenarioName(detail.session.scenario)}</span>
       </div>
       <div className="experiment-setup">
         <p>
-          The runner enables the fault for <strong>BEFORE</strong>, disables it
-          for <strong>AFTER</strong>, and sends real k6 results to the control
-          plane. Creating a record here does not start traffic. Prepare the
-          experiment before sending scoped traffic; use a new incident session
-          if a manual workload already used this session.
+          {t("experiment.prepareHelp")
+            .split(/(BEFORE|AFTER)/)
+            .map((part, index) =>
+              part === "BEFORE" || part === "AFTER" ? (
+                <strong key={index}>{part}</strong>
+              ) : (
+                part
+              ),
+            )}
         </p>
         <form
           onSubmit={(event) => {
@@ -1080,7 +1175,7 @@ function ExperimentSetup({
           }}
         >
           <label>
-            Virtual users
+            {t("experiment.virtualUsers")}
             <input
               type="number"
               min={1}
@@ -1091,7 +1186,7 @@ function ExperimentSetup({
             />
           </label>
           <label>
-            Duration per phase (s)
+            {t("experiment.duration")}
             <input
               type="number"
               min={5}
@@ -1102,76 +1197,13 @@ function ExperimentSetup({
             />
           </label>
           <button className="button primary" disabled={busy} type="submit">
-            Create experiment
+            {t("experiment.create")}
           </button>
         </form>
       </div>
     </section>
   );
 }
-
-const comparisonRows: {
-  key: keyof Metrics;
-  label: string;
-  format: (value: number | null | undefined) => string;
-  lowerBetter: boolean;
-}[] = [
-  {
-    key: "requestCount",
-    label: "Requests",
-    format: number,
-    lowerBetter: false,
-  },
-  {
-    key: "throughput",
-    label: "Throughput (req/s)",
-    format: (value) => number(value, 2),
-    lowerBetter: false,
-  },
-  {
-    key: "successRate",
-    label: "Success rate",
-    format: percent,
-    lowerBetter: false,
-  },
-  {
-    key: "p50Ms",
-    label: "p50 request latency",
-    format: milliseconds,
-    lowerBetter: true,
-  },
-  {
-    key: "p95Ms",
-    label: "p95 request latency",
-    format: milliseconds,
-    lowerBetter: true,
-  },
-  {
-    key: "p99Ms",
-    label: "p99 request latency",
-    format: milliseconds,
-    lowerBetter: true,
-  },
-  {
-    key: "dbQueryP95Ms",
-    label: "DB lookup p95",
-    format: milliseconds,
-    lowerBetter: true,
-  },
-  {
-    key: "kafkaLag",
-    label: "Consumer lag (events)",
-    format: number,
-    lowerBetter: true,
-  },
-  {
-    key: "cacheHitRate",
-    label: "Cache hit rate",
-    format: percent,
-    lowerBetter: false,
-  },
-  { key: "errorCount", label: "Errors", format: number, lowerBetter: true },
-];
 
 export function ExperimentCard({
   experiment,
@@ -1182,29 +1214,108 @@ export function ExperimentCard({
   scenario: Scenario;
   parameter?: number;
 }) {
+  const { t, number, percent, milliseconds, date, change } = usePresentation();
+  const comparisonRows: {
+    key: keyof Metrics;
+    label: TranslationKey;
+    format: (value: number | null | undefined) => string;
+    lowerBetter: boolean;
+  }[] = [
+    {
+      key: "requestCount",
+      label: "metric.requests",
+      format: number,
+      lowerBetter: false,
+    },
+    {
+      key: "throughput",
+      label: "metric.throughput",
+      format: (value) => number(value, 2),
+      lowerBetter: false,
+    },
+    {
+      key: "successRate",
+      label: "metric.successRate",
+      format: percent,
+      lowerBetter: false,
+    },
+    {
+      key: "p50Ms",
+      label: "metric.p50",
+      format: milliseconds,
+      lowerBetter: true,
+    },
+    {
+      key: "p95Ms",
+      label: "metric.p95",
+      format: milliseconds,
+      lowerBetter: true,
+    },
+    {
+      key: "p99Ms",
+      label: "metric.p99",
+      format: milliseconds,
+      lowerBetter: true,
+    },
+    {
+      key: "dbQueryP95Ms",
+      label: "metric.dbP95",
+      format: milliseconds,
+      lowerBetter: true,
+    },
+    {
+      key: "kafkaLag",
+      label: "metric.consumerLagEvents",
+      format: number,
+      lowerBetter: true,
+    },
+    {
+      key: "cacheHitRate",
+      label: "metric.cacheHitRate",
+      format: percent,
+      lowerBetter: false,
+    },
+    {
+      key: "errorCount",
+      label: "metric.errors",
+      format: number,
+      lowerBetter: true,
+    },
+  ];
+
   const [copied, setCopied] = useState(false);
   const command = `.\\scripts\\demo-compare.ps1 -Scenario ${scenario} -SessionId ${experiment.sessionId} -ExperimentId ${experiment.id} -Vus ${experiment.workload.vus} -DurationSeconds ${experiment.workload.durationSeconds} -Parameter ${parameter}`;
   return (
     <section className="panel">
       <div className="panel-header">
         <div>
-          <span className="eyebrow">BEFORE / AFTER</span>
+          <span className="eyebrow">{t("experiment.comparison")}</span>
           <h2>
-            Experiment{" "}
+            {t("experiment.name")}{" "}
             <span className="mono small">{experiment.id.slice(0, 8)}</span>
           </h2>
         </div>
         <Status value={experiment.status} />
       </div>
       <div className="experiment-meta">
-        <span>{experiment.workload.vus} virtual users</span>
-        <span>{experiment.workload.durationSeconds}s per phase</span>
-        <span>Created {date(experiment.createdAt)}</span>
+        <span>
+          {t("experiment.usersSummary", {
+            count: number(experiment.workload.vus),
+          })}
+        </span>
+        <span>
+          {t("experiment.durationSummary", {
+            seconds: number(experiment.workload.durationSeconds),
+          })}
+        </span>
+        <span>
+          {t("experiment.created", { date: date(experiment.createdAt) })}
+        </span>
       </div>
       {experiment.status === "CREATED" && (
         <div className="command-panel">
           <div>
-            <strong>Run from the repository root in PowerShell</strong>
+            <strong>{t("experiment.runCommand")}</strong>
             <button
               className="text-button"
               onClick={() => {
@@ -1214,50 +1325,42 @@ export function ExperimentCard({
                   .catch(() => setCopied(false));
               }}
             >
-              {copied ? "Copied" : "Copy command"}
+              {copied ? t("experiment.copied") : t("experiment.copy")}
             </button>
           </div>
           <pre>
             <code>{command}</code>
           </pre>
-          <p>
-            The dashboard refreshes automatically. The script owns fault
-            activation, k6 execution, evidence collection, and result
-            submission.
-          </p>
+          <p>{t("experiment.runnerHelp")}</p>
         </div>
       )}
       {experiment.status.endsWith("_RUNNING") && (
         <div className="experiment-guidance" role="status">
-          The workload is running. Results appear when the runner completes this
-          phase. Disabling the fault now aborts the active run.
+          {t("experiment.runningHelp")}
         </div>
       )}
       {experiment.status === "BEFORE_COMPLETE" && (
         <div className="experiment-guidance">
-          BEFORE is recorded. The active runner will disable the fault and start
-          AFTER. If the runner stopped, create a new session and experiment; a
-          partial run cannot be restarted with the comparison command.
+          {t("experiment.beforeCompleteHelp")}
         </div>
       )}
       {experiment.status === "ABORTED" && (
-        <div className="experiment-guidance">
-          This experiment was aborted. Its partial measurements are retained.
-          Create a new session and experiment to run a complete comparison.
-        </div>
+        <div className="experiment-guidance">{t("experiment.abortedHelp")}</div>
       )}
       <div className="table-scroll">
         <table className="comparison-table">
           <thead>
             <tr>
-              <th>Measurement</th>
+              <th>{t("experiment.measurement")}</th>
               <th>
-                BEFORE <span>fault active</span>
+                {t("phase.before")}
+                <span>{t("phase.faultActive")}</span>
               </th>
               <th>
-                AFTER <span>fault disabled</span>
+                {t("phase.after")}
+                <span>{t("phase.faultDisabled")}</span>
               </th>
-              <th>Relative change</th>
+              <th>{t("experiment.relativeChange")}</th>
             </tr>
           </thead>
           <tbody>
@@ -1275,9 +1378,15 @@ export function ExperimentCard({
                 (row.lowerBetter ? after > before : after < before);
               return (
                 <tr key={row.key}>
-                  <td>{row.label}</td>
-                  <td>{experiment.before ? row.format(before) : "Pending"}</td>
-                  <td>{experiment.after ? row.format(after) : "Pending"}</td>
+                  <td>{t(row.label)}</td>
+                  <td>
+                    {experiment.before
+                      ? row.format(before)
+                      : t("common.pending")}
+                  </td>
+                  <td>
+                    {experiment.after ? row.format(after) : t("common.pending")}
+                  </td>
                   <td
                     className={
                       delta !== "—" && better
@@ -1296,11 +1405,7 @@ export function ExperimentCard({
         </table>
       </div>
       <div className="panel-footer">
-        <span>
-          Single-run comparison; differences are measured observations, not
-          statistical guarantees. “Unavailable” means the source did not provide
-          a value.
-        </span>
+        <span>{t("experiment.comparisonHelp")}</span>
       </div>
     </section>
   );
