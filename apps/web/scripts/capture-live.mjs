@@ -51,8 +51,10 @@ try {
   });
   async function capture(name, locator = page) {
     const path = `screenshots/${name}.png`;
+    if (locator === page) await page.evaluate(() => window.scrollTo(0, 0));
     const noOverflow = await page.evaluate(
-      () => document.documentElement.scrollWidth <= window.innerWidth,
+      (width) => document.documentElement.scrollWidth <= width,
+      page.viewportSize().width,
     );
     assert.equal(
       noOverflow,
@@ -114,10 +116,17 @@ try {
   await page.setViewportSize({ width: 390, height: 844 });
   assert.equal(
     await page.evaluate(
-      () => document.documentElement.scrollWidth <= window.innerWidth,
+      (width) => document.documentElement.scrollWidth <= width,
+      page.viewportSize().width,
     ),
     true,
     "Mobile comparison has no horizontal document overflow",
+  );
+  await page.getByRole("button", { name: "Overview", exact: true }).click();
+  assert.equal(
+    await page.evaluate((width) => document.documentElement.scrollWidth <= width, page.viewportSize().width),
+    true,
+    "Populated mobile overview has no horizontal document overflow",
   );
 
   assert.deepEqual(
@@ -146,6 +155,7 @@ try {
     browserErrors: errors,
     apiMutations: writes,
     mobileDocumentOverflow: false,
+    mobileCheckedViews: ["overview", "comparison"],
     note: "Real local API observations; no route mocks or synthetic benchmark values. Overview is aggregate telemetry at capture time; comparison belongs to the identified completed session.",
   };
   await writeFile(

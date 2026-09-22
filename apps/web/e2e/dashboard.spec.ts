@@ -145,9 +145,18 @@ test("a developer can create a fault session, inspect evidence, and prepare a re
   ).not.toBeVisible();
   expect(browserErrors).toEqual([]);
   const noHorizontalOverflow = await page.evaluate(
-    () => document.documentElement.scrollWidth <= window.innerWidth,
+    (width) => document.documentElement.scrollWidth <= width,
+    page.viewportSize()!.width,
   );
   expect(noHorizontalOverflow).toBe(true);
+  await page.getByRole("button", { name: "Overview", exact: true }).click();
+  await expect(page.getByRole("button", { name: "Inspect" })).toBeVisible();
+  expect(
+    await page.evaluate(
+      (width) => document.documentElement.scrollWidth <= width,
+      page.viewportSize()!.width,
+    ),
+  ).toBe(true);
 });
 
 test("the actual empty dashboard remains usable when the control plane is unavailable", async ({
