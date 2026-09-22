@@ -8,7 +8,8 @@ import java.util.*;
 public class RuleBasedRcaProvider implements RcaProvider {
     private record Rule(String type, java.util.function.DoublePredicate matches, String cause, String action) {}
     private static final List<Rule> RULES = List.of(
-        new Rule("KAFKA_LAG", v -> v > 10, "Consumer throughput is below event production; slow processing or a stalled consumer is plausible.", "Restore consumer speed; watch lag drain and check retry/DLQ counters before increasing concurrency."),
+        new Rule("OUTBOX_PENDING", v -> v > 10, "Orders are queued before Kafka publication; relay capacity, publication failures or a recent traffic burst are competing explanations.", "Inspect outbox age, publication failures and relay throughput; confirm both outbox backlog and consumer lag drain before declaring asynchronous recovery."),
+        new Rule("KAFKA_LAG", v -> v > 10, "Committed offsets trail published events; slow processing, a stalled consumer or a backlog already draining after a burst are plausible.", "Inspect lag over time, restore consumer speed, and check retry/DLQ counters before increasing concurrency."),
         new Rule("CACHE_HIT_RATE", v -> v < 0.5, "Low cache reuse may be increasing database work; cold start and disabled cache are competing explanations.", "Inspect cache misses and database query counts; restore caching and compare an identical workload after warm-up."),
         new Rule("DB_QUERY_P95", v -> v > 20, "Database lookup work is slow; repeated lookups or an inefficient query plan are plausible.", "Compare indexed/batched queries with the degraded query path; inspect EXPLAIN and pool saturation."),
         new Rule("LATENCY_P95", v -> v > 200, "A slow synchronous dependency or injected downstream delay is consistent with the request latency.", "Inspect the cited trace spans, restore the downstream path, and repeat the same workload.")

@@ -17,7 +17,7 @@ class EvidenceCollector {
         Map.entry("p99Ms", new Metric("LATENCY_P99", "ms", "99th percentile observed request latency")),
         Map.entry("dbQueryP95Ms", new Metric("DB_QUERY_P95", "ms", "95th percentile measured catalog database lookup duration")),
         Map.entry("dbQueryCount", new Metric("DB_LOOKUP_COUNT", "lookups", "Logical catalog database loads; degraded loads execute multiple SQL statements")),
-        Map.entry("kafkaLag", new Metric("KAFKA_LAG", "events", "Consumer group backlog at collection time; shared across sessions")),
+        Map.entry("kafkaLag", new Metric("KAFKA_LAG", "events", "Latest sampled consumer group backlog (normally refreshed every 2 seconds); shared across sessions")),
         Map.entry("cacheHitRate", new Metric("CACHE_HIT_RATE", "ratio", "Observed cache hits divided by cache lookups")),
         Map.entry("outboxPending", new Metric("OUTBOX_PENDING", "events", "Unpublished durable outbox rows at collection time; shared across sessions")),
         Map.entry("processedCount", new Metric("PROCESSED_COUNT", "events", "Events processed by worker in the selected scope")),

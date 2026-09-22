@@ -31,6 +31,15 @@ class EvidenceAndRcaTest {
         assertThat(evidence.getFirst().value()).isNull();
         assertThat(evidence.getFirst().source()).contains("phase=BEFORE");
     }
+    @Test void unpublishedOutboxBacklogRemainsEvidenceWhenKafkaLagIsZero() {
+        var evidence = List.of(metric("requests", "REQUEST_COUNT", 300.0),
+                metric("outbox", "OUTBOX_PENDING", 200.0), metric("lag", "KAFKA_LAG", 0.0));
+        var report = new RuleBasedRcaProvider().analyze(evidence);
+        assertThat(report.evidenceIds()).contains("outbox", "requests").doesNotContain("lag");
+        assertThat(report.suspectedRootCause()).contains("before Kafka publication", "competing explanations");
+        assertThat(report.recommendedActions()).anySatisfy(action -> assertThat(action).contains("both outbox backlog and consumer lag"));
+        assertThatCode(() -> RcaValidator.validate(report, evidence)).doesNotThrowAnyException();
+    }
     @Test void collectorRetainsProvenanceAndTraceLinks() {
         var snapshot = new TelemetryClient.Snapshot("demo-api", Instant.now(), Map.of("p95Ms", 410.0), List.of("1234567890abcdef1234567890abcdef"), true);
         var evidence = EvidenceCollector.build("session", Instant.EPOCH, "BEFORE", List.of(snapshot));

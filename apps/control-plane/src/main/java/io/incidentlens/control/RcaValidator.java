@@ -19,7 +19,7 @@ final class RcaValidator {
         boolean traffic = evidence.stream().anyMatch(e -> e.value() != null && e.value() > 0
             && ("REQUEST_COUNT".equals(e.type()) || "PROCESSED_COUNT".equals(e.type())));
         Set<String> events = Set.of("INEFFICIENT_QUERY", "CACHE_BYPASS", "DOWNSTREAM_DELAY", "DOWNSTREAM_TIMEOUT", "CONSUMER_DELAY", "CONSUMER_RETRY");
-        Set<String> measurements = Set.of("LATENCY_P95", "LATENCY_P99", "DB_QUERY_P95", "KAFKA_LAG", "ERROR_COUNT", "RETRY_COUNT", "TIMEOUT_COUNT");
+        Set<String> measurements = Set.of("LATENCY_P95", "LATENCY_P99", "DB_QUERY_P95", "KAFKA_LAG", "OUTBOX_PENDING", "ERROR_COUNT", "RETRY_COUNT", "TIMEOUT_COUNT");
         boolean citedSymptom = evidence.stream().anyMatch(e -> report.evidenceIds().contains(e.id())
             && (events.contains(e.type()) || (e.value() != null && Double.isFinite(e.value())
                 && ((measurements.contains(e.type()) && e.value() > 0) || ("CACHE_HIT_RATE".equals(e.type()) && e.value() < 1)))));
