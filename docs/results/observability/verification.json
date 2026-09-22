@@ -1,0 +1,43 @@
+{
+  "verifiedAt": "2026-09-22T12:06:10.284Z",
+  "prometheusTargetsUp": 3,
+  "businessRequestCount": 44,
+  "dashboardPanels": 13,
+  "workerLogStreams": 22,
+  "faultEventStreams": 2,
+  "traceId": "9ab4ecb47b77a2b4543cc239fd55a151",
+  "services": [
+    "demo-api",
+    "demo-worker"
+  ],
+  "spanNamesByService": {
+    "demo-api": [
+      "OrderRepository.findByIdempotencyKey",
+      "SELECT demo_api.product",
+      "INSERT demo_api.purchase_order",
+      "SELECT demo_api.purchase_order",
+      "INSERT demo_api.outbox_event",
+      "UPDATE demo_api.outbox_event",
+      "Set variable 'autocommit'",
+      "Prepare statement",
+      "Execute prepared statement",
+      "Commit",
+      "SELECT io.incidentlens.demoapi.PurchaseOrder",
+      "Transaction.commit",
+      "POST /api/orders",
+      "incidentlens.orders.v1 publish"
+    ],
+    "demo-worker": [
+      "INSERT demo_worker.processed_event",
+      "SELECT demo_worker.processed_event",
+      "INSERT demo_worker.fulfillment",
+      "SELECT demo_worker.fulfillment",
+      "incidentlens.orders.v1 process",
+      "Set variable 'autocommit'",
+      "Prepare statement",
+      "Execute prepared statement",
+      "Commit",
+      "GET"
+    ]
+  }
+}

@@ -1,0 +1,80 @@
+[
+  {
+    "timestamp": "2026-09-22T11:41:01.085Z",
+    "outboxPending": 201,
+    "kafkaLag": 0,
+    "processedCount": 684
+  },
+  {
+    "timestamp": "2026-09-22T11:41:11.096Z",
+    "outboxPending": 183,
+    "kafkaLag": 1,
+    "processedCount": 702
+  },
+  {
+    "timestamp": "2026-09-22T11:41:21.117Z",
+    "outboxPending": 163,
+    "kafkaLag": 1,
+    "processedCount": 721
+  },
+  {
+    "timestamp": "2026-09-22T11:41:31.125Z",
+    "outboxPending": 146,
+    "kafkaLag": 1,
+    "processedCount": 739
+  },
+  {
+    "timestamp": "2026-09-22T11:41:41.132Z",
+    "outboxPending": 127,
+    "kafkaLag": 1,
+    "processedCount": 757
+  },
+  {
+    "timestamp": "2026-09-22T11:41:51.136Z",
+    "outboxPending": 109,
+    "kafkaLag": 1,
+    "processedCount": 776
+  },
+  {
+    "timestamp": "2026-09-22T11:42:01.141Z",
+    "outboxPending": 91,
+    "kafkaLag": 0,
+    "processedCount": 794
+  },
+  {
+    "timestamp": "2026-09-22T11:42:11.148Z",
+    "outboxPending": 74,
+    "kafkaLag": 1,
+    "processedCount": 811
+  },
+  {
+    "timestamp": "2026-09-22T11:42:21.158Z",
+    "outboxPending": 56,
+    "kafkaLag": 1,
+    "processedCount": 829
+  },
+  {
+    "timestamp": "2026-09-22T11:42:31.165Z",
+    "outboxPending": 39,
+    "kafkaLag": 1,
+    "processedCount": 846
+  },
+  {
+    "timestamp": "2026-09-22T11:42:41.172Z",
+    "outboxPending": 23,
+    "kafkaLag": 1,
+    "processedCount": 861
+  },
+  {
+    "timestamp": "2026-09-22T11:42:51.178Z",
+    "outboxPending": 7,
+    "kafkaLag": 1,
+    "processedCount": 877
+  },
+  {
+    "timestamp": "2026-09-22T11:43:01.183Z",
+    "outboxPending": 0,
+    "kafkaLag": 0,
+    "processedCount": 885
+  }
+]

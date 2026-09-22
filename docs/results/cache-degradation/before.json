@@ -1,0 +1,12 @@
+{
+  "requestCount": 294,
+  "errorCount": 0,
+  "durationSeconds": 20.562110538000002,
+  "p50Ms": 114.4020965,
+  "p95Ms": 964.5306167499997,
+  "p99Ms": 1440.572778,
+  "workload": {
+    "vus": 5,
+    "durationSeconds": 20
+  }
+}

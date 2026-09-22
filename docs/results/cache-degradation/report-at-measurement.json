@@ -1,0 +1,26 @@
+{
+  "summary": "Observed symptoms support 3 candidate explanation(s).",
+  "suspectedRootCause": "Low cache reuse may be increasing database work; cold start and disabled cache are competing explanations. A slow synchronous dependency or injected downstream delay is consistent with the request latency. The catalog recorded a cache bypass; increased database load is consistent with disabled caching.",
+  "confidence": 0.65,
+  "evidenceIds": [
+    "0711c81f-3576-40ba-bf6c-d1f3913c961f",
+    "e21705a3-b8d5-48fe-8bae-8008b3179c17",
+    "71380bd0-7e7b-42b4-b814-75498047c2ad",
+    "841f6274-068f-4dcf-90cf-6158cb30045d",
+    "9f9840ae-fed4-483f-88a2-8efe65188e06",
+    "19997ce5-be69-41f9-b884-d5b84e342f14",
+    "c97acf7c-d772-41ef-991d-06faf442fd6c"
+  ],
+  "impact": "Observed counts and latency are listed in the cited evidence; user impact beyond this local workload is unknown.",
+  "recommendedActions": [
+    "Inspect cache misses and database query counts; restore caching and compare an identical workload after warm-up.",
+    "Inspect the cited trace spans, restore the downstream path, and repeat the same workload."
+  ],
+  "uncertainties": [
+    "Rules identify correlated symptoms, not proven causation; confidence is a heuristic, not a calibrated probability.",
+    "Kafka lag and outbox backlog are shared gauges; unrelated traffic can affect them.",
+    "Compare BEFORE and AFTER under the same load; a single sample cannot establish a performance improvement."
+  ],
+  "provider": "rule-based",
+  "generatedAt": "2026-09-22T11:38:57.706589773Z"
+}

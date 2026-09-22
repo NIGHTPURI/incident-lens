@@ -1,0 +1,392 @@
+[
+  {
+    "timestamp": "2026-09-22T11:43:27.013Z",
+    "outboxPending": 0,
+    "kafkaLag": 0,
+    "processedCount": 885
+  },
+  {
+    "timestamp": "2026-09-22T11:43:29.021Z",
+    "outboxPending": 0,
+    "kafkaLag": 0,
+    "processedCount": 885
+  },
+  {
+    "timestamp": "2026-09-22T11:43:31.030Z",
+    "outboxPending": 0,
+    "kafkaLag": 0,
+    "processedCount": 885
+  },
+  {
+    "timestamp": "2026-09-22T11:43:33.040Z",
+    "outboxPending": 0,
+    "kafkaLag": 0,
+    "processedCount": 885
+  },
+  {
+    "timestamp": "2026-09-22T11:43:35.049Z",
+    "outboxPending": 0,
+    "kafkaLag": 0,
+    "processedCount": 885
+  },
+  {
+    "timestamp": "2026-09-22T11:43:37.064Z",
+    "outboxPending": 0,
+    "kafkaLag": 0,
+    "processedCount": 885
+  },
+  {
+    "timestamp": "2026-09-22T11:43:39.075Z",
+    "outboxPending": 0,
+    "kafkaLag": 0,
+    "processedCount": 885
+  },
+  {
+    "timestamp": "2026-09-22T11:43:41.082Z",
+    "outboxPending": 0,
+    "kafkaLag": 0,
+    "processedCount": 885
+  },
+  {
+    "timestamp": "2026-09-22T11:43:43.105Z",
+    "outboxPending": 0,
+    "kafkaLag": 0,
+    "processedCount": 885
+  },
+  {
+    "timestamp": "2026-09-22T11:43:45.161Z",
+    "outboxPending": 10,
+    "kafkaLag": 0,
+    "processedCount": 885
+  },
+  {
+    "timestamp": "2026-09-22T11:43:47.197Z",
+    "outboxPending": 29,
+    "kafkaLag": 1,
+    "processedCount": 885
+  },
+  {
+    "timestamp": "2026-09-22T11:43:49.306Z",
+    "outboxPending": 56,
+    "kafkaLag": 2,
+    "processedCount": 886
+  },
+  {
+    "timestamp": "2026-09-22T11:43:51.313Z",
+    "outboxPending": 84,
+    "kafkaLag": 2,
+    "processedCount": 888
+  },
+  {
+    "timestamp": "2026-09-22T11:43:53.319Z",
+    "outboxPending": 110,
+    "kafkaLag": 2,
+    "processedCount": 890
+  },
+  {
+    "timestamp": "2026-09-22T11:43:55.456Z",
+    "outboxPending": 137,
+    "kafkaLag": 3,
+    "processedCount": 890
+  },
+  {
+    "timestamp": "2026-09-22T11:43:57.825Z",
+    "outboxPending": 169,
+    "kafkaLag": 3,
+    "processedCount": 892
+  },
+  {
+    "timestamp": "2026-09-22T11:43:59.845Z",
+    "outboxPending": 190,
+    "kafkaLag": 3,
+    "processedCount": 894
+  },
+  {
+    "timestamp": "2026-09-22T11:44:02.233Z",
+    "outboxPending": 231,
+    "kafkaLag": 3,
+    "processedCount": 896
+  },
+  {
+    "timestamp": "2026-09-22T11:44:04.448Z",
+    "outboxPending": 269,
+    "kafkaLag": 3,
+    "processedCount": 898
+  },
+  {
+    "timestamp": "2026-09-22T11:44:06.454Z",
+    "outboxPending": 276,
+    "kafkaLag": 4,
+    "processedCount": 901
+  },
+  {
+    "timestamp": "2026-09-22T11:44:08.463Z",
+    "outboxPending": 274,
+    "kafkaLag": 3,
+    "processedCount": 903
+  },
+  {
+    "timestamp": "2026-09-22T11:44:10.469Z",
+    "outboxPending": 271,
+    "kafkaLag": 6,
+    "processedCount": 905
+  },
+  {
+    "timestamp": "2026-09-22T11:44:12.475Z",
+    "outboxPending": 268,
+    "kafkaLag": 1,
+    "processedCount": 912
+  },
+  {
+    "timestamp": "2026-09-22T11:44:14.481Z",
+    "outboxPending": 264,
+    "kafkaLag": 0,
+    "processedCount": 915
+  },
+  {
+    "timestamp": "2026-09-22T11:44:16.490Z",
+    "outboxPending": 261,
+    "kafkaLag": 1,
+    "processedCount": 919
+  },
+  {
+    "timestamp": "2026-09-22T11:44:18.495Z",
+    "outboxPending": 257,
+    "kafkaLag": 1,
+    "processedCount": 923
+  },
+  {
+    "timestamp": "2026-09-22T11:44:20.501Z",
+    "outboxPending": 254,
+    "kafkaLag": 1,
+    "processedCount": 926
+  },
+  {
+    "timestamp": "2026-09-22T11:44:22.508Z",
+    "outboxPending": 250,
+    "kafkaLag": 0,
+    "processedCount": 930
+  },
+  {
+    "timestamp": "2026-09-22T11:44:24.515Z",
+    "outboxPending": 246,
+    "kafkaLag": 0,
+    "processedCount": 934
+  },
+  {
+    "timestamp": "2026-09-22T11:44:26.521Z",
+    "outboxPending": 242,
+    "kafkaLag": 0,
+    "processedCount": 938
+  },
+  {
+    "timestamp": "2026-09-22T11:44:28.526Z",
+    "outboxPending": 237,
+    "kafkaLag": 1,
+    "processedCount": 942
+  },
+  {
+    "timestamp": "2026-09-22T11:44:30.533Z",
+    "outboxPending": 234,
+    "kafkaLag": 1,
+    "processedCount": 946
+  },
+  {
+    "timestamp": "2026-09-22T11:44:32.540Z",
+    "outboxPending": 232,
+    "kafkaLag": 1,
+    "processedCount": 948
+  },
+  {
+    "timestamp": "2026-09-22T11:44:34.561Z",
+    "outboxPending": 230,
+    "kafkaLag": 1,
+    "processedCount": 950
+  },
+  {
+    "timestamp": "2026-09-22T11:44:36.577Z",
+    "outboxPending": 228,
+    "kafkaLag": 1,
+    "processedCount": 952
+  },
+  {
+    "timestamp": "2026-09-22T11:44:38.794Z",
+    "outboxPending": 237,
+    "kafkaLag": 0,
+    "processedCount": 954
+  },
+  {
+    "timestamp": "2026-09-22T11:44:40.940Z",
+    "outboxPending": 276,
+    "kafkaLag": 1,
+    "processedCount": 956
+  },
+  {
+    "timestamp": "2026-09-22T11:44:43.300Z",
+    "outboxPending": 314,
+    "kafkaLag": 0,
+    "processedCount": 958
+  },
+  {
+    "timestamp": "2026-09-22T11:44:45.922Z",
+    "outboxPending": 343,
+    "kafkaLag": 1,
+    "processedCount": 961
+  },
+  {
+    "timestamp": "2026-09-22T11:44:47.981Z",
+    "outboxPending": 362,
+    "kafkaLag": 0,
+    "processedCount": 962
+  },
+  {
+    "timestamp": "2026-09-22T11:44:50.465Z",
+    "outboxPending": 406,
+    "kafkaLag": 1,
+    "processedCount": 964
+  },
+  {
+    "timestamp": "2026-09-22T11:44:52.546Z",
+    "outboxPending": 433,
+    "kafkaLag": 0,
+    "processedCount": 966
+  },
+  {
+    "timestamp": "2026-09-22T11:44:54.705Z",
+    "outboxPending": 464,
+    "kafkaLag": 0,
+    "processedCount": 968
+  },
+  {
+    "timestamp": "2026-09-22T11:44:56.712Z",
+    "outboxPending": 492,
+    "kafkaLag": 0,
+    "processedCount": 970
+  },
+  {
+    "timestamp": "2026-09-22T11:44:58.720Z",
+    "outboxPending": 510,
+    "kafkaLag": 1,
+    "processedCount": 971
+  },
+  {
+    "timestamp": "2026-09-22T11:45:00.725Z",
+    "outboxPending": 508,
+    "kafkaLag": 1,
+    "processedCount": 974
+  },
+  {
+    "timestamp": "2026-09-22T11:45:02.741Z",
+    "outboxPending": 505,
+    "kafkaLag": 1,
+    "processedCount": 977
+  },
+  {
+    "timestamp": "2026-09-22T11:45:04.747Z",
+    "outboxPending": 500,
+    "kafkaLag": 0,
+    "processedCount": 981
+  },
+  {
+    "timestamp": "2026-09-22T11:45:06.754Z",
+    "outboxPending": 497,
+    "kafkaLag": 1,
+    "processedCount": 985
+  },
+  {
+    "timestamp": "2026-09-22T11:45:08.760Z",
+    "outboxPending": 493,
+    "kafkaLag": 1,
+    "processedCount": 988
+  },
+  {
+    "timestamp": "2026-09-22T11:45:10.766Z",
+    "outboxPending": 489,
+    "kafkaLag": 1,
+    "processedCount": 993
+  },
+  {
+    "timestamp": "2026-09-22T11:45:12.772Z",
+    "outboxPending": 486,
+    "kafkaLag": 0,
+    "processedCount": 996
+  },
+  {
+    "timestamp": "2026-09-22T11:45:14.778Z",
+    "outboxPending": 482,
+    "kafkaLag": 0,
+    "processedCount": 1000
+  },
+  {
+    "timestamp": "2026-09-22T11:45:16.785Z",
+    "outboxPending": 478,
+    "kafkaLag": 1,
+    "processedCount": 1004
+  },
+  {
+    "timestamp": "2026-09-22T11:45:18.790Z",
+    "outboxPending": 474,
+    "kafkaLag": 1,
+    "processedCount": 1008
+  },
+  {
+    "timestamp": "2026-09-22T11:45:20.795Z",
+    "outboxPending": 470,
+    "kafkaLag": 1,
+    "processedCount": 1012
+  },
+  {
+    "timestamp": "2026-09-22T11:45:22.802Z",
+    "outboxPending": 467,
+    "kafkaLag": 1,
+    "processedCount": 1015
+  },
+  {
+    "timestamp": "2026-09-22T11:45:24.809Z",
+    "outboxPending": 463,
+    "kafkaLag": 1,
+    "processedCount": 1019
+  },
+  {
+    "timestamp": "2026-09-22T11:45:26.814Z",
+    "outboxPending": 458,
+    "kafkaLag": 1,
+    "processedCount": 1023
+  },
+  {
+    "timestamp": "2026-09-22T11:45:28.821Z",
+    "outboxPending": 454,
+    "kafkaLag": 0,
+    "processedCount": 1027
+  },
+  {
+    "timestamp": "2026-09-22T11:45:30.828Z",
+    "outboxPending": 451,
+    "kafkaLag": 1,
+    "processedCount": 1031
+  },
+  {
+    "timestamp": "2026-09-22T11:45:32.835Z",
+    "outboxPending": 447,
+    "kafkaLag": 1,
+    "processedCount": 1035
+  },
+  {
+    "timestamp": "2026-09-22T11:45:34.841Z",
+    "outboxPending": 443,
+    "kafkaLag": 1,
+    "processedCount": 1039
+  },
+  {
+    "timestamp": "2026-09-22T11:45:36.846Z",
+    "outboxPending": 439,
+    "kafkaLag": 0,
+    "processedCount": 1043
+  },
+  {
+    "timestamp": "2026-09-22T11:45:39.290Z",
+    "outboxPending": 435,
+    "kafkaLag": 1,
+    "processedCount": 1046
+  }
+]

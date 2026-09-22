@@ -1,0 +1,28 @@
+{
+  "orders": 1504,
+  "outboxRows": 1504,
+  "verifiedAt": "2026-09-22 12:03:06.938224",
+  "fulfillments": 1504,
+  "outboxPending": 0,
+  "processedEvents": 1504,
+  "kafkaLag": 0,
+  "activeFault": null,
+  "serviceHealth": [
+    {
+      "name": "control-plane",
+      "status": "UP"
+    },
+    {
+      "name": "demo-api",
+      "status": "UP"
+    },
+    {
+      "name": "demo-worker",
+      "status": "UP"
+    },
+    {
+      "name": "redis",
+      "status": "UP"
+    }
+  ]
+}

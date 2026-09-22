@@ -1,0 +1,30 @@
+[
+  {
+    "scenario": "downstream-latency",
+    "sessionId": "2962e2d9-30f5-4520-820d-61a4c0fb3afb",
+    "originalGeneratedAt": "2026-09-22T11:33:42.697653683Z",
+    "generatedAt": "2026-09-22T11:55:39.822742883Z",
+    "reason": "Final rule-based analysis adds cautious outbox-backlog interpretation and avoids claiming growth from a single lag snapshot; measurements and evidence unchanged."
+  },
+  {
+    "scenario": "database-degradation",
+    "sessionId": "997430e6-1db6-4ece-9d31-b221bc8384f2",
+    "originalGeneratedAt": "2026-09-22T11:37:01.434315224Z",
+    "generatedAt": "2026-09-22T11:55:40.584889505Z",
+    "reason": "Final rule-based analysis adds cautious outbox-backlog interpretation and avoids claiming growth from a single lag snapshot; measurements and evidence unchanged."
+  },
+  {
+    "scenario": "cache-degradation",
+    "sessionId": "eef78f9e-06b2-4c6f-b925-9f60ad1a0dc0",
+    "originalGeneratedAt": "2026-09-22T11:38:57.706589773Z",
+    "generatedAt": "2026-09-22T11:55:41.047702189Z",
+    "reason": "Final rule-based analysis adds cautious outbox-backlog interpretation and avoids claiming growth from a single lag snapshot; measurements and evidence unchanged."
+  },
+  {
+    "scenario": "kafka-slowdown",
+    "sessionId": "5f0ecac7-cbf6-402b-88c7-6e45bfd00a39",
+    "originalGeneratedAt": "2026-09-22T11:44:09.490300115Z",
+    "generatedAt": "2026-09-22T11:55:41.356635112Z",
+    "reason": "Final rule-based analysis adds cautious outbox-backlog interpretation and avoids claiming growth from a single lag snapshot; measurements and evidence unchanged."
+  }
+]

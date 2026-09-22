@@ -1,0 +1,36 @@
+{
+  "id": "c532dcd2-def6-45cb-8938-5264f194079d",
+  "sessionId": "5f0ecac7-cbf6-402b-88c7-6e45bfd00a39",
+  "status": "COMPLETE",
+  "workload": {
+    "vus": 10,
+    "durationSeconds": 20
+  },
+  "before": {
+    "requestCount": 590,
+    "errorCount": 0,
+    "durationSeconds": 20.543985637000002,
+    "throughput": 28.718867430349146,
+    "successRate": 1,
+    "p50Ms": 155.1260565,
+    "p95Ms": 945.4945805,
+    "p99Ms": 1060.0296369700002,
+    "cacheHitRate": 0.9966101694915255,
+    "dbQueryP95Ms": 1.36956,
+    "kafkaLag": 3
+  },
+  "after": {
+    "requestCount": 604,
+    "errorCount": 0,
+    "durationSeconds": 20.319983613,
+    "throughput": 29.724433419994607,
+    "successRate": 1,
+    "p50Ms": 163.52913949999999,
+    "p95Ms": 896.94776785,
+    "p99Ms": 1148.32075951,
+    "cacheHitRate": 0.9966887417218543,
+    "dbQueryP95Ms": 1.407829,
+    "kafkaLag": 1
+  },
+  "createdAt": "2026-09-22T11:43:38.381844Z"
+}

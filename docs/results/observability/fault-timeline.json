@@ -1,0 +1,252 @@
+{
+  "status": "success",
+  "data": {
+    "resultType": "streams",
+    "result": [
+      {
+        "stream": {
+          "container_id": "7758a12712979e3930d721687d2d4eb362d74de2eb0159e81fe70baee60c8c2a",
+          "correlationId": "d4518544-e18e-4e1d-b33b-ed08e118c3f1",
+          "deployment_environment": "local",
+          "detected_level": "INFO",
+          "experimentPhase": "NONE",
+          "faultEnabled": "true",
+          "flags": "1",
+          "host_arch": "amd64",
+          "host_name": "7758a1271297",
+          "incidentId": "unscoped",
+          "observed_timestamp": "1790078221687728872",
+          "os_description": "Linux 6.18.33.2-microsoft-standard-WSL2",
+          "os_type": "linux",
+          "parameter": "1800",
+          "process_command_args": "[\"/opt/java/openjdk/bin/java\",\"-jar\",\"/app/application.jar\"]",
+          "process_executable_path": "/opt/java/openjdk/bin/java",
+          "process_pid": "7",
+          "process_runtime_description": "Eclipse Adoptium OpenJDK 64-Bit Server VM 21.0.12+8-LTS",
+          "process_runtime_name": "OpenJDK Runtime Environment",
+          "process_runtime_version": "21.0.12+8-LTS",
+          "scenario": "DOWNSTREAM_LATENCY",
+          "scope_name": "io.incidentlens.control.IncidentService",
+          "service_instance_id": "29e607ef-4b20-4ea3-a6c2-aa4ec686d42c",
+          "service_name": "control-plane",
+          "service_namespace": "incidentlens",
+          "service_version": "0.1.0",
+          "sessionId": "16fa94d6-33eb-4c31-87c5-7bfaba365594",
+          "severity_number": "9",
+          "severity_text": "INFO",
+          "span_id": "0bb02b769248a692",
+          "telemetry_distro_name": "opentelemetry-java-instrumentation",
+          "telemetry_distro_version": "2.20.0",
+          "telemetry_sdk_language": "java",
+          "telemetry_sdk_name": "opentelemetry",
+          "telemetry_sdk_version": "1.54.0",
+          "trace_id": "b1b11673c664f7c4cd6b9846ddbfadcf"
+        },
+        "values": [
+          [
+            "1790078221684826122",
+            "Incident fault configuration applied"
+          ]
+        ]
+      },
+      {
+        "stream": {
+          "container_id": "7758a12712979e3930d721687d2d4eb362d74de2eb0159e81fe70baee60c8c2a",
+          "correlationId": "54a1876e-2568-4faa-92fd-2fba6188e73e",
+          "deployment_environment": "local",
+          "detected_level": "INFO",
+          "experimentPhase": "NONE",
+          "faultEnabled": "false",
+          "flags": "1",
+          "host_arch": "amd64",
+          "host_name": "7758a1271297",
+          "incidentId": "unscoped",
+          "observed_timestamp": "1790078242065828934",
+          "os_description": "Linux 6.18.33.2-microsoft-standard-WSL2",
+          "os_type": "linux",
+          "parameter": "0",
+          "process_command_args": "[\"/opt/java/openjdk/bin/java\",\"-jar\",\"/app/application.jar\"]",
+          "process_executable_path": "/opt/java/openjdk/bin/java",
+          "process_pid": "7",
+          "process_runtime_description": "Eclipse Adoptium OpenJDK 64-Bit Server VM 21.0.12+8-LTS",
+          "process_runtime_name": "OpenJDK Runtime Environment",
+          "process_runtime_version": "21.0.12+8-LTS",
+          "scenario": "DOWNSTREAM_LATENCY",
+          "scope_name": "io.incidentlens.control.IncidentService",
+          "service_instance_id": "29e607ef-4b20-4ea3-a6c2-aa4ec686d42c",
+          "service_name": "control-plane",
+          "service_namespace": "incidentlens",
+          "service_version": "0.1.0",
+          "sessionId": "16fa94d6-33eb-4c31-87c5-7bfaba365594",
+          "severity_number": "9",
+          "severity_text": "INFO",
+          "span_id": "5ba0e2b7f0a083e0",
+          "telemetry_distro_name": "opentelemetry-java-instrumentation",
+          "telemetry_distro_version": "2.20.0",
+          "telemetry_sdk_language": "java",
+          "telemetry_sdk_name": "opentelemetry",
+          "telemetry_sdk_version": "1.54.0",
+          "trace_id": "33521a5b3c21f404db82b84bca8271db"
+        },
+        "values": [
+          [
+            "1790078242065735429",
+            "Incident fault configuration applied"
+          ]
+        ]
+      }
+    ],
+    "stats": {
+      "summary": {
+        "bytesProcessedPerSecond": 2753325,
+        "linesProcessedPerSecond": 9754,
+        "totalBytesProcessed": 11855,
+        "totalLinesProcessed": 42,
+        "execTime": 0.004306,
+        "queueTime": 0.000193,
+        "subqueries": 0,
+        "totalEntriesReturned": 2,
+        "splits": 2,
+        "shards": 2,
+        "totalPostFilterLines": 2,
+        "totalStructuredMetadataBytesProcessed": 7624
+      },
+      "querier": {
+        "store": {
+          "totalChunksRef": 0,
+          "totalChunksDownloaded": 0,
+          "chunksDownloadTime": 0,
+          "queryReferencedStructuredMetadata": false,
+          "chunk": {
+            "headChunkBytes": 0,
+            "headChunkLines": 0,
+            "decompressedBytes": 0,
+            "decompressedLines": 0,
+            "compressedBytes": 0,
+            "totalDuplicates": 0,
+            "postFilterLines": 0,
+            "headChunkStructuredMetadataBytes": 0,
+            "decompressedStructuredMetadataBytes": 0
+          },
+          "chunkRefsFetchTime": 0,
+          "congestionControlLatency": 0,
+          "pipelineWrapperFilteredLines": 0
+        }
+      },
+      "ingester": {
+        "totalReached": 2,
+        "totalChunksMatched": 1,
+        "totalBatches": 3,
+        "totalLinesSent": 2,
+        "store": {
+          "totalChunksRef": 0,
+          "totalChunksDownloaded": 0,
+          "chunksDownloadTime": 0,
+          "queryReferencedStructuredMetadata": false,
+          "chunk": {
+            "headChunkBytes": 11855,
+            "headChunkLines": 42,
+            "decompressedBytes": 0,
+            "decompressedLines": 0,
+            "compressedBytes": 0,
+            "totalDuplicates": 0,
+            "postFilterLines": 2,
+            "headChunkStructuredMetadataBytes": 7624,
+            "decompressedStructuredMetadataBytes": 0
+          },
+          "chunkRefsFetchTime": 193434,
+          "congestionControlLatency": 0,
+          "pipelineWrapperFilteredLines": 0
+        }
+      },
+      "cache": {
+        "chunk": {
+          "entriesFound": 0,
+          "entriesRequested": 0,
+          "entriesStored": 0,
+          "bytesReceived": 0,
+          "bytesSent": 0,
+          "requests": 0,
+          "downloadTime": 0,
+          "queryLengthServed": 0
+        },
+        "index": {
+          "entriesFound": 0,
+          "entriesRequested": 0,
+          "entriesStored": 0,
+          "bytesReceived": 0,
+          "bytesSent": 0,
+          "requests": 0,
+          "downloadTime": 0,
+          "queryLengthServed": 0
+        },
+        "result": {
+          "entriesFound": 0,
+          "entriesRequested": 0,
+          "entriesStored": 0,
+          "bytesReceived": 0,
+          "bytesSent": 0,
+          "requests": 0,
+          "downloadTime": 0,
+          "queryLengthServed": 0
+        },
+        "statsResult": {
+          "entriesFound": 0,
+          "entriesRequested": 0,
+          "entriesStored": 0,
+          "bytesReceived": 0,
+          "bytesSent": 0,
+          "requests": 0,
+          "downloadTime": 0,
+          "queryLengthServed": 0
+        },
+        "volumeResult": {
+          "entriesFound": 0,
+          "entriesRequested": 0,
+          "entriesStored": 0,
+          "bytesReceived": 0,
+          "bytesSent": 0,
+          "requests": 0,
+          "downloadTime": 0,
+          "queryLengthServed": 0
+        },
+        "seriesResult": {
+          "entriesFound": 0,
+          "entriesRequested": 0,
+          "entriesStored": 0,
+          "bytesReceived": 0,
+          "bytesSent": 0,
+          "requests": 0,
+          "downloadTime": 0,
+          "queryLengthServed": 0
+        },
+        "labelResult": {
+          "entriesFound": 0,
+          "entriesRequested": 0,
+          "entriesStored": 0,
+          "bytesReceived": 0,
+          "bytesSent": 0,
+          "requests": 0,
+          "downloadTime": 0,
+          "queryLengthServed": 0
+        },
+        "instantMetricResult": {
+          "entriesFound": 0,
+          "entriesRequested": 0,
+          "entriesStored": 0,
+          "bytesReceived": 0,
+          "bytesSent": 0,
+          "requests": 0,
+          "downloadTime": 0,
+          "queryLengthServed": 0
+        }
+      },
+      "index": {
+        "totalChunks": 0,
+        "postFilterChunks": 0,
+        "shardsDuration": 0,
+        "usedBloomFilters": false
+      }
+    }
+  }
+}

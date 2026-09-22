@@ -1,0 +1,2948 @@
+{
+  "batches": [
+    {
+      "resource": {
+        "attributes": [
+          {
+            "key": "container.id",
+            "value": {
+              "stringValue": "c1077d83354b4d4a563df85354b75cdeb6ff3cad96906e74ed6babc511a6a850"
+            }
+          },
+          {
+            "key": "deployment.environment",
+            "value": {
+              "stringValue": "local"
+            }
+          },
+          {
+            "key": "host.arch",
+            "value": {
+              "stringValue": "amd64"
+            }
+          },
+          {
+            "key": "host.name",
+            "value": {
+              "stringValue": "c1077d83354b"
+            }
+          },
+          {
+            "key": "os.description",
+            "value": {
+              "stringValue": "Linux 6.18.33.2-microsoft-standard-WSL2"
+            }
+          },
+          {
+            "key": "os.type",
+            "value": {
+              "stringValue": "linux"
+            }
+          },
+          {
+            "key": "process.command_args",
+            "value": {
+              "arrayValue": {
+                "values": [
+                  {
+                    "stringValue": "/opt/java/openjdk/bin/java"
+                  },
+                  {
+                    "stringValue": "-jar"
+                  },
+                  {
+                    "stringValue": "/app/application.jar"
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "key": "process.executable.path",
+            "value": {
+              "stringValue": "/opt/java/openjdk/bin/java"
+            }
+          },
+          {
+            "key": "process.pid",
+            "value": {
+              "intValue": "7"
+            }
+          },
+          {
+            "key": "process.runtime.description",
+            "value": {
+              "stringValue": "Eclipse Adoptium OpenJDK 64-Bit Server VM 21.0.12+8-LTS"
+            }
+          },
+          {
+            "key": "process.runtime.name",
+            "value": {
+              "stringValue": "OpenJDK Runtime Environment"
+            }
+          },
+          {
+            "key": "process.runtime.version",
+            "value": {
+              "stringValue": "21.0.12+8-LTS"
+            }
+          },
+          {
+            "key": "service.instance.id",
+            "value": {
+              "stringValue": "8cb2c5d9-5c90-4080-98f4-ef482901f158"
+            }
+          },
+          {
+            "key": "service.namespace",
+            "value": {
+              "stringValue": "incidentlens"
+            }
+          },
+          {
+            "key": "service.version",
+            "value": {
+              "stringValue": "0.1.0"
+            }
+          },
+          {
+            "key": "telemetry.distro.name",
+            "value": {
+              "stringValue": "opentelemetry-java-instrumentation"
+            }
+          },
+          {
+            "key": "telemetry.distro.version",
+            "value": {
+              "stringValue": "2.20.0"
+            }
+          },
+          {
+            "key": "telemetry.sdk.language",
+            "value": {
+              "stringValue": "java"
+            }
+          },
+          {
+            "key": "telemetry.sdk.name",
+            "value": {
+              "stringValue": "opentelemetry"
+            }
+          },
+          {
+            "key": "telemetry.sdk.version",
+            "value": {
+              "stringValue": "1.54.0"
+            }
+          },
+          {
+            "key": "service.name",
+            "value": {
+              "stringValue": "demo-api"
+            }
+          }
+        ]
+      },
+      "scopeSpans": [
+        {
+          "scope": {
+            "name": "io.opentelemetry.spring-data-1.8",
+            "version": "2.20.0-alpha"
+          },
+          "spans": [
+            {
+              "traceId": "mrTstHt3orRUPMI5/VWhUQ==",
+              "spanId": "poA7yUwQvfo=",
+              "parentSpanId": "YgMRgztand8=",
+              "name": "OrderRepository.findByIdempotencyKey",
+              "kind": "SPAN_KIND_INTERNAL",
+              "startTimeUnixNano": "1790078255885815377",
+              "endTimeUnixNano": "1790078255888687870",
+              "attributes": [
+                {
+                  "key": "code.namespace",
+                  "value": {
+                    "stringValue": "io.incidentlens.demoapi.OrderRepository"
+                  }
+                },
+                {
+                  "key": "code.function",
+                  "value": {
+                    "stringValue": "findByIdempotencyKey"
+                  }
+                },
+                {
+                  "key": "thread.id",
+                  "value": {
+                    "intValue": "43"
+                  }
+                },
+                {
+                  "key": "thread.name",
+                  "value": {
+                    "stringValue": "http-nio-8081-exec-6"
+                  }
+                }
+              ],
+              "status": {}
+            }
+          ]
+        },
+        {
+          "scope": {
+            "name": "io.opentelemetry.jdbc",
+            "version": "2.20.0-alpha"
+          },
+          "spans": [
+            {
+              "traceId": "mrTstHt3orRUPMI5/VWhUQ==",
+              "spanId": "lSG0o8OaV38=",
+              "parentSpanId": "YgMRgztand8=",
+              "name": "SELECT demo_api.product",
+              "kind": "SPAN_KIND_CLIENT",
+              "startTimeUnixNano": "1790078255884101525",
+              "endTimeUnixNano": "1790078255884787886",
+              "attributes": [
+                {
+                  "key": "server.address",
+                  "value": {
+                    "stringValue": "mysql"
+                  }
+                },
+                {
+                  "key": "db.connection_string",
+                  "value": {
+                    "stringValue": "mysql://mysql:3306"
+                  }
+                },
+                {
+                  "key": "db.user",
+                  "value": {
+                    "stringValue": "incidentlens"
+                  }
+                },
+                {
+                  "key": "server.port",
+                  "value": {
+                    "intValue": "3306"
+                  }
+                },
+                {
+                  "key": "db.statement",
+                  "value": {
+                    "stringValue": "SELECT COUNT(*) FROM product WHERE id = ?"
+                  }
+                },
+                {
+                  "key": "thread.id",
+                  "value": {
+                    "intValue": "43"
+                  }
+                },
+                {
+                  "key": "db.system",
+                  "value": {
+                    "stringValue": "mysql"
+                  }
+                },
+                {
+                  "key": "db.sql.table",
+                  "value": {
+                    "stringValue": "product"
+                  }
+                },
+                {
+                  "key": "db.operation",
+                  "value": {
+                    "stringValue": "SELECT"
+                  }
+                },
+                {
+                  "key": "thread.name",
+                  "value": {
+                    "stringValue": "http-nio-8081-exec-6"
+                  }
+                },
+                {
+                  "key": "db.name",
+                  "value": {
+                    "stringValue": "demo_api"
+                  }
+                }
+              ],
+              "status": {}
+            },
+            {
+              "traceId": "mrTstHt3orRUPMI5/VWhUQ==",
+              "spanId": "xjQ3TGfvonc=",
+              "parentSpanId": "YgMRgztand8=",
+              "name": "INSERT demo_api.purchase_order",
+              "kind": "SPAN_KIND_CLIENT",
+              "startTimeUnixNano": "1790078255885182636",
+              "endTimeUnixNano": "1790078255885724142",
+              "attributes": [
+                {
+                  "key": "server.address",
+                  "value": {
+                    "stringValue": "mysql"
+                  }
+                },
+                {
+                  "key": "db.connection_string",
+                  "value": {
+                    "stringValue": "mysql://mysql:3306"
+                  }
+                },
+                {
+                  "key": "db.user",
+                  "value": {
+                    "stringValue": "incidentlens"
+                  }
+                },
+                {
+                  "key": "server.port",
+                  "value": {
+                    "intValue": "3306"
+                  }
+                },
+                {
+                  "key": "db.statement",
+                  "value": {
+                    "stringValue": "INSERT INTO purchase_order(id,idempotency_key,product_id,quantity,created_at) VALUES(?,?,?,?,CURRENT_TIMESTAMP(?)) ON DUPLICATE KEY UPDATE id=id"
+                  }
+                },
+                {
+                  "key": "thread.id",
+                  "value": {
+                    "intValue": "43"
+                  }
+                },
+                {
+                  "key": "db.system",
+                  "value": {
+                    "stringValue": "mysql"
+                  }
+                },
+                {
+                  "key": "db.sql.table",
+                  "value": {
+                    "stringValue": "purchase_order"
+                  }
+                },
+                {
+                  "key": "db.operation",
+                  "value": {
+                    "stringValue": "INSERT"
+                  }
+                },
+                {
+                  "key": "thread.name",
+                  "value": {
+                    "stringValue": "http-nio-8081-exec-6"
+                  }
+                },
+                {
+                  "key": "db.name",
+                  "value": {
+                    "stringValue": "demo_api"
+                  }
+                }
+              ],
+              "status": {}
+            },
+            {
+              "traceId": "mrTstHt3orRUPMI5/VWhUQ==",
+              "spanId": "S6LdSkGR+3w=",
+              "parentSpanId": "MzW7TGo8BaA=",
+              "name": "SELECT demo_api.purchase_order",
+              "kind": "SPAN_KIND_CLIENT",
+              "startTimeUnixNano": "1790078255887447098",
+              "endTimeUnixNano": "1790078255888045626",
+              "attributes": [
+                {
+                  "key": "server.address",
+                  "value": {
+                    "stringValue": "mysql"
+                  }
+                },
+                {
+                  "key": "db.connection_string",
+                  "value": {
+                    "stringValue": "mysql://mysql:3306"
+                  }
+                },
+                {
+                  "key": "db.user",
+                  "value": {
+                    "stringValue": "incidentlens"
+                  }
+                },
+                {
+                  "key": "server.port",
+                  "value": {
+                    "intValue": "3306"
+                  }
+                },
+                {
+                  "key": "db.statement",
+                  "value": {
+                    "stringValue": "select po1_0.id,po1_0.created_at,po1_0.idempotency_key,po1_0.product_id,po1_0.quantity from purchase_order po1_0 where po1_0.idempotency_key=? for update"
+                  }
+                },
+                {
+                  "key": "thread.id",
+                  "value": {
+                    "intValue": "43"
+                  }
+                },
+                {
+                  "key": "db.system",
+                  "value": {
+                    "stringValue": "mysql"
+                  }
+                },
+                {
+                  "key": "db.sql.table",
+                  "value": {
+                    "stringValue": "purchase_order"
+                  }
+                },
+                {
+                  "key": "db.operation",
+                  "value": {
+                    "stringValue": "SELECT"
+                  }
+                },
+                {
+                  "key": "thread.name",
+                  "value": {
+                    "stringValue": "http-nio-8081-exec-6"
+                  }
+                },
+                {
+                  "key": "db.name",
+                  "value": {
+                    "stringValue": "demo_api"
+                  }
+                }
+              ],
+              "status": {}
+            },
+            {
+              "traceId": "mrTstHt3orRUPMI5/VWhUQ==",
+              "spanId": "MaddbfvxBRo=",
+              "parentSpanId": "YgMRgztand8=",
+              "name": "INSERT demo_api.outbox_event",
+              "kind": "SPAN_KIND_CLIENT",
+              "startTimeUnixNano": "1790078255889243382",
+              "endTimeUnixNano": "1790078255968512916",
+              "attributes": [
+                {
+                  "key": "server.address",
+                  "value": {
+                    "stringValue": "mysql"
+                  }
+                },
+                {
+                  "key": "db.connection_string",
+                  "value": {
+                    "stringValue": "mysql://mysql:3306"
+                  }
+                },
+                {
+                  "key": "db.user",
+                  "value": {
+                    "stringValue": "incidentlens"
+                  }
+                },
+                {
+                  "key": "server.port",
+                  "value": {
+                    "intValue": "3306"
+                  }
+                },
+                {
+                  "key": "db.statement",
+                  "value": {
+                    "stringValue": "INSERT INTO outbox_event(id,aggregate_id,payload,created_at,next_attempt_at) VALUES(?,?,?,CURRENT_TIMESTAMP(?),CURRENT_TIMESTAMP(?))"
+                  }
+                },
+                {
+                  "key": "thread.id",
+                  "value": {
+                    "intValue": "43"
+                  }
+                },
+                {
+                  "key": "db.system",
+                  "value": {
+                    "stringValue": "mysql"
+                  }
+                },
+                {
+                  "key": "db.sql.table",
+                  "value": {
+                    "stringValue": "outbox_event"
+                  }
+                },
+                {
+                  "key": "db.operation",
+                  "value": {
+                    "stringValue": "INSERT"
+                  }
+                },
+                {
+                  "key": "thread.name",
+                  "value": {
+                    "stringValue": "http-nio-8081-exec-6"
+                  }
+                },
+                {
+                  "key": "db.name",
+                  "value": {
+                    "stringValue": "demo_api"
+                  }
+                }
+              ],
+              "status": {}
+            },
+            {
+              "traceId": "mrTstHt3orRUPMI5/VWhUQ==",
+              "spanId": "nHKnuJZn+1Q=",
+              "parentSpanId": "YgMRgztand8=",
+              "name": "UPDATE demo_api.outbox_event",
+              "kind": "SPAN_KIND_CLIENT",
+              "startTimeUnixNano": "1790078259840359534",
+              "endTimeUnixNano": "1790078260330471082",
+              "attributes": [
+                {
+                  "key": "server.address",
+                  "value": {
+                    "stringValue": "mysql"
+                  }
+                },
+                {
+                  "key": "db.connection_string",
+                  "value": {
+                    "stringValue": "mysql://mysql:3306"
+                  }
+                },
+                {
+                  "key": "db.user",
+                  "value": {
+                    "stringValue": "incidentlens"
+                  }
+                },
+                {
+                  "key": "server.port",
+                  "value": {
+                    "intValue": "3306"
+                  }
+                },
+                {
+                  "key": "db.statement",
+                  "value": {
+                    "stringValue": "UPDATE outbox_event SET published_at=CURRENT_TIMESTAMP(?),leased_until=NULL,lease_token=NULL,last_error=NULL WHERE id=? AND lease_token=?"
+                  }
+                },
+                {
+                  "key": "thread.id",
+                  "value": {
+                    "intValue": "50"
+                  }
+                },
+                {
+                  "key": "db.system",
+                  "value": {
+                    "stringValue": "mysql"
+                  }
+                },
+                {
+                  "key": "db.sql.table",
+                  "value": {
+                    "stringValue": "outbox_event"
+                  }
+                },
+                {
+                  "key": "db.operation",
+                  "value": {
+                    "stringValue": "UPDATE"
+                  }
+                },
+                {
+                  "key": "thread.name",
+                  "value": {
+                    "stringValue": "scheduling-1"
+                  }
+                },
+                {
+                  "key": "db.name",
+                  "value": {
+                    "stringValue": "demo_api"
+                  }
+                }
+              ],
+              "status": {}
+            }
+          ]
+        },
+        {
+          "scope": {
+            "name": "MySQL Connector/J",
+            "version": "9.7.0"
+          },
+          "spans": [
+            {
+              "traceId": "mrTstHt3orRUPMI5/VWhUQ==",
+              "spanId": "5BG03MebX5A=",
+              "parentSpanId": "YgMRgztand8=",
+              "name": "Set variable 'autocommit'",
+              "kind": "SPAN_KIND_CLIENT",
+              "startTimeUnixNano": "1790078255883126453",
+              "endTimeUnixNano": "1790078255883708275",
+              "attributes": [
+                {
+                  "key": "db.user",
+                  "value": {
+                    "stringValue": "incidentlens"
+                  }
+                },
+                {
+                  "key": "thread.id",
+                  "value": {
+                    "intValue": "43"
+                  }
+                },
+                {
+                  "key": "db.statement",
+                  "value": {
+                    "stringValue": "SET (...)"
+                  }
+                },
+                {
+                  "key": "db.system",
+                  "value": {
+                    "stringValue": "mysql"
+                  }
+                },
+                {
+                  "key": "db.operation",
+                  "value": {
+                    "stringValue": "SET"
+                  }
+                },
+                {
+                  "key": "thread.name",
+                  "value": {
+                    "stringValue": "http-nio-8081-exec-6"
+                  }
+                },
+                {
+                  "key": "db.name",
+                  "value": {
+                    "stringValue": "demo_api"
+                  }
+                }
+              ],
+              "droppedAttributesCount": 2,
+              "links": [
+                {
+                  "traceId": "wza/fy0l958V0v21EEb/wg==",
+                  "spanId": "l44Mj9VRuzk="
+                }
+              ],
+              "status": {}
+            },
+            {
+              "traceId": "mrTstHt3orRUPMI5/VWhUQ==",
+              "spanId": "SPtRap8pMlU=",
+              "parentSpanId": "YgMRgztand8=",
+              "name": "Prepare statement",
+              "kind": "SPAN_KIND_CLIENT",
+              "startTimeUnixNano": "1790078255883899448",
+              "endTimeUnixNano": "1790078255884013891",
+              "attributes": [
+                {
+                  "key": "db.user",
+                  "value": {
+                    "stringValue": "incidentlens"
+                  }
+                },
+                {
+                  "key": "thread.id",
+                  "value": {
+                    "intValue": "43"
+                  }
+                },
+                {
+                  "key": "db.statement",
+                  "value": {
+                    "stringValue": "SELECT (...)"
+                  }
+                },
+                {
+                  "key": "db.system",
+                  "value": {
+                    "stringValue": "mysql"
+                  }
+                },
+                {
+                  "key": "db.operation",
+                  "value": {
+                    "stringValue": "SELECT"
+                  }
+                },
+                {
+                  "key": "thread.name",
+                  "value": {
+                    "stringValue": "http-nio-8081-exec-6"
+                  }
+                },
+                {
+                  "key": "db.name",
+                  "value": {
+                    "stringValue": "demo_api"
+                  }
+                }
+              ],
+              "droppedAttributesCount": 2,
+              "links": [
+                {
+                  "traceId": "wza/fy0l958V0v21EEb/wg==",
+                  "spanId": "l44Mj9VRuzk="
+                }
+              ],
+              "status": {}
+            },
+            {
+              "traceId": "mrTstHt3orRUPMI5/VWhUQ==",
+              "spanId": "aDRxYNeckHQ=",
+              "parentSpanId": "lSG0o8OaV38=",
+              "name": "Execute prepared statement",
+              "kind": "SPAN_KIND_CLIENT",
+              "startTimeUnixNano": "1790078255884122132",
+              "endTimeUnixNano": "1790078255884777282",
+              "attributes": [
+                {
+                  "key": "db.user",
+                  "value": {
+                    "stringValue": "incidentlens"
+                  }
+                },
+                {
+                  "key": "thread.id",
+                  "value": {
+                    "intValue": "43"
+                  }
+                },
+                {
+                  "key": "db.statement",
+                  "value": {
+                    "stringValue": "SELECT (...)"
+                  }
+                },
+                {
+                  "key": "db.system",
+                  "value": {
+                    "stringValue": "mysql"
+                  }
+                },
+                {
+                  "key": "db.operation",
+                  "value": {
+                    "stringValue": "SELECT"
+                  }
+                },
+                {
+                  "key": "thread.name",
+                  "value": {
+                    "stringValue": "http-nio-8081-exec-6"
+                  }
+                },
+                {
+                  "key": "db.name",
+                  "value": {
+                    "stringValue": "demo_api"
+                  }
+                }
+              ],
+              "droppedAttributesCount": 2,
+              "links": [
+                {
+                  "traceId": "wza/fy0l958V0v21EEb/wg==",
+                  "spanId": "l44Mj9VRuzk="
+                }
+              ],
+              "status": {}
+            },
+            {
+              "traceId": "mrTstHt3orRUPMI5/VWhUQ==",
+              "spanId": "+YIJhapYB/o=",
+              "parentSpanId": "YgMRgztand8=",
+              "name": "Prepare statement",
+              "kind": "SPAN_KIND_CLIENT",
+              "startTimeUnixNano": "1790078255884992164",
+              "endTimeUnixNano": "1790078255885117511",
+              "attributes": [
+                {
+                  "key": "db.user",
+                  "value": {
+                    "stringValue": "incidentlens"
+                  }
+                },
+                {
+                  "key": "thread.id",
+                  "value": {
+                    "intValue": "43"
+                  }
+                },
+                {
+                  "key": "db.statement",
+                  "value": {
+                    "stringValue": "INSERT (...)"
+                  }
+                },
+                {
+                  "key": "db.system",
+                  "value": {
+                    "stringValue": "mysql"
+                  }
+                },
+                {
+                  "key": "db.operation",
+                  "value": {
+                    "stringValue": "INSERT"
+                  }
+                },
+                {
+                  "key": "thread.name",
+                  "value": {
+                    "stringValue": "http-nio-8081-exec-6"
+                  }
+                },
+                {
+                  "key": "db.name",
+                  "value": {
+                    "stringValue": "demo_api"
+                  }
+                }
+              ],
+              "droppedAttributesCount": 2,
+              "links": [
+                {
+                  "traceId": "wza/fy0l958V0v21EEb/wg==",
+                  "spanId": "l44Mj9VRuzk="
+                }
+              ],
+              "status": {}
+            },
+            {
+              "traceId": "mrTstHt3orRUPMI5/VWhUQ==",
+              "spanId": "4EFbEcFVe2g=",
+              "parentSpanId": "xjQ3TGfvonc=",
+              "name": "Execute prepared statement",
+              "kind": "SPAN_KIND_CLIENT",
+              "startTimeUnixNano": "1790078255885197042",
+              "endTimeUnixNano": "1790078255885715439",
+              "attributes": [
+                {
+                  "key": "db.user",
+                  "value": {
+                    "stringValue": "incidentlens"
+                  }
+                },
+                {
+                  "key": "thread.id",
+                  "value": {
+                    "intValue": "43"
+                  }
+                },
+                {
+                  "key": "db.statement",
+                  "value": {
+                    "stringValue": "INSERT (...)"
+                  }
+                },
+                {
+                  "key": "db.system",
+                  "value": {
+                    "stringValue": "mysql"
+                  }
+                },
+                {
+                  "key": "db.operation",
+                  "value": {
+                    "stringValue": "INSERT"
+                  }
+                },
+                {
+                  "key": "thread.name",
+                  "value": {
+                    "stringValue": "http-nio-8081-exec-6"
+                  }
+                },
+                {
+                  "key": "db.name",
+                  "value": {
+                    "stringValue": "demo_api"
+                  }
+                }
+              ],
+              "droppedAttributesCount": 2,
+              "links": [
+                {
+                  "traceId": "wza/fy0l958V0v21EEb/wg==",
+                  "spanId": "l44Mj9VRuzk="
+                }
+              ],
+              "status": {}
+            },
+            {
+              "traceId": "mrTstHt3orRUPMI5/VWhUQ==",
+              "spanId": "CJddP+Gg4AY=",
+              "parentSpanId": "MzW7TGo8BaA=",
+              "name": "Prepare statement",
+              "kind": "SPAN_KIND_CLIENT",
+              "startTimeUnixNano": "1790078255887194202",
+              "endTimeUnixNano": "1790078255887308445",
+              "attributes": [
+                {
+                  "key": "db.user",
+                  "value": {
+                    "stringValue": "incidentlens"
+                  }
+                },
+                {
+                  "key": "thread.id",
+                  "value": {
+                    "intValue": "43"
+                  }
+                },
+                {
+                  "key": "db.statement",
+                  "value": {
+                    "stringValue": "SELECT (...)"
+                  }
+                },
+                {
+                  "key": "db.system",
+                  "value": {
+                    "stringValue": "mysql"
+                  }
+                },
+                {
+                  "key": "db.operation",
+                  "value": {
+                    "stringValue": "SELECT"
+                  }
+                },
+                {
+                  "key": "thread.name",
+                  "value": {
+                    "stringValue": "http-nio-8081-exec-6"
+                  }
+                },
+                {
+                  "key": "db.name",
+                  "value": {
+                    "stringValue": "demo_api"
+                  }
+                }
+              ],
+              "droppedAttributesCount": 2,
+              "links": [
+                {
+                  "traceId": "wza/fy0l958V0v21EEb/wg==",
+                  "spanId": "l44Mj9VRuzk="
+                }
+              ],
+              "status": {}
+            },
+            {
+              "traceId": "mrTstHt3orRUPMI5/VWhUQ==",
+              "spanId": "UmLPYfixQNY=",
+              "parentSpanId": "S6LdSkGR+3w=",
+              "name": "Execute prepared statement",
+              "kind": "SPAN_KIND_CLIENT",
+              "startTimeUnixNano": "1790078255887465105",
+              "endTimeUnixNano": "1790078255888037223",
+              "attributes": [
+                {
+                  "key": "db.user",
+                  "value": {
+                    "stringValue": "incidentlens"
+                  }
+                },
+                {
+                  "key": "thread.id",
+                  "value": {
+                    "intValue": "43"
+                  }
+                },
+                {
+                  "key": "db.statement",
+                  "value": {
+                    "stringValue": "SELECT (...)"
+                  }
+                },
+                {
+                  "key": "db.system",
+                  "value": {
+                    "stringValue": "mysql"
+                  }
+                },
+                {
+                  "key": "db.operation",
+                  "value": {
+                    "stringValue": "SELECT"
+                  }
+                },
+                {
+                  "key": "thread.name",
+                  "value": {
+                    "stringValue": "http-nio-8081-exec-6"
+                  }
+                },
+                {
+                  "key": "db.name",
+                  "value": {
+                    "stringValue": "demo_api"
+                  }
+                }
+              ],
+              "droppedAttributesCount": 2,
+              "links": [
+                {
+                  "traceId": "wza/fy0l958V0v21EEb/wg==",
+                  "spanId": "l44Mj9VRuzk="
+                }
+              ],
+              "status": {}
+            },
+            {
+              "traceId": "mrTstHt3orRUPMI5/VWhUQ==",
+              "spanId": "JbzHY+SiMsE=",
+              "parentSpanId": "YgMRgztand8=",
+              "name": "Prepare statement",
+              "kind": "SPAN_KIND_CLIENT",
+              "startTimeUnixNano": "1790078255889009693",
+              "endTimeUnixNano": "1790078255889179257",
+              "attributes": [
+                {
+                  "key": "db.user",
+                  "value": {
+                    "stringValue": "incidentlens"
+                  }
+                },
+                {
+                  "key": "thread.id",
+                  "value": {
+                    "intValue": "43"
+                  }
+                },
+                {
+                  "key": "db.statement",
+                  "value": {
+                    "stringValue": "INSERT (...)"
+                  }
+                },
+                {
+                  "key": "db.system",
+                  "value": {
+                    "stringValue": "mysql"
+                  }
+                },
+                {
+                  "key": "db.operation",
+                  "value": {
+                    "stringValue": "INSERT"
+                  }
+                },
+                {
+                  "key": "thread.name",
+                  "value": {
+                    "stringValue": "http-nio-8081-exec-6"
+                  }
+                },
+                {
+                  "key": "db.name",
+                  "value": {
+                    "stringValue": "demo_api"
+                  }
+                }
+              ],
+              "droppedAttributesCount": 2,
+              "links": [
+                {
+                  "traceId": "wza/fy0l958V0v21EEb/wg==",
+                  "spanId": "l44Mj9VRuzk="
+                }
+              ],
+              "status": {}
+            },
+            {
+              "traceId": "mrTstHt3orRUPMI5/VWhUQ==",
+              "spanId": "GDSx/eEn/7I=",
+              "parentSpanId": "MaddbfvxBRo=",
+              "name": "Execute prepared statement",
+              "kind": "SPAN_KIND_CLIENT",
+              "startTimeUnixNano": "1790078255889260488",
+              "endTimeUnixNano": "1790078255968498516",
+              "attributes": [
+                {
+                  "key": "db.user",
+                  "value": {
+                    "stringValue": "incidentlens"
+                  }
+                },
+                {
+                  "key": "thread.id",
+                  "value": {
+                    "intValue": "43"
+                  }
+                },
+                {
+                  "key": "db.statement",
+                  "value": {
+                    "stringValue": "INSERT (...)"
+                  }
+                },
+                {
+                  "key": "db.system",
+                  "value": {
+                    "stringValue": "mysql"
+                  }
+                },
+                {
+                  "key": "db.operation",
+                  "value": {
+                    "stringValue": "INSERT"
+                  }
+                },
+                {
+                  "key": "thread.name",
+                  "value": {
+                    "stringValue": "http-nio-8081-exec-6"
+                  }
+                },
+                {
+                  "key": "db.name",
+                  "value": {
+                    "stringValue": "demo_api"
+                  }
+                }
+              ],
+              "droppedAttributesCount": 2,
+              "links": [
+                {
+                  "traceId": "wza/fy0l958V0v21EEb/wg==",
+                  "spanId": "l44Mj9VRuzk="
+                }
+              ],
+              "status": {}
+            },
+            {
+              "traceId": "mrTstHt3orRUPMI5/VWhUQ==",
+              "spanId": "vNbGxUcYKGo=",
+              "parentSpanId": "GbUFMNeXdqU=",
+              "name": "Commit",
+              "kind": "SPAN_KIND_CLIENT",
+              "startTimeUnixNano": "1790078255968847404",
+              "endTimeUnixNano": "1790078256434818106",
+              "attributes": [
+                {
+                  "key": "db.user",
+                  "value": {
+                    "stringValue": "incidentlens"
+                  }
+                },
+                {
+                  "key": "thread.id",
+                  "value": {
+                    "intValue": "43"
+                  }
+                },
+                {
+                  "key": "db.statement",
+                  "value": {
+                    "stringValue": "COMMIT"
+                  }
+                },
+                {
+                  "key": "db.system",
+                  "value": {
+                    "stringValue": "mysql"
+                  }
+                },
+                {
+                  "key": "db.operation",
+                  "value": {
+                    "stringValue": "COMMIT"
+                  }
+                },
+                {
+                  "key": "thread.name",
+                  "value": {
+                    "stringValue": "http-nio-8081-exec-6"
+                  }
+                },
+                {
+                  "key": "db.name",
+                  "value": {
+                    "stringValue": "demo_api"
+                  }
+                }
+              ],
+              "droppedAttributesCount": 2,
+              "links": [
+                {
+                  "traceId": "wza/fy0l958V0v21EEb/wg==",
+                  "spanId": "l44Mj9VRuzk="
+                }
+              ],
+              "status": {}
+            },
+            {
+              "traceId": "mrTstHt3orRUPMI5/VWhUQ==",
+              "spanId": "rWnrdUZ4A2I=",
+              "parentSpanId": "GbUFMNeXdqU=",
+              "name": "Set variable 'autocommit'",
+              "kind": "SPAN_KIND_CLIENT",
+              "startTimeUnixNano": "1790078256434874604",
+              "endTimeUnixNano": "1790078256435150495",
+              "attributes": [
+                {
+                  "key": "db.user",
+                  "value": {
+                    "stringValue": "incidentlens"
+                  }
+                },
+                {
+                  "key": "thread.id",
+                  "value": {
+                    "intValue": "43"
+                  }
+                },
+                {
+                  "key": "db.statement",
+                  "value": {
+                    "stringValue": "SET (...)"
+                  }
+                },
+                {
+                  "key": "db.system",
+                  "value": {
+                    "stringValue": "mysql"
+                  }
+                },
+                {
+                  "key": "db.operation",
+                  "value": {
+                    "stringValue": "SET"
+                  }
+                },
+                {
+                  "key": "thread.name",
+                  "value": {
+                    "stringValue": "http-nio-8081-exec-6"
+                  }
+                },
+                {
+                  "key": "db.name",
+                  "value": {
+                    "stringValue": "demo_api"
+                  }
+                }
+              ],
+              "droppedAttributesCount": 2,
+              "links": [
+                {
+                  "traceId": "wza/fy0l958V0v21EEb/wg==",
+                  "spanId": "l44Mj9VRuzk="
+                }
+              ],
+              "status": {}
+            },
+            {
+              "traceId": "mrTstHt3orRUPMI5/VWhUQ==",
+              "spanId": "iqUemRV1WrM=",
+              "parentSpanId": "YgMRgztand8=",
+              "name": "Prepare statement",
+              "kind": "SPAN_KIND_CLIENT",
+              "startTimeUnixNano": "1790078259840177741",
+              "endTimeUnixNano": "1790078259840271537",
+              "attributes": [
+                {
+                  "key": "db.user",
+                  "value": {
+                    "stringValue": "incidentlens"
+                  }
+                },
+                {
+                  "key": "thread.id",
+                  "value": {
+                    "intValue": "50"
+                  }
+                },
+                {
+                  "key": "db.statement",
+                  "value": {
+                    "stringValue": "UPDATE (...)"
+                  }
+                },
+                {
+                  "key": "db.system",
+                  "value": {
+                    "stringValue": "mysql"
+                  }
+                },
+                {
+                  "key": "db.operation",
+                  "value": {
+                    "stringValue": "UPDATE"
+                  }
+                },
+                {
+                  "key": "thread.name",
+                  "value": {
+                    "stringValue": "scheduling-1"
+                  }
+                },
+                {
+                  "key": "db.name",
+                  "value": {
+                    "stringValue": "demo_api"
+                  }
+                }
+              ],
+              "droppedAttributesCount": 2,
+              "links": [
+                {
+                  "traceId": "GEwKJTbVxzSVqFxohoFRaQ==",
+                  "spanId": "XU6mWzFkiM0="
+                }
+              ],
+              "status": {}
+            },
+            {
+              "traceId": "mrTstHt3orRUPMI5/VWhUQ==",
+              "spanId": "W4/Wz8DrBC0=",
+              "parentSpanId": "nHKnuJZn+1Q=",
+              "name": "Execute prepared statement",
+              "kind": "SPAN_KIND_CLIENT",
+              "startTimeUnixNano": "1790078259840381933",
+              "endTimeUnixNano": "1790078260330458082",
+              "attributes": [
+                {
+                  "key": "db.user",
+                  "value": {
+                    "stringValue": "incidentlens"
+                  }
+                },
+                {
+                  "key": "thread.id",
+                  "value": {
+                    "intValue": "50"
+                  }
+                },
+                {
+                  "key": "db.statement",
+                  "value": {
+                    "stringValue": "UPDATE (...)"
+                  }
+                },
+                {
+                  "key": "db.system",
+                  "value": {
+                    "stringValue": "mysql"
+                  }
+                },
+                {
+                  "key": "db.operation",
+                  "value": {
+                    "stringValue": "UPDATE"
+                  }
+                },
+                {
+                  "key": "thread.name",
+                  "value": {
+                    "stringValue": "scheduling-1"
+                  }
+                },
+                {
+                  "key": "db.name",
+                  "value": {
+                    "stringValue": "demo_api"
+                  }
+                }
+              ],
+              "droppedAttributesCount": 2,
+              "links": [
+                {
+                  "traceId": "GEwKJTbVxzSVqFxohoFRaQ==",
+                  "spanId": "XU6mWzFkiM0="
+                }
+              ],
+              "status": {}
+            }
+          ]
+        },
+        {
+          "scope": {
+            "name": "io.opentelemetry.hibernate-6.0",
+            "version": "2.20.0-alpha"
+          },
+          "spans": [
+            {
+              "traceId": "mrTstHt3orRUPMI5/VWhUQ==",
+              "spanId": "MzW7TGo8BaA=",
+              "parentSpanId": "poA7yUwQvfo=",
+              "name": "SELECT io.incidentlens.demoapi.PurchaseOrder",
+              "kind": "SPAN_KIND_INTERNAL",
+              "startTimeUnixNano": "1790078255886349780",
+              "endTimeUnixNano": "1790078255888538113",
+              "attributes": [
+                {
+                  "key": "thread.id",
+                  "value": {
+                    "intValue": "43"
+                  }
+                },
+                {
+                  "key": "thread.name",
+                  "value": {
+                    "stringValue": "http-nio-8081-exec-6"
+                  }
+                }
+              ],
+              "status": {}
+            },
+            {
+              "traceId": "mrTstHt3orRUPMI5/VWhUQ==",
+              "spanId": "GbUFMNeXdqU=",
+              "parentSpanId": "YgMRgztand8=",
+              "name": "Transaction.commit",
+              "kind": "SPAN_KIND_INTERNAL",
+              "startTimeUnixNano": "1790078255968618112",
+              "endTimeUnixNano": "1790078256435197993",
+              "attributes": [
+                {
+                  "key": "thread.id",
+                  "value": {
+                    "intValue": "43"
+                  }
+                },
+                {
+                  "key": "thread.name",
+                  "value": {
+                    "stringValue": "http-nio-8081-exec-6"
+                  }
+                }
+              ],
+              "status": {}
+            }
+          ]
+        },
+        {
+          "scope": {
+            "name": "io.opentelemetry.tomcat-10.0",
+            "version": "2.20.0-alpha"
+          },
+          "spans": [
+            {
+              "traceId": "mrTstHt3orRUPMI5/VWhUQ==",
+              "spanId": "YgMRgztand8=",
+              "name": "POST /api/orders",
+              "kind": "SPAN_KIND_SERVER",
+              "startTimeUnixNano": "1790078255881362382",
+              "endTimeUnixNano": "1790078256436529946",
+              "attributes": [
+                {
+                  "key": "server.address",
+                  "value": {
+                    "stringValue": "demo-api"
+                  }
+                },
+                {
+                  "key": "client.address",
+                  "value": {
+                    "stringValue": "172.18.0.14"
+                  }
+                },
+                {
+                  "key": "network.peer.address",
+                  "value": {
+                    "stringValue": "172.18.0.14"
+                  }
+                },
+                {
+                  "key": "url.path",
+                  "value": {
+                    "stringValue": "/api/orders"
+                  }
+                },
+                {
+                  "key": "network.peer.port",
+                  "value": {
+                    "intValue": "45910"
+                  }
+                },
+                {
+                  "key": "http.request.method",
+                  "value": {
+                    "stringValue": "POST"
+                  }
+                },
+                {
+                  "key": "http.route",
+                  "value": {
+                    "stringValue": "/api/orders"
+                  }
+                },
+                {
+                  "key": "user_agent.original",
+                  "value": {
+                    "stringValue": "Grafana k6/1.2.3"
+                  }
+                },
+                {
+                  "key": "server.port",
+                  "value": {
+                    "intValue": "8081"
+                  }
+                },
+                {
+                  "key": "thread.id",
+                  "value": {
+                    "intValue": "43"
+                  }
+                },
+                {
+                  "key": "http.response.status_code",
+                  "value": {
+                    "intValue": "201"
+                  }
+                },
+                {
+                  "key": "network.protocol.version",
+                  "value": {
+                    "stringValue": "1.1"
+                  }
+                },
+                {
+                  "key": "url.scheme",
+                  "value": {
+                    "stringValue": "http"
+                  }
+                },
+                {
+                  "key": "thread.name",
+                  "value": {
+                    "stringValue": "http-nio-8081-exec-6"
+                  }
+                }
+              ],
+              "status": {}
+            }
+          ]
+        },
+        {
+          "scope": {
+            "name": "io.opentelemetry.kafka-clients-0.11",
+            "version": "2.20.0-alpha"
+          },
+          "spans": [
+            {
+              "traceId": "mrTstHt3orRUPMI5/VWhUQ==",
+              "spanId": "pbmtv0OYry4=",
+              "parentSpanId": "YgMRgztand8=",
+              "name": "incidentlens.orders.v1 publish",
+              "kind": "SPAN_KIND_PRODUCER",
+              "startTimeUnixNano": "1790078259786512941",
+              "endTimeUnixNano": "1790078259839953349",
+              "attributes": [
+                {
+                  "key": "messaging.destination.partition.id",
+                  "value": {
+                    "stringValue": "0"
+                  }
+                },
+                {
+                  "key": "messaging.system",
+                  "value": {
+                    "stringValue": "kafka"
+                  }
+                },
+                {
+                  "key": "messaging.kafka.message.key",
+                  "value": {
+                    "stringValue": "bd5a9095-bab0-4d67-b3d5-65be1aaf423c"
+                  }
+                },
+                {
+                  "key": "thread.id",
+                  "value": {
+                    "intValue": "50"
+                  }
+                },
+                {
+                  "key": "messaging.client_id",
+                  "value": {
+                    "stringValue": "demo-api-producer-1"
+                  }
+                },
+                {
+                  "key": "thread.name",
+                  "value": {
+                    "stringValue": "scheduling-1"
+                  }
+                },
+                {
+                  "key": "messaging.kafka.message.offset",
+                  "value": {
+                    "intValue": "491"
+                  }
+                },
+                {
+                  "key": "messaging.destination.name",
+                  "value": {
+                    "stringValue": "incidentlens.orders.v1"
+                  }
+                },
+                {
+                  "key": "messaging.operation",
+                  "value": {
+                    "stringValue": "publish"
+                  }
+                }
+              ],
+              "status": {}
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "resource": {
+        "attributes": [
+          {
+            "key": "container.id",
+            "value": {
+              "stringValue": "b6f7f534b2e1510d4ae776910b97ba26a05b520820e748bf733928ad3cd7504b"
+            }
+          },
+          {
+            "key": "deployment.environment",
+            "value": {
+              "stringValue": "local"
+            }
+          },
+          {
+            "key": "host.arch",
+            "value": {
+              "stringValue": "amd64"
+            }
+          },
+          {
+            "key": "host.name",
+            "value": {
+              "stringValue": "b6f7f534b2e1"
+            }
+          },
+          {
+            "key": "os.description",
+            "value": {
+              "stringValue": "Linux 6.18.33.2-microsoft-standard-WSL2"
+            }
+          },
+          {
+            "key": "os.type",
+            "value": {
+              "stringValue": "linux"
+            }
+          },
+          {
+            "key": "process.command_args",
+            "value": {
+              "arrayValue": {
+                "values": [
+                  {
+                    "stringValue": "/opt/java/openjdk/bin/java"
+                  },
+                  {
+                    "stringValue": "-jar"
+                  },
+                  {
+                    "stringValue": "/app/application.jar"
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "key": "process.executable.path",
+            "value": {
+              "stringValue": "/opt/java/openjdk/bin/java"
+            }
+          },
+          {
+            "key": "process.pid",
+            "value": {
+              "intValue": "7"
+            }
+          },
+          {
+            "key": "process.runtime.description",
+            "value": {
+              "stringValue": "Eclipse Adoptium OpenJDK 64-Bit Server VM 21.0.12+8-LTS"
+            }
+          },
+          {
+            "key": "process.runtime.name",
+            "value": {
+              "stringValue": "OpenJDK Runtime Environment"
+            }
+          },
+          {
+            "key": "process.runtime.version",
+            "value": {
+              "stringValue": "21.0.12+8-LTS"
+            }
+          },
+          {
+            "key": "service.instance.id",
+            "value": {
+              "stringValue": "7162ec0f-40f7-4bab-ba45-1508b277b5d3"
+            }
+          },
+          {
+            "key": "service.namespace",
+            "value": {
+              "stringValue": "incidentlens"
+            }
+          },
+          {
+            "key": "service.version",
+            "value": {
+              "stringValue": "0.1.0"
+            }
+          },
+          {
+            "key": "telemetry.distro.name",
+            "value": {
+              "stringValue": "opentelemetry-java-instrumentation"
+            }
+          },
+          {
+            "key": "telemetry.distro.version",
+            "value": {
+              "stringValue": "2.20.0"
+            }
+          },
+          {
+            "key": "telemetry.sdk.language",
+            "value": {
+              "stringValue": "java"
+            }
+          },
+          {
+            "key": "telemetry.sdk.name",
+            "value": {
+              "stringValue": "opentelemetry"
+            }
+          },
+          {
+            "key": "telemetry.sdk.version",
+            "value": {
+              "stringValue": "1.54.0"
+            }
+          },
+          {
+            "key": "service.name",
+            "value": {
+              "stringValue": "demo-worker"
+            }
+          }
+        ]
+      },
+      "scopeSpans": [
+        {
+          "scope": {
+            "name": "io.opentelemetry.jdbc",
+            "version": "2.20.0-alpha"
+          },
+          "spans": [
+            {
+              "traceId": "mrTstHt3orRUPMI5/VWhUQ==",
+              "spanId": "x0/Q1Aj3Lc8=",
+              "parentSpanId": "htPKHhZBivU=",
+              "name": "INSERT demo_worker.processed_event",
+              "kind": "SPAN_KIND_CLIENT",
+              "startTimeUnixNano": "1790078259843753315",
+              "endTimeUnixNano": "1790078259844389492",
+              "attributes": [
+                {
+                  "key": "server.address",
+                  "value": {
+                    "stringValue": "mysql"
+                  }
+                },
+                {
+                  "key": "db.connection_string",
+                  "value": {
+                    "stringValue": "mysql://mysql:3306"
+                  }
+                },
+                {
+                  "key": "db.user",
+                  "value": {
+                    "stringValue": "incidentlens"
+                  }
+                },
+                {
+                  "key": "server.port",
+                  "value": {
+                    "intValue": "3306"
+                  }
+                },
+                {
+                  "key": "db.statement",
+                  "value": {
+                    "stringValue": "INSERT INTO processed_event(event_id,payload_fingerprint,delivery_token,processed_at) VALUES(?,?,?,CURRENT_TIMESTAMP(?)) ON DUPLICATE KEY UPDATE event_id=event_id"
+                  }
+                },
+                {
+                  "key": "thread.id",
+                  "value": {
+                    "intValue": "53"
+                  }
+                },
+                {
+                  "key": "db.system",
+                  "value": {
+                    "stringValue": "mysql"
+                  }
+                },
+                {
+                  "key": "db.sql.table",
+                  "value": {
+                    "stringValue": "processed_event"
+                  }
+                },
+                {
+                  "key": "db.operation",
+                  "value": {
+                    "stringValue": "INSERT"
+                  }
+                },
+                {
+                  "key": "thread.name",
+                  "value": {
+                    "stringValue": "org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1"
+                  }
+                },
+                {
+                  "key": "db.name",
+                  "value": {
+                    "stringValue": "demo_worker"
+                  }
+                }
+              ],
+              "status": {}
+            },
+            {
+              "traceId": "mrTstHt3orRUPMI5/VWhUQ==",
+              "spanId": "hE1foh4ohKk=",
+              "parentSpanId": "htPKHhZBivU=",
+              "name": "SELECT demo_worker.processed_event",
+              "kind": "SPAN_KIND_CLIENT",
+              "startTimeUnixNano": "1790078259844845476",
+              "endTimeUnixNano": "1790078259845731445",
+              "attributes": [
+                {
+                  "key": "server.address",
+                  "value": {
+                    "stringValue": "mysql"
+                  }
+                },
+                {
+                  "key": "db.connection_string",
+                  "value": {
+                    "stringValue": "mysql://mysql:3306"
+                  }
+                },
+                {
+                  "key": "db.user",
+                  "value": {
+                    "stringValue": "incidentlens"
+                  }
+                },
+                {
+                  "key": "server.port",
+                  "value": {
+                    "intValue": "3306"
+                  }
+                },
+                {
+                  "key": "db.statement",
+                  "value": {
+                    "stringValue": "SELECT payload_fingerprint,delivery_token FROM processed_event WHERE event_id=? FOR UPDATE"
+                  }
+                },
+                {
+                  "key": "thread.id",
+                  "value": {
+                    "intValue": "53"
+                  }
+                },
+                {
+                  "key": "db.system",
+                  "value": {
+                    "stringValue": "mysql"
+                  }
+                },
+                {
+                  "key": "db.sql.table",
+                  "value": {
+                    "stringValue": "processed_event"
+                  }
+                },
+                {
+                  "key": "db.operation",
+                  "value": {
+                    "stringValue": "SELECT"
+                  }
+                },
+                {
+                  "key": "thread.name",
+                  "value": {
+                    "stringValue": "org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1"
+                  }
+                },
+                {
+                  "key": "db.name",
+                  "value": {
+                    "stringValue": "demo_worker"
+                  }
+                }
+              ],
+              "status": {}
+            },
+            {
+              "traceId": "mrTstHt3orRUPMI5/VWhUQ==",
+              "spanId": "rZ9dS1ZKE9c=",
+              "parentSpanId": "htPKHhZBivU=",
+              "name": "INSERT demo_worker.fulfillment",
+              "kind": "SPAN_KIND_CLIENT",
+              "startTimeUnixNano": "1790078259846252227",
+              "endTimeUnixNano": "1790078259846847405",
+              "attributes": [
+                {
+                  "key": "server.address",
+                  "value": {
+                    "stringValue": "mysql"
+                  }
+                },
+                {
+                  "key": "db.connection_string",
+                  "value": {
+                    "stringValue": "mysql://mysql:3306"
+                  }
+                },
+                {
+                  "key": "db.user",
+                  "value": {
+                    "stringValue": "incidentlens"
+                  }
+                },
+                {
+                  "key": "server.port",
+                  "value": {
+                    "intValue": "3306"
+                  }
+                },
+                {
+                  "key": "db.statement",
+                  "value": {
+                    "stringValue": "INSERT INTO fulfillment(order_id,event_id,product_id,quantity,fulfilled_at) VALUES(?,?,?,?,CURRENT_TIMESTAMP(?)) ON DUPLICATE KEY UPDATE order_id=order_id"
+                  }
+                },
+                {
+                  "key": "thread.id",
+                  "value": {
+                    "intValue": "53"
+                  }
+                },
+                {
+                  "key": "db.system",
+                  "value": {
+                    "stringValue": "mysql"
+                  }
+                },
+                {
+                  "key": "db.sql.table",
+                  "value": {
+                    "stringValue": "fulfillment"
+                  }
+                },
+                {
+                  "key": "db.operation",
+                  "value": {
+                    "stringValue": "INSERT"
+                  }
+                },
+                {
+                  "key": "thread.name",
+                  "value": {
+                    "stringValue": "org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1"
+                  }
+                },
+                {
+                  "key": "db.name",
+                  "value": {
+                    "stringValue": "demo_worker"
+                  }
+                }
+              ],
+              "status": {}
+            },
+            {
+              "traceId": "mrTstHt3orRUPMI5/VWhUQ==",
+              "spanId": "VwxJ8SiH06A=",
+              "parentSpanId": "htPKHhZBivU=",
+              "name": "SELECT demo_worker.fulfillment",
+              "kind": "SPAN_KIND_CLIENT",
+              "startTimeUnixNano": "1790078259847161994",
+              "endTimeUnixNano": "1790078259847790672",
+              "attributes": [
+                {
+                  "key": "server.address",
+                  "value": {
+                    "stringValue": "mysql"
+                  }
+                },
+                {
+                  "key": "db.connection_string",
+                  "value": {
+                    "stringValue": "mysql://mysql:3306"
+                  }
+                },
+                {
+                  "key": "db.user",
+                  "value": {
+                    "stringValue": "incidentlens"
+                  }
+                },
+                {
+                  "key": "server.port",
+                  "value": {
+                    "intValue": "3306"
+                  }
+                },
+                {
+                  "key": "db.statement",
+                  "value": {
+                    "stringValue": "SELECT event_id,product_id,quantity FROM fulfillment WHERE order_id=? FOR UPDATE"
+                  }
+                },
+                {
+                  "key": "thread.id",
+                  "value": {
+                    "intValue": "53"
+                  }
+                },
+                {
+                  "key": "db.system",
+                  "value": {
+                    "stringValue": "mysql"
+                  }
+                },
+                {
+                  "key": "db.sql.table",
+                  "value": {
+                    "stringValue": "fulfillment"
+                  }
+                },
+                {
+                  "key": "db.operation",
+                  "value": {
+                    "stringValue": "SELECT"
+                  }
+                },
+                {
+                  "key": "thread.name",
+                  "value": {
+                    "stringValue": "org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1"
+                  }
+                },
+                {
+                  "key": "db.name",
+                  "value": {
+                    "stringValue": "demo_worker"
+                  }
+                }
+              ],
+              "status": {}
+            }
+          ]
+        },
+        {
+          "scope": {
+            "name": "io.opentelemetry.spring-kafka-2.7",
+            "version": "2.20.0-alpha"
+          },
+          "spans": [
+            {
+              "traceId": "mrTstHt3orRUPMI5/VWhUQ==",
+              "spanId": "htPKHhZBivU=",
+              "parentSpanId": "pbmtv0OYry4=",
+              "name": "incidentlens.orders.v1 process",
+              "kind": "SPAN_KIND_CONSUMER",
+              "startTimeUnixNano": "1790078259840575827",
+              "endTimeUnixNano": "1790078260433842723",
+              "attributes": [
+                {
+                  "key": "messaging.destination.partition.id",
+                  "value": {
+                    "stringValue": "0"
+                  }
+                },
+                {
+                  "key": "messaging.system",
+                  "value": {
+                    "stringValue": "kafka"
+                  }
+                },
+                {
+                  "key": "messaging.message.body.size",
+                  "value": {
+                    "intValue": "403"
+                  }
+                },
+                {
+                  "key": "messaging.kafka.message.key",
+                  "value": {
+                    "stringValue": "bd5a9095-bab0-4d67-b3d5-65be1aaf423c"
+                  }
+                },
+                {
+                  "key": "messaging.kafka.consumer.group",
+                  "value": {
+                    "stringValue": "incidentlens-fulfillment-v1"
+                  }
+                },
+                {
+                  "key": "thread.id",
+                  "value": {
+                    "intValue": "53"
+                  }
+                },
+                {
+                  "key": "messaging.client_id",
+                  "value": {
+                    "stringValue": "consumer-incidentlens-fulfillment-v1-1"
+                  }
+                },
+                {
+                  "key": "thread.name",
+                  "value": {
+                    "stringValue": "org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1"
+                  }
+                },
+                {
+                  "key": "messaging.kafka.message.offset",
+                  "value": {
+                    "intValue": "491"
+                  }
+                },
+                {
+                  "key": "messaging.destination.name",
+                  "value": {
+                    "stringValue": "incidentlens.orders.v1"
+                  }
+                },
+                {
+                  "key": "messaging.operation",
+                  "value": {
+                    "stringValue": "process"
+                  }
+                }
+              ],
+              "status": {}
+            }
+          ]
+        },
+        {
+          "scope": {
+            "name": "MySQL Connector/J",
+            "version": "9.7.0"
+          },
+          "spans": [
+            {
+              "traceId": "mrTstHt3orRUPMI5/VWhUQ==",
+              "spanId": "y5/SG9R3x9Q=",
+              "parentSpanId": "htPKHhZBivU=",
+              "name": "Set variable 'autocommit'",
+              "kind": "SPAN_KIND_CLIENT",
+              "startTimeUnixNano": "1790078259842618555",
+              "endTimeUnixNano": "1790078259843140737",
+              "attributes": [
+                {
+                  "key": "db.user",
+                  "value": {
+                    "stringValue": "incidentlens"
+                  }
+                },
+                {
+                  "key": "thread.id",
+                  "value": {
+                    "intValue": "53"
+                  }
+                },
+                {
+                  "key": "db.statement",
+                  "value": {
+                    "stringValue": "SET (...)"
+                  }
+                },
+                {
+                  "key": "db.system",
+                  "value": {
+                    "stringValue": "mysql"
+                  }
+                },
+                {
+                  "key": "db.operation",
+                  "value": {
+                    "stringValue": "SET"
+                  }
+                },
+                {
+                  "key": "thread.name",
+                  "value": {
+                    "stringValue": "org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1"
+                  }
+                },
+                {
+                  "key": "db.name",
+                  "value": {
+                    "stringValue": "demo_worker"
+                  }
+                }
+              ],
+              "droppedAttributesCount": 2,
+              "links": [
+                {
+                  "traceId": "hOqm9+5QKGq823p5CWb1hw==",
+                  "spanId": "cEO6g3ISdxc="
+                }
+              ],
+              "status": {}
+            },
+            {
+              "traceId": "mrTstHt3orRUPMI5/VWhUQ==",
+              "spanId": "fS8KjGx6j4o=",
+              "parentSpanId": "htPKHhZBivU=",
+              "name": "Prepare statement",
+              "kind": "SPAN_KIND_CLIENT",
+              "startTimeUnixNano": "1790078259843320630",
+              "endTimeUnixNano": "1790078259843591221",
+              "attributes": [
+                {
+                  "key": "db.user",
+                  "value": {
+                    "stringValue": "incidentlens"
+                  }
+                },
+                {
+                  "key": "thread.id",
+                  "value": {
+                    "intValue": "53"
+                  }
+                },
+                {
+                  "key": "db.statement",
+                  "value": {
+                    "stringValue": "INSERT (...)"
+                  }
+                },
+                {
+                  "key": "db.system",
+                  "value": {
+                    "stringValue": "mysql"
+                  }
+                },
+                {
+                  "key": "db.operation",
+                  "value": {
+                    "stringValue": "INSERT"
+                  }
+                },
+                {
+                  "key": "thread.name",
+                  "value": {
+                    "stringValue": "org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1"
+                  }
+                },
+                {
+                  "key": "db.name",
+                  "value": {
+                    "stringValue": "demo_worker"
+                  }
+                }
+              ],
+              "droppedAttributesCount": 2,
+              "links": [
+                {
+                  "traceId": "hOqm9+5QKGq823p5CWb1hw==",
+                  "spanId": "cEO6g3ISdxc="
+                }
+              ],
+              "status": {}
+            },
+            {
+              "traceId": "mrTstHt3orRUPMI5/VWhUQ==",
+              "spanId": "ZY7hauHTji8=",
+              "parentSpanId": "x0/Q1Aj3Lc8=",
+              "name": "Execute prepared statement",
+              "kind": "SPAN_KIND_CLIENT",
+              "startTimeUnixNano": "1790078259843793514",
+              "endTimeUnixNano": "1790078259844373693",
+              "attributes": [
+                {
+                  "key": "db.user",
+                  "value": {
+                    "stringValue": "incidentlens"
+                  }
+                },
+                {
+                  "key": "thread.id",
+                  "value": {
+                    "intValue": "53"
+                  }
+                },
+                {
+                  "key": "db.statement",
+                  "value": {
+                    "stringValue": "INSERT (...)"
+                  }
+                },
+                {
+                  "key": "db.system",
+                  "value": {
+                    "stringValue": "mysql"
+                  }
+                },
+                {
+                  "key": "db.operation",
+                  "value": {
+                    "stringValue": "INSERT"
+                  }
+                },
+                {
+                  "key": "thread.name",
+                  "value": {
+                    "stringValue": "org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1"
+                  }
+                },
+                {
+                  "key": "db.name",
+                  "value": {
+                    "stringValue": "demo_worker"
+                  }
+                }
+              ],
+              "droppedAttributesCount": 2,
+              "links": [
+                {
+                  "traceId": "hOqm9+5QKGq823p5CWb1hw==",
+                  "spanId": "cEO6g3ISdxc="
+                }
+              ],
+              "status": {}
+            },
+            {
+              "traceId": "mrTstHt3orRUPMI5/VWhUQ==",
+              "spanId": "1o9qiDfqmRk=",
+              "parentSpanId": "htPKHhZBivU=",
+              "name": "Prepare statement",
+              "kind": "SPAN_KIND_CLIENT",
+              "startTimeUnixNano": "1790078259844544587",
+              "endTimeUnixNano": "1790078259844675782",
+              "attributes": [
+                {
+                  "key": "db.user",
+                  "value": {
+                    "stringValue": "incidentlens"
+                  }
+                },
+                {
+                  "key": "thread.id",
+                  "value": {
+                    "intValue": "53"
+                  }
+                },
+                {
+                  "key": "db.statement",
+                  "value": {
+                    "stringValue": "SELECT (...)"
+                  }
+                },
+                {
+                  "key": "db.system",
+                  "value": {
+                    "stringValue": "mysql"
+                  }
+                },
+                {
+                  "key": "db.operation",
+                  "value": {
+                    "stringValue": "SELECT"
+                  }
+                },
+                {
+                  "key": "thread.name",
+                  "value": {
+                    "stringValue": "org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1"
+                  }
+                },
+                {
+                  "key": "db.name",
+                  "value": {
+                    "stringValue": "demo_worker"
+                  }
+                }
+              ],
+              "droppedAttributesCount": 2,
+              "links": [
+                {
+                  "traceId": "hOqm9+5QKGq823p5CWb1hw==",
+                  "spanId": "cEO6g3ISdxc="
+                }
+              ],
+              "status": {}
+            },
+            {
+              "traceId": "mrTstHt3orRUPMI5/VWhUQ==",
+              "spanId": "DkV3eyaLrhQ=",
+              "parentSpanId": "hE1foh4ohKk=",
+              "name": "Execute prepared statement",
+              "kind": "SPAN_KIND_CLIENT",
+              "startTimeUnixNano": "1790078259844885175",
+              "endTimeUnixNano": "1790078259845712646",
+              "attributes": [
+                {
+                  "key": "db.user",
+                  "value": {
+                    "stringValue": "incidentlens"
+                  }
+                },
+                {
+                  "key": "thread.id",
+                  "value": {
+                    "intValue": "53"
+                  }
+                },
+                {
+                  "key": "db.statement",
+                  "value": {
+                    "stringValue": "SELECT (...)"
+                  }
+                },
+                {
+                  "key": "db.system",
+                  "value": {
+                    "stringValue": "mysql"
+                  }
+                },
+                {
+                  "key": "db.operation",
+                  "value": {
+                    "stringValue": "SELECT"
+                  }
+                },
+                {
+                  "key": "thread.name",
+                  "value": {
+                    "stringValue": "org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1"
+                  }
+                },
+                {
+                  "key": "db.name",
+                  "value": {
+                    "stringValue": "demo_worker"
+                  }
+                }
+              ],
+              "droppedAttributesCount": 2,
+              "links": [
+                {
+                  "traceId": "hOqm9+5QKGq823p5CWb1hw==",
+                  "spanId": "cEO6g3ISdxc="
+                }
+              ],
+              "status": {}
+            },
+            {
+              "traceId": "mrTstHt3orRUPMI5/VWhUQ==",
+              "spanId": "WjpyMAr98eE=",
+              "parentSpanId": "htPKHhZBivU=",
+              "name": "Prepare statement",
+              "kind": "SPAN_KIND_CLIENT",
+              "startTimeUnixNano": "1790078259845948537",
+              "endTimeUnixNano": "1790078259846116131",
+              "attributes": [
+                {
+                  "key": "db.user",
+                  "value": {
+                    "stringValue": "incidentlens"
+                  }
+                },
+                {
+                  "key": "thread.id",
+                  "value": {
+                    "intValue": "53"
+                  }
+                },
+                {
+                  "key": "db.statement",
+                  "value": {
+                    "stringValue": "INSERT (...)"
+                  }
+                },
+                {
+                  "key": "db.system",
+                  "value": {
+                    "stringValue": "mysql"
+                  }
+                },
+                {
+                  "key": "db.operation",
+                  "value": {
+                    "stringValue": "INSERT"
+                  }
+                },
+                {
+                  "key": "thread.name",
+                  "value": {
+                    "stringValue": "org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1"
+                  }
+                },
+                {
+                  "key": "db.name",
+                  "value": {
+                    "stringValue": "demo_worker"
+                  }
+                }
+              ],
+              "droppedAttributesCount": 2,
+              "links": [
+                {
+                  "traceId": "hOqm9+5QKGq823p5CWb1hw==",
+                  "spanId": "cEO6g3ISdxc="
+                }
+              ],
+              "status": {}
+            },
+            {
+              "traceId": "mrTstHt3orRUPMI5/VWhUQ==",
+              "spanId": "Wb67ptueQtM=",
+              "parentSpanId": "rZ9dS1ZKE9c=",
+              "name": "Execute prepared statement",
+              "kind": "SPAN_KIND_CLIENT",
+              "startTimeUnixNano": "1790078259846287625",
+              "endTimeUnixNano": "1790078259846837506",
+              "attributes": [
+                {
+                  "key": "db.user",
+                  "value": {
+                    "stringValue": "incidentlens"
+                  }
+                },
+                {
+                  "key": "thread.id",
+                  "value": {
+                    "intValue": "53"
+                  }
+                },
+                {
+                  "key": "db.statement",
+                  "value": {
+                    "stringValue": "INSERT (...)"
+                  }
+                },
+                {
+                  "key": "db.system",
+                  "value": {
+                    "stringValue": "mysql"
+                  }
+                },
+                {
+                  "key": "db.operation",
+                  "value": {
+                    "stringValue": "INSERT"
+                  }
+                },
+                {
+                  "key": "thread.name",
+                  "value": {
+                    "stringValue": "org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1"
+                  }
+                },
+                {
+                  "key": "db.name",
+                  "value": {
+                    "stringValue": "demo_worker"
+                  }
+                }
+              ],
+              "droppedAttributesCount": 2,
+              "links": [
+                {
+                  "traceId": "hOqm9+5QKGq823p5CWb1hw==",
+                  "spanId": "cEO6g3ISdxc="
+                }
+              ],
+              "status": {}
+            },
+            {
+              "traceId": "mrTstHt3orRUPMI5/VWhUQ==",
+              "spanId": "mqWZftZKZ38=",
+              "parentSpanId": "htPKHhZBivU=",
+              "name": "Prepare statement",
+              "kind": "SPAN_KIND_CLIENT",
+              "startTimeUnixNano": "1790078259846915603",
+              "endTimeUnixNano": "1790078259847076397",
+              "attributes": [
+                {
+                  "key": "db.user",
+                  "value": {
+                    "stringValue": "incidentlens"
+                  }
+                },
+                {
+                  "key": "thread.id",
+                  "value": {
+                    "intValue": "53"
+                  }
+                },
+                {
+                  "key": "db.statement",
+                  "value": {
+                    "stringValue": "SELECT (...)"
+                  }
+                },
+                {
+                  "key": "db.system",
+                  "value": {
+                    "stringValue": "mysql"
+                  }
+                },
+                {
+                  "key": "db.operation",
+                  "value": {
+                    "stringValue": "SELECT"
+                  }
+                },
+                {
+                  "key": "thread.name",
+                  "value": {
+                    "stringValue": "org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1"
+                  }
+                },
+                {
+                  "key": "db.name",
+                  "value": {
+                    "stringValue": "demo_worker"
+                  }
+                }
+              ],
+              "droppedAttributesCount": 2,
+              "links": [
+                {
+                  "traceId": "hOqm9+5QKGq823p5CWb1hw==",
+                  "spanId": "cEO6g3ISdxc="
+                }
+              ],
+              "status": {}
+            },
+            {
+              "traceId": "mrTstHt3orRUPMI5/VWhUQ==",
+              "spanId": "B55U89e/zQY=",
+              "parentSpanId": "VwxJ8SiH06A=",
+              "name": "Execute prepared statement",
+              "kind": "SPAN_KIND_CLIENT",
+              "startTimeUnixNano": "1790078259847190693",
+              "endTimeUnixNano": "1790078259847779972",
+              "attributes": [
+                {
+                  "key": "db.user",
+                  "value": {
+                    "stringValue": "incidentlens"
+                  }
+                },
+                {
+                  "key": "thread.id",
+                  "value": {
+                    "intValue": "53"
+                  }
+                },
+                {
+                  "key": "db.statement",
+                  "value": {
+                    "stringValue": "SELECT (...)"
+                  }
+                },
+                {
+                  "key": "db.system",
+                  "value": {
+                    "stringValue": "mysql"
+                  }
+                },
+                {
+                  "key": "db.operation",
+                  "value": {
+                    "stringValue": "SELECT"
+                  }
+                },
+                {
+                  "key": "thread.name",
+                  "value": {
+                    "stringValue": "org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1"
+                  }
+                },
+                {
+                  "key": "db.name",
+                  "value": {
+                    "stringValue": "demo_worker"
+                  }
+                }
+              ],
+              "droppedAttributesCount": 2,
+              "links": [
+                {
+                  "traceId": "hOqm9+5QKGq823p5CWb1hw==",
+                  "spanId": "cEO6g3ISdxc="
+                }
+              ],
+              "status": {}
+            },
+            {
+              "traceId": "mrTstHt3orRUPMI5/VWhUQ==",
+              "spanId": "BCS74M8IktY=",
+              "parentSpanId": "htPKHhZBivU=",
+              "name": "Commit",
+              "kind": "SPAN_KIND_CLIENT",
+              "startTimeUnixNano": "1790078259847935967",
+              "endTimeUnixNano": "1790078260431306313",
+              "attributes": [
+                {
+                  "key": "db.user",
+                  "value": {
+                    "stringValue": "incidentlens"
+                  }
+                },
+                {
+                  "key": "thread.id",
+                  "value": {
+                    "intValue": "53"
+                  }
+                },
+                {
+                  "key": "db.statement",
+                  "value": {
+                    "stringValue": "COMMIT"
+                  }
+                },
+                {
+                  "key": "db.system",
+                  "value": {
+                    "stringValue": "mysql"
+                  }
+                },
+                {
+                  "key": "db.operation",
+                  "value": {
+                    "stringValue": "COMMIT"
+                  }
+                },
+                {
+                  "key": "thread.name",
+                  "value": {
+                    "stringValue": "org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1"
+                  }
+                },
+                {
+                  "key": "db.name",
+                  "value": {
+                    "stringValue": "demo_worker"
+                  }
+                }
+              ],
+              "droppedAttributesCount": 2,
+              "links": [
+                {
+                  "traceId": "hOqm9+5QKGq823p5CWb1hw==",
+                  "spanId": "cEO6g3ISdxc="
+                }
+              ],
+              "status": {}
+            },
+            {
+              "traceId": "mrTstHt3orRUPMI5/VWhUQ==",
+              "spanId": "Jrkbr9uk2MI=",
+              "parentSpanId": "htPKHhZBivU=",
+              "name": "Set variable 'autocommit'",
+              "kind": "SPAN_KIND_CLIENT",
+              "startTimeUnixNano": "1790078260431477407",
+              "endTimeUnixNano": "1790078260432104984",
+              "attributes": [
+                {
+                  "key": "db.user",
+                  "value": {
+                    "stringValue": "incidentlens"
+                  }
+                },
+                {
+                  "key": "thread.id",
+                  "value": {
+                    "intValue": "53"
+                  }
+                },
+                {
+                  "key": "db.statement",
+                  "value": {
+                    "stringValue": "SET (...)"
+                  }
+                },
+                {
+                  "key": "db.system",
+                  "value": {
+                    "stringValue": "mysql"
+                  }
+                },
+                {
+                  "key": "db.operation",
+                  "value": {
+                    "stringValue": "SET"
+                  }
+                },
+                {
+                  "key": "thread.name",
+                  "value": {
+                    "stringValue": "org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1"
+                  }
+                },
+                {
+                  "key": "db.name",
+                  "value": {
+                    "stringValue": "demo_worker"
+                  }
+                }
+              ],
+              "droppedAttributesCount": 2,
+              "links": [
+                {
+                  "traceId": "hOqm9+5QKGq823p5CWb1hw==",
+                  "spanId": "cEO6g3ISdxc="
+                }
+              ],
+              "status": {}
+            }
+          ]
+        },
+        {
+          "scope": {
+            "name": "io.opentelemetry.lettuce-5.1",
+            "version": "2.20.0-alpha"
+          },
+          "spans": [
+            {
+              "traceId": "mrTstHt3orRUPMI5/VWhUQ==",
+              "spanId": "ZCLUNxa1+/A=",
+              "parentSpanId": "htPKHhZBivU=",
+              "name": "GET",
+              "kind": "SPAN_KIND_CLIENT",
+              "startTimeUnixNano": "1790078259841748286",
+              "endTimeUnixNano": "1790078259842333865",
+              "attributes": [
+                {
+                  "key": "server.address",
+                  "value": {
+                    "stringValue": "redis"
+                  }
+                },
+                {
+                  "key": "network.peer.address",
+                  "value": {
+                    "stringValue": "172.18.0.3"
+                  }
+                },
+                {
+                  "key": "network.peer.port",
+                  "value": {
+                    "intValue": "6379"
+                  }
+                },
+                {
+                  "key": "server.port",
+                  "value": {
+                    "intValue": "6379"
+                  }
+                },
+                {
+                  "key": "thread.id",
+                  "value": {
+                    "intValue": "65"
+                  }
+                },
+                {
+                  "key": "db.statement",
+                  "value": {
+                    "stringValue": "GET incidentlens:fault"
+                  }
+                },
+                {
+                  "key": "db.system",
+                  "value": {
+                    "stringValue": "redis"
+                  }
+                },
+                {
+                  "key": "db.redis.database_index",
+                  "value": {
+                    "intValue": "0"
+                  }
+                },
+                {
+                  "key": "thread.name",
+                  "value": {
+                    "stringValue": "lettuce-nioEventLoop-4-1"
+                  }
+                },
+                {
+                  "key": "network.type",
+                  "value": {
+                    "stringValue": "ipv4"
+                  }
+                }
+              ],
+              "droppedAttributesCount": 1,
+              "events": [
+                {
+                  "timeUnixNano": "1790078259841855082",
+                  "name": "redis.encode.start"
+                },
+                {
+                  "timeUnixNano": "1790078259841891281",
+                  "name": "redis.encode.end"
+                }
+              ],
+              "status": {}
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

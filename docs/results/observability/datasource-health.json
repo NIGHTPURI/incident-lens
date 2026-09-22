@@ -1,0 +1,21 @@
+{
+  "prometheus": {
+    "details": {
+      "application": "Prometheus",
+      "features": {
+        "rulerApiEnabled": false
+      }
+    },
+    "message": "Successfully queried the Prometheus API.",
+    "status": "OK"
+  },
+  "loki": {
+    "message": "Data source successfully connected.",
+    "status": "OK"
+  },
+  "tempo": {
+    "status": "OK",
+    "checkedBy": "Grafana datasource proxy -> Tempo /api/search",
+    "returnedTraces": 1
+  }
+}

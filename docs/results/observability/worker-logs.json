@@ -1,0 +1,1084 @@
+{
+  "status": "success",
+  "data": {
+    "resultType": "streams",
+    "result": [
+      {
+        "stream": {
+          "container_id": "b6f7f534b2e1510d4ae776910b97ba26a05b520820e748bf733928ad3cd7504b",
+          "correlationId": "f768dd7f-3e6e-40df-93e8-ce3ade7c846c",
+          "deployment_environment": "local",
+          "detected_level": "INFO",
+          "experimentPhase": "AFTER",
+          "flags": "1",
+          "host_arch": "amd64",
+          "host_name": "b6f7f534b2e1",
+          "incidentId": "16fa94d6-33eb-4c31-87c5-7bfaba365594",
+          "observed_timestamp": "1790078260432458571",
+          "os_description": "Linux 6.18.33.2-microsoft-standard-WSL2",
+          "os_type": "linux",
+          "process_command_args": "[\"/opt/java/openjdk/bin/java\",\"-jar\",\"/app/application.jar\"]",
+          "process_executable_path": "/opt/java/openjdk/bin/java",
+          "process_pid": "7",
+          "process_runtime_description": "Eclipse Adoptium OpenJDK 64-Bit Server VM 21.0.12+8-LTS",
+          "process_runtime_name": "OpenJDK Runtime Environment",
+          "process_runtime_version": "21.0.12+8-LTS",
+          "scope_name": "io.incidentlens.demoworker.OrderListener",
+          "service_instance_id": "7162ec0f-40f7-4bab-ba45-1508b277b5d3",
+          "service_name": "demo-worker",
+          "service_namespace": "incidentlens",
+          "service_version": "0.1.0",
+          "severity_number": "9",
+          "severity_text": "INFO",
+          "span_id": "86d3ca1e16418af5",
+          "telemetry_distro_name": "opentelemetry-java-instrumentation",
+          "telemetry_distro_version": "2.20.0",
+          "telemetry_sdk_language": "java",
+          "telemetry_sdk_name": "opentelemetry",
+          "telemetry_sdk_version": "1.54.0",
+          "trace_id": "9ab4ecb47b77a2b4543cc239fd55a151"
+        },
+        "values": [
+          [
+            "1790078260432339875",
+            "order_fulfilled eventId=3d371c16-29da-4537-8925-f12c44343f3b orderId=bd5a9095-bab0-4d67-b3d5-65be1aaf423c result=PROCESSED partition=0 offset=491"
+          ]
+        ]
+      },
+      {
+        "stream": {
+          "container_id": "b6f7f534b2e1510d4ae776910b97ba26a05b520820e748bf733928ad3cd7504b",
+          "correlationId": "f44497c8-f389-4cc7-840c-ae7e577d083a",
+          "deployment_environment": "local",
+          "detected_level": "INFO",
+          "experimentPhase": "BEFORE",
+          "flags": "1",
+          "host_arch": "amd64",
+          "host_name": "b6f7f534b2e1",
+          "incidentId": "16fa94d6-33eb-4c31-87c5-7bfaba365594",
+          "observed_timestamp": "1790078240588917116",
+          "os_description": "Linux 6.18.33.2-microsoft-standard-WSL2",
+          "os_type": "linux",
+          "process_command_args": "[\"/opt/java/openjdk/bin/java\",\"-jar\",\"/app/application.jar\"]",
+          "process_executable_path": "/opt/java/openjdk/bin/java",
+          "process_pid": "7",
+          "process_runtime_description": "Eclipse Adoptium OpenJDK 64-Bit Server VM 21.0.12+8-LTS",
+          "process_runtime_name": "OpenJDK Runtime Environment",
+          "process_runtime_version": "21.0.12+8-LTS",
+          "scope_name": "io.incidentlens.demoworker.OrderListener",
+          "service_instance_id": "7162ec0f-40f7-4bab-ba45-1508b277b5d3",
+          "service_name": "demo-worker",
+          "service_namespace": "incidentlens",
+          "service_version": "0.1.0",
+          "severity_number": "9",
+          "severity_text": "INFO",
+          "span_id": "3c207312a07657fd",
+          "telemetry_distro_name": "opentelemetry-java-instrumentation",
+          "telemetry_distro_version": "2.20.0",
+          "telemetry_sdk_language": "java",
+          "telemetry_sdk_name": "opentelemetry",
+          "telemetry_sdk_version": "1.54.0",
+          "trace_id": "acfb0ffbc88a780a5bf245e1162b840d"
+        },
+        "values": [
+          [
+            "1790078240588829712",
+            "order_fulfilled eventId=da9e2c7e-007e-4c4c-b9be-6175d1e4373e orderId=bb74676a-3533-4398-84cd-77e425d7bd2d result=PROCESSED partition=0 offset=487"
+          ]
+        ]
+      },
+      {
+        "stream": {
+          "container_id": "b6f7f534b2e1510d4ae776910b97ba26a05b520820e748bf733928ad3cd7504b",
+          "correlationId": "ef3dd07f-e3b4-420a-981a-893eb509382d",
+          "deployment_environment": "local",
+          "detected_level": "INFO",
+          "experimentPhase": "AFTER",
+          "flags": "1",
+          "host_arch": "amd64",
+          "host_name": "b6f7f534b2e1",
+          "incidentId": "16fa94d6-33eb-4c31-87c5-7bfaba365594",
+          "observed_timestamp": "1790078265602357199",
+          "os_description": "Linux 6.18.33.2-microsoft-standard-WSL2",
+          "os_type": "linux",
+          "process_command_args": "[\"/opt/java/openjdk/bin/java\",\"-jar\",\"/app/application.jar\"]",
+          "process_executable_path": "/opt/java/openjdk/bin/java",
+          "process_pid": "7",
+          "process_runtime_description": "Eclipse Adoptium OpenJDK 64-Bit Server VM 21.0.12+8-LTS",
+          "process_runtime_name": "OpenJDK Runtime Environment",
+          "process_runtime_version": "21.0.12+8-LTS",
+          "scope_name": "io.incidentlens.demoworker.OrderListener",
+          "service_instance_id": "7162ec0f-40f7-4bab-ba45-1508b277b5d3",
+          "service_name": "demo-worker",
+          "service_namespace": "incidentlens",
+          "service_version": "0.1.0",
+          "severity_number": "9",
+          "severity_text": "INFO",
+          "span_id": "3cc7bbed9e9bfd55",
+          "telemetry_distro_name": "opentelemetry-java-instrumentation",
+          "telemetry_distro_version": "2.20.0",
+          "telemetry_sdk_language": "java",
+          "telemetry_sdk_name": "opentelemetry",
+          "telemetry_sdk_version": "1.54.0",
+          "trace_id": "8b8a5ccec8002093e22c9d70a87b1b22"
+        },
+        "values": [
+          [
+            "1790078265602271701",
+            "order_fulfilled eventId=bd297b3c-aed3-4a43-b524-195adc8b048b orderId=a9caa72c-b40c-4496-99cc-82c63bbc5754 result=PROCESSED partition=2 offset=503"
+          ]
+        ]
+      },
+      {
+        "stream": {
+          "container_id": "b6f7f534b2e1510d4ae776910b97ba26a05b520820e748bf733928ad3cd7504b",
+          "correlationId": "ea0def79-b938-4267-ac76-3e37bd5f2a3d",
+          "deployment_environment": "local",
+          "detected_level": "INFO",
+          "experimentPhase": "AFTER",
+          "flags": "1",
+          "host_arch": "amd64",
+          "host_name": "b6f7f534b2e1",
+          "incidentId": "16fa94d6-33eb-4c31-87c5-7bfaba365594",
+          "observed_timestamp": "1790078266697351918",
+          "os_description": "Linux 6.18.33.2-microsoft-standard-WSL2",
+          "os_type": "linux",
+          "process_command_args": "[\"/opt/java/openjdk/bin/java\",\"-jar\",\"/app/application.jar\"]",
+          "process_executable_path": "/opt/java/openjdk/bin/java",
+          "process_pid": "7",
+          "process_runtime_description": "Eclipse Adoptium OpenJDK 64-Bit Server VM 21.0.12+8-LTS",
+          "process_runtime_name": "OpenJDK Runtime Environment",
+          "process_runtime_version": "21.0.12+8-LTS",
+          "scope_name": "io.incidentlens.demoworker.OrderListener",
+          "service_instance_id": "7162ec0f-40f7-4bab-ba45-1508b277b5d3",
+          "service_name": "demo-worker",
+          "service_namespace": "incidentlens",
+          "service_version": "0.1.0",
+          "severity_number": "9",
+          "severity_text": "INFO",
+          "span_id": "b7b3df54372665d6",
+          "telemetry_distro_name": "opentelemetry-java-instrumentation",
+          "telemetry_distro_version": "2.20.0",
+          "telemetry_sdk_language": "java",
+          "telemetry_sdk_name": "opentelemetry",
+          "telemetry_sdk_version": "1.54.0",
+          "trace_id": "0eb0265ef400d67722270a6f7a769631"
+        },
+        "values": [
+          [
+            "1790078266696957526",
+            "order_fulfilled eventId=1f67f999-828e-4777-bdcf-2ad4016cbc5f orderId=312f1b73-2778-415d-b3d7-e134abcd3475 result=PROCESSED partition=2 offset=504"
+          ]
+        ]
+      },
+      {
+        "stream": {
+          "container_id": "b6f7f534b2e1510d4ae776910b97ba26a05b520820e748bf733928ad3cd7504b",
+          "correlationId": "d85791ce-b3de-4961-a164-c16accd74db2",
+          "deployment_environment": "local",
+          "detected_level": "INFO",
+          "experimentPhase": "AFTER",
+          "flags": "1",
+          "host_arch": "amd64",
+          "host_name": "b6f7f534b2e1",
+          "incidentId": "16fa94d6-33eb-4c31-87c5-7bfaba365594",
+          "observed_timestamp": "1790078262402355353",
+          "os_description": "Linux 6.18.33.2-microsoft-standard-WSL2",
+          "os_type": "linux",
+          "process_command_args": "[\"/opt/java/openjdk/bin/java\",\"-jar\",\"/app/application.jar\"]",
+          "process_executable_path": "/opt/java/openjdk/bin/java",
+          "process_pid": "7",
+          "process_runtime_description": "Eclipse Adoptium OpenJDK 64-Bit Server VM 21.0.12+8-LTS",
+          "process_runtime_name": "OpenJDK Runtime Environment",
+          "process_runtime_version": "21.0.12+8-LTS",
+          "scope_name": "io.incidentlens.demoworker.OrderListener",
+          "service_instance_id": "7162ec0f-40f7-4bab-ba45-1508b277b5d3",
+          "service_name": "demo-worker",
+          "service_namespace": "incidentlens",
+          "service_version": "0.1.0",
+          "severity_number": "9",
+          "severity_text": "INFO",
+          "span_id": "bb714a21656d6e92",
+          "telemetry_distro_name": "opentelemetry-java-instrumentation",
+          "telemetry_distro_version": "2.20.0",
+          "telemetry_sdk_language": "java",
+          "telemetry_sdk_name": "opentelemetry",
+          "telemetry_sdk_version": "1.54.0",
+          "trace_id": "279bf5d8b2237dc638f78550720c5ae0"
+        },
+        "values": [
+          [
+            "1790078262402218136",
+            "order_fulfilled eventId=1a7ba75a-87b4-4060-a4c1-de52b3e2f4c8 orderId=78ad6ebf-a02d-464f-bccd-53705946b934 result=PROCESSED partition=1 offset=498"
+          ]
+        ]
+      },
+      {
+        "stream": {
+          "container_id": "b6f7f534b2e1510d4ae776910b97ba26a05b520820e748bf733928ad3cd7504b",
+          "correlationId": "bf97e7fa-1dda-4f99-93c4-5c13a5ed7e51",
+          "deployment_environment": "local",
+          "detected_level": "INFO",
+          "experimentPhase": "AFTER",
+          "flags": "1",
+          "host_arch": "amd64",
+          "host_name": "b6f7f534b2e1",
+          "incidentId": "16fa94d6-33eb-4c31-87c5-7bfaba365594",
+          "observed_timestamp": "1790078256459035550",
+          "os_description": "Linux 6.18.33.2-microsoft-standard-WSL2",
+          "os_type": "linux",
+          "process_command_args": "[\"/opt/java/openjdk/bin/java\",\"-jar\",\"/app/application.jar\"]",
+          "process_executable_path": "/opt/java/openjdk/bin/java",
+          "process_pid": "7",
+          "process_runtime_description": "Eclipse Adoptium OpenJDK 64-Bit Server VM 21.0.12+8-LTS",
+          "process_runtime_name": "OpenJDK Runtime Environment",
+          "process_runtime_version": "21.0.12+8-LTS",
+          "scope_name": "io.incidentlens.demoworker.OrderListener",
+          "service_instance_id": "7162ec0f-40f7-4bab-ba45-1508b277b5d3",
+          "service_name": "demo-worker",
+          "service_namespace": "incidentlens",
+          "service_version": "0.1.0",
+          "severity_number": "9",
+          "severity_text": "INFO",
+          "span_id": "17f5ad8c409a222c",
+          "telemetry_distro_name": "opentelemetry-java-instrumentation",
+          "telemetry_distro_version": "2.20.0",
+          "telemetry_sdk_language": "java",
+          "telemetry_sdk_name": "opentelemetry",
+          "telemetry_sdk_version": "1.54.0",
+          "trace_id": "ca58773d58b636366451356e42dd6431"
+        },
+        "values": [
+          [
+            "1790078256458883955",
+            "order_fulfilled eventId=928666be-b8d2-47a0-86c1-665ba8a00f6e orderId=72b8874a-88d6-46d2-ba6d-d45807dee7ca result=PROCESSED partition=1 offset=497"
+          ]
+        ]
+      },
+      {
+        "stream": {
+          "container_id": "b6f7f534b2e1510d4ae776910b97ba26a05b520820e748bf733928ad3cd7504b",
+          "correlationId": "9e30dd13-ddb6-4b62-b876-dea593aad945",
+          "deployment_environment": "local",
+          "detected_level": "INFO",
+          "experimentPhase": "AFTER",
+          "flags": "1",
+          "host_arch": "amd64",
+          "host_name": "b6f7f534b2e1",
+          "incidentId": "16fa94d6-33eb-4c31-87c5-7bfaba365594",
+          "observed_timestamp": "1790078255711466314",
+          "os_description": "Linux 6.18.33.2-microsoft-standard-WSL2",
+          "os_type": "linux",
+          "process_command_args": "[\"/opt/java/openjdk/bin/java\",\"-jar\",\"/app/application.jar\"]",
+          "process_executable_path": "/opt/java/openjdk/bin/java",
+          "process_pid": "7",
+          "process_runtime_description": "Eclipse Adoptium OpenJDK 64-Bit Server VM 21.0.12+8-LTS",
+          "process_runtime_name": "OpenJDK Runtime Environment",
+          "process_runtime_version": "21.0.12+8-LTS",
+          "scope_name": "io.incidentlens.demoworker.OrderListener",
+          "service_instance_id": "7162ec0f-40f7-4bab-ba45-1508b277b5d3",
+          "service_name": "demo-worker",
+          "service_namespace": "incidentlens",
+          "service_version": "0.1.0",
+          "severity_number": "9",
+          "severity_text": "INFO",
+          "span_id": "5f163c970127a542",
+          "telemetry_distro_name": "opentelemetry-java-instrumentation",
+          "telemetry_distro_version": "2.20.0",
+          "telemetry_sdk_language": "java",
+          "telemetry_sdk_name": "opentelemetry",
+          "telemetry_sdk_version": "1.54.0",
+          "trace_id": "40f0eb598f1e4a71296b7de76ed1e2ea"
+        },
+        "values": [
+          [
+            "1790078255711313456",
+            "order_fulfilled eventId=7f72da4e-905e-45d1-be04-d27e92bb79c9 orderId=2df270cf-611a-4684-91f3-99f56b6b135c result=PROCESSED partition=2 offset=500"
+          ]
+        ]
+      },
+      {
+        "stream": {
+          "container_id": "b6f7f534b2e1510d4ae776910b97ba26a05b520820e748bf733928ad3cd7504b",
+          "correlationId": "9299c7e0-369a-41cc-a12c-3d60323f9435",
+          "deployment_environment": "local",
+          "detected_level": "INFO",
+          "experimentPhase": "BEFORE",
+          "flags": "1",
+          "host_arch": "amd64",
+          "host_name": "b6f7f534b2e1",
+          "incidentId": "16fa94d6-33eb-4c31-87c5-7bfaba365594",
+          "observed_timestamp": "1790078240991553777",
+          "os_description": "Linux 6.18.33.2-microsoft-standard-WSL2",
+          "os_type": "linux",
+          "process_command_args": "[\"/opt/java/openjdk/bin/java\",\"-jar\",\"/app/application.jar\"]",
+          "process_executable_path": "/opt/java/openjdk/bin/java",
+          "process_pid": "7",
+          "process_runtime_description": "Eclipse Adoptium OpenJDK 64-Bit Server VM 21.0.12+8-LTS",
+          "process_runtime_name": "OpenJDK Runtime Environment",
+          "process_runtime_version": "21.0.12+8-LTS",
+          "scope_name": "io.incidentlens.demoworker.OrderListener",
+          "service_instance_id": "7162ec0f-40f7-4bab-ba45-1508b277b5d3",
+          "service_name": "demo-worker",
+          "service_namespace": "incidentlens",
+          "service_version": "0.1.0",
+          "severity_number": "9",
+          "severity_text": "INFO",
+          "span_id": "c3e8b36604086490",
+          "telemetry_distro_name": "opentelemetry-java-instrumentation",
+          "telemetry_distro_version": "2.20.0",
+          "telemetry_sdk_language": "java",
+          "telemetry_sdk_name": "opentelemetry",
+          "telemetry_sdk_version": "1.54.0",
+          "trace_id": "1a1977fb28ca61df5fbd68c0cc758076"
+        },
+        "values": [
+          [
+            "1790078240991435871",
+            "order_fulfilled eventId=4051a5b5-7e1f-411b-85f4-16a6e8f4c9d1 orderId=06bd2c1e-acb1-47cb-a21f-1be6bcc52462 result=PROCESSED partition=0 offset=488"
+          ]
+        ]
+      },
+      {
+        "stream": {
+          "container_id": "b6f7f534b2e1510d4ae776910b97ba26a05b520820e748bf733928ad3cd7504b",
+          "correlationId": "885348eb-4d98-48aa-a199-1edbd87f99a4",
+          "deployment_environment": "local",
+          "detected_level": "INFO",
+          "experimentPhase": "BEFORE",
+          "flags": "1",
+          "host_arch": "amd64",
+          "host_name": "b6f7f534b2e1",
+          "incidentId": "16fa94d6-33eb-4c31-87c5-7bfaba365594",
+          "observed_timestamp": "1790078240041334870",
+          "os_description": "Linux 6.18.33.2-microsoft-standard-WSL2",
+          "os_type": "linux",
+          "process_command_args": "[\"/opt/java/openjdk/bin/java\",\"-jar\",\"/app/application.jar\"]",
+          "process_executable_path": "/opt/java/openjdk/bin/java",
+          "process_pid": "7",
+          "process_runtime_description": "Eclipse Adoptium OpenJDK 64-Bit Server VM 21.0.12+8-LTS",
+          "process_runtime_name": "OpenJDK Runtime Environment",
+          "process_runtime_version": "21.0.12+8-LTS",
+          "scope_name": "io.incidentlens.demoworker.OrderListener",
+          "service_instance_id": "7162ec0f-40f7-4bab-ba45-1508b277b5d3",
+          "service_name": "demo-worker",
+          "service_namespace": "incidentlens",
+          "service_version": "0.1.0",
+          "severity_number": "9",
+          "severity_text": "INFO",
+          "span_id": "e8f79df07aecdeba",
+          "telemetry_distro_name": "opentelemetry-java-instrumentation",
+          "telemetry_distro_version": "2.20.0",
+          "telemetry_sdk_language": "java",
+          "telemetry_sdk_name": "opentelemetry",
+          "telemetry_sdk_version": "1.54.0",
+          "trace_id": "1bc37c80146b0435d03d511dabf053db"
+        },
+        "values": [
+          [
+            "1790078240038734141",
+            "order_fulfilled eventId=e633d4bd-8a32-4153-8484-43d34abf86ef orderId=97619a44-6983-4e85-9f0f-cfe95ee34f4f result=PROCESSED partition=1 offset=496"
+          ]
+        ]
+      },
+      {
+        "stream": {
+          "container_id": "b6f7f534b2e1510d4ae776910b97ba26a05b520820e748bf733928ad3cd7504b",
+          "correlationId": "684b0769-5527-4612-9f90-1dfd5eaae17c",
+          "deployment_environment": "local",
+          "detected_level": "INFO",
+          "experimentPhase": "AFTER",
+          "flags": "1",
+          "host_arch": "amd64",
+          "host_name": "b6f7f534b2e1",
+          "incidentId": "16fa94d6-33eb-4c31-87c5-7bfaba365594",
+          "observed_timestamp": "1790078257985699598",
+          "os_description": "Linux 6.18.33.2-microsoft-standard-WSL2",
+          "os_type": "linux",
+          "process_command_args": "[\"/opt/java/openjdk/bin/java\",\"-jar\",\"/app/application.jar\"]",
+          "process_executable_path": "/opt/java/openjdk/bin/java",
+          "process_pid": "7",
+          "process_runtime_description": "Eclipse Adoptium OpenJDK 64-Bit Server VM 21.0.12+8-LTS",
+          "process_runtime_name": "OpenJDK Runtime Environment",
+          "process_runtime_version": "21.0.12+8-LTS",
+          "scope_name": "io.incidentlens.demoworker.OrderListener",
+          "service_instance_id": "7162ec0f-40f7-4bab-ba45-1508b277b5d3",
+          "service_name": "demo-worker",
+          "service_namespace": "incidentlens",
+          "service_version": "0.1.0",
+          "severity_number": "9",
+          "severity_text": "INFO",
+          "span_id": "adec194bb4aad2d9",
+          "telemetry_distro_name": "opentelemetry-java-instrumentation",
+          "telemetry_distro_version": "2.20.0",
+          "telemetry_sdk_language": "java",
+          "telemetry_sdk_name": "opentelemetry",
+          "telemetry_sdk_version": "1.54.0",
+          "trace_id": "6dc179d4a7562cce6711388208552dd8"
+        },
+        "values": [
+          [
+            "1790078257985595002",
+            "order_fulfilled eventId=157fa9aa-6221-4894-862b-8977ab3a76de orderId=b72f1e3a-5355-4582-b290-d857b4f02b79 result=PROCESSED partition=2 offset=502"
+          ]
+        ]
+      },
+      {
+        "stream": {
+          "container_id": "b6f7f534b2e1510d4ae776910b97ba26a05b520820e748bf733928ad3cd7504b",
+          "correlationId": "60fe00b5-2b28-4d6b-9097-578029cb4dfb",
+          "deployment_environment": "local",
+          "detected_level": "INFO",
+          "experimentPhase": "AFTER",
+          "flags": "1",
+          "host_arch": "amd64",
+          "host_name": "b6f7f534b2e1",
+          "incidentId": "16fa94d6-33eb-4c31-87c5-7bfaba365594",
+          "observed_timestamp": "1790078267983260678",
+          "os_description": "Linux 6.18.33.2-microsoft-standard-WSL2",
+          "os_type": "linux",
+          "process_command_args": "[\"/opt/java/openjdk/bin/java\",\"-jar\",\"/app/application.jar\"]",
+          "process_executable_path": "/opt/java/openjdk/bin/java",
+          "process_pid": "7",
+          "process_runtime_description": "Eclipse Adoptium OpenJDK 64-Bit Server VM 21.0.12+8-LTS",
+          "process_runtime_name": "OpenJDK Runtime Environment",
+          "process_runtime_version": "21.0.12+8-LTS",
+          "scope_name": "io.incidentlens.demoworker.OrderListener",
+          "service_instance_id": "7162ec0f-40f7-4bab-ba45-1508b277b5d3",
+          "service_name": "demo-worker",
+          "service_namespace": "incidentlens",
+          "service_version": "0.1.0",
+          "severity_number": "9",
+          "severity_text": "INFO",
+          "span_id": "8c829b6a4a4879df",
+          "telemetry_distro_name": "opentelemetry-java-instrumentation",
+          "telemetry_distro_version": "2.20.0",
+          "telemetry_sdk_language": "java",
+          "telemetry_sdk_name": "opentelemetry",
+          "telemetry_sdk_version": "1.54.0",
+          "trace_id": "eb1f6f9464504e65ca5bdb6d260dd110"
+        },
+        "values": [
+          [
+            "1790078267983176842",
+            "order_fulfilled eventId=56e2375c-2c1c-4d97-9da1-d41812973f74 orderId=659326f3-d7d7-4f2e-bd97-59175603f457 result=PROCESSED partition=2 offset=506"
+          ]
+        ]
+      },
+      {
+        "stream": {
+          "container_id": "b6f7f534b2e1510d4ae776910b97ba26a05b520820e748bf733928ad3cd7504b",
+          "correlationId": "5fc11048-6a01-46c6-a726-88bb801e1922",
+          "deployment_environment": "local",
+          "detected_level": "INFO",
+          "experimentPhase": "AFTER",
+          "flags": "1",
+          "host_arch": "amd64",
+          "host_name": "b6f7f534b2e1",
+          "incidentId": "16fa94d6-33eb-4c31-87c5-7bfaba365594",
+          "observed_timestamp": "1790078257277483873",
+          "os_description": "Linux 6.18.33.2-microsoft-standard-WSL2",
+          "os_type": "linux",
+          "process_command_args": "[\"/opt/java/openjdk/bin/java\",\"-jar\",\"/app/application.jar\"]",
+          "process_executable_path": "/opt/java/openjdk/bin/java",
+          "process_pid": "7",
+          "process_runtime_description": "Eclipse Adoptium OpenJDK 64-Bit Server VM 21.0.12+8-LTS",
+          "process_runtime_name": "OpenJDK Runtime Environment",
+          "process_runtime_version": "21.0.12+8-LTS",
+          "scope_name": "io.incidentlens.demoworker.OrderListener",
+          "service_instance_id": "7162ec0f-40f7-4bab-ba45-1508b277b5d3",
+          "service_name": "demo-worker",
+          "service_namespace": "incidentlens",
+          "service_version": "0.1.0",
+          "severity_number": "9",
+          "severity_text": "INFO",
+          "span_id": "fc4dba324eb544f5",
+          "telemetry_distro_name": "opentelemetry-java-instrumentation",
+          "telemetry_distro_version": "2.20.0",
+          "telemetry_sdk_language": "java",
+          "telemetry_sdk_name": "opentelemetry",
+          "telemetry_sdk_version": "1.54.0",
+          "trace_id": "c82a877a11b88b6678736d94e90ddf28"
+        },
+        "values": [
+          [
+            "1790078257277346078",
+            "order_fulfilled eventId=8e4276ca-41c0-4d8c-a91a-4b5c5d8488a1 orderId=0f190a2a-4b26-4be4-93dc-e8f8948e9e1c result=PROCESSED partition=2 offset=501"
+          ]
+        ]
+      },
+      {
+        "stream": {
+          "container_id": "b6f7f534b2e1510d4ae776910b97ba26a05b520820e748bf733928ad3cd7504b",
+          "correlationId": "5d047ab3-703a-44ff-8b12-2fd571649681",
+          "deployment_environment": "local",
+          "detected_level": "INFO",
+          "experimentPhase": "AFTER",
+          "flags": "1",
+          "host_arch": "amd64",
+          "host_name": "b6f7f534b2e1",
+          "incidentId": "16fa94d6-33eb-4c31-87c5-7bfaba365594",
+          "observed_timestamp": "1790078263410173421",
+          "os_description": "Linux 6.18.33.2-microsoft-standard-WSL2",
+          "os_type": "linux",
+          "process_command_args": "[\"/opt/java/openjdk/bin/java\",\"-jar\",\"/app/application.jar\"]",
+          "process_executable_path": "/opt/java/openjdk/bin/java",
+          "process_pid": "7",
+          "process_runtime_description": "Eclipse Adoptium OpenJDK 64-Bit Server VM 21.0.12+8-LTS",
+          "process_runtime_name": "OpenJDK Runtime Environment",
+          "process_runtime_version": "21.0.12+8-LTS",
+          "scope_name": "io.incidentlens.demoworker.OrderListener",
+          "service_instance_id": "7162ec0f-40f7-4bab-ba45-1508b277b5d3",
+          "service_name": "demo-worker",
+          "service_namespace": "incidentlens",
+          "service_version": "0.1.0",
+          "severity_number": "9",
+          "severity_text": "INFO",
+          "span_id": "9c7855aa39dceeb3",
+          "telemetry_distro_name": "opentelemetry-java-instrumentation",
+          "telemetry_distro_version": "2.20.0",
+          "telemetry_sdk_language": "java",
+          "telemetry_sdk_name": "opentelemetry",
+          "telemetry_sdk_version": "1.54.0",
+          "trace_id": "5a6c46f79c0db9b6858764e93a324d90"
+        },
+        "values": [
+          [
+            "1790078263410075709",
+            "order_fulfilled eventId=8c66ec11-b89e-4942-8ca1-8817adc65f62 orderId=acd5980a-823a-4293-b779-9519610ff6b5 result=PROCESSED partition=0 offset=493"
+          ]
+        ]
+      },
+      {
+        "stream": {
+          "container_id": "b6f7f534b2e1510d4ae776910b97ba26a05b520820e748bf733928ad3cd7504b",
+          "correlationId": "5a227522-c8d7-4da7-8815-cc3aa9cd4bb1",
+          "deployment_environment": "local",
+          "detected_level": "INFO",
+          "experimentPhase": "AFTER",
+          "flags": "1",
+          "host_arch": "amd64",
+          "host_name": "b6f7f534b2e1",
+          "incidentId": "16fa94d6-33eb-4c31-87c5-7bfaba365594",
+          "observed_timestamp": "1790078266244054377",
+          "os_description": "Linux 6.18.33.2-microsoft-standard-WSL2",
+          "os_type": "linux",
+          "process_command_args": "[\"/opt/java/openjdk/bin/java\",\"-jar\",\"/app/application.jar\"]",
+          "process_executable_path": "/opt/java/openjdk/bin/java",
+          "process_pid": "7",
+          "process_runtime_description": "Eclipse Adoptium OpenJDK 64-Bit Server VM 21.0.12+8-LTS",
+          "process_runtime_name": "OpenJDK Runtime Environment",
+          "process_runtime_version": "21.0.12+8-LTS",
+          "scope_name": "io.incidentlens.demoworker.OrderListener",
+          "service_instance_id": "7162ec0f-40f7-4bab-ba45-1508b277b5d3",
+          "service_name": "demo-worker",
+          "service_namespace": "incidentlens",
+          "service_version": "0.1.0",
+          "severity_number": "9",
+          "severity_text": "INFO",
+          "span_id": "2011d64dc36b430e",
+          "telemetry_distro_name": "opentelemetry-java-instrumentation",
+          "telemetry_distro_version": "2.20.0",
+          "telemetry_sdk_language": "java",
+          "telemetry_sdk_name": "opentelemetry",
+          "telemetry_sdk_version": "1.54.0",
+          "trace_id": "982877472c5f15f670f7fc0da84d21b0"
+        },
+        "values": [
+          [
+            "1790078266243942379",
+            "order_fulfilled eventId=bf5c8995-d56d-4bd8-9f57-3b5f93ef2523 orderId=9ea12bfa-c43b-4197-b298-c8c82903372a result=PROCESSED partition=1 offset=500"
+          ]
+        ]
+      },
+      {
+        "stream": {
+          "container_id": "b6f7f534b2e1510d4ae776910b97ba26a05b520820e748bf733928ad3cd7504b",
+          "correlationId": "57467e92-2f83-4e13-92a4-8cde2844b116",
+          "deployment_environment": "local",
+          "detected_level": "INFO",
+          "experimentPhase": "AFTER",
+          "flags": "1",
+          "host_arch": "amd64",
+          "host_name": "b6f7f534b2e1",
+          "incidentId": "16fa94d6-33eb-4c31-87c5-7bfaba365594",
+          "observed_timestamp": "1790078264316341587",
+          "os_description": "Linux 6.18.33.2-microsoft-standard-WSL2",
+          "os_type": "linux",
+          "process_command_args": "[\"/opt/java/openjdk/bin/java\",\"-jar\",\"/app/application.jar\"]",
+          "process_executable_path": "/opt/java/openjdk/bin/java",
+          "process_pid": "7",
+          "process_runtime_description": "Eclipse Adoptium OpenJDK 64-Bit Server VM 21.0.12+8-LTS",
+          "process_runtime_name": "OpenJDK Runtime Environment",
+          "process_runtime_version": "21.0.12+8-LTS",
+          "scope_name": "io.incidentlens.demoworker.OrderListener",
+          "service_instance_id": "7162ec0f-40f7-4bab-ba45-1508b277b5d3",
+          "service_name": "demo-worker",
+          "service_namespace": "incidentlens",
+          "service_version": "0.1.0",
+          "severity_number": "9",
+          "severity_text": "INFO",
+          "span_id": "9ec016887e0c4628",
+          "telemetry_distro_name": "opentelemetry-java-instrumentation",
+          "telemetry_distro_version": "2.20.0",
+          "telemetry_sdk_language": "java",
+          "telemetry_sdk_name": "opentelemetry",
+          "telemetry_sdk_version": "1.54.0",
+          "trace_id": "9ada9330e353e7c5e4980b74d186cc26"
+        },
+        "values": [
+          [
+            "1790078264316149764",
+            "order_fulfilled eventId=1ecfb55c-c78d-4ece-8f66-3581d487c122 orderId=015b0f1f-7de4-4064-b571-335978506676 result=PROCESSED partition=1 offset=499"
+          ]
+        ]
+      },
+      {
+        "stream": {
+          "container_id": "b6f7f534b2e1510d4ae776910b97ba26a05b520820e748bf733928ad3cd7504b",
+          "correlationId": "402d4fe2-35fc-4e12-bf35-35f058de9ae2",
+          "deployment_environment": "local",
+          "detected_level": "INFO",
+          "experimentPhase": "AFTER",
+          "flags": "1",
+          "host_arch": "amd64",
+          "host_name": "b6f7f534b2e1",
+          "incidentId": "16fa94d6-33eb-4c31-87c5-7bfaba365594",
+          "observed_timestamp": "1790078268707304391",
+          "os_description": "Linux 6.18.33.2-microsoft-standard-WSL2",
+          "os_type": "linux",
+          "process_command_args": "[\"/opt/java/openjdk/bin/java\",\"-jar\",\"/app/application.jar\"]",
+          "process_executable_path": "/opt/java/openjdk/bin/java",
+          "process_pid": "7",
+          "process_runtime_description": "Eclipse Adoptium OpenJDK 64-Bit Server VM 21.0.12+8-LTS",
+          "process_runtime_name": "OpenJDK Runtime Environment",
+          "process_runtime_version": "21.0.12+8-LTS",
+          "scope_name": "io.incidentlens.demoworker.OrderListener",
+          "service_instance_id": "7162ec0f-40f7-4bab-ba45-1508b277b5d3",
+          "service_name": "demo-worker",
+          "service_namespace": "incidentlens",
+          "service_version": "0.1.0",
+          "severity_number": "9",
+          "severity_text": "INFO",
+          "span_id": "eb4ce9733bf24552",
+          "telemetry_distro_name": "opentelemetry-java-instrumentation",
+          "telemetry_distro_version": "2.20.0",
+          "telemetry_sdk_language": "java",
+          "telemetry_sdk_name": "opentelemetry",
+          "telemetry_sdk_version": "1.54.0",
+          "trace_id": "ecd528e55dcd8b2176d34f199447d6a6"
+        },
+        "values": [
+          [
+            "1790078268707215143",
+            "order_fulfilled eventId=773206ce-6db5-4451-8912-e8bb4325e5b2 orderId=2c42522e-d1ce-40c0-87f7-7243ed5e76a6 result=PROCESSED partition=0 offset=495"
+          ]
+        ]
+      },
+      {
+        "stream": {
+          "container_id": "b6f7f534b2e1510d4ae776910b97ba26a05b520820e748bf733928ad3cd7504b",
+          "correlationId": "3d5c505c-d36e-4979-aa5b-50c676dbdf1b",
+          "deployment_environment": "local",
+          "detected_level": "INFO",
+          "experimentPhase": "AFTER",
+          "flags": "1",
+          "host_arch": "amd64",
+          "host_name": "b6f7f534b2e1",
+          "incidentId": "16fa94d6-33eb-4c31-87c5-7bfaba365594",
+          "observed_timestamp": "1790078261754102178",
+          "os_description": "Linux 6.18.33.2-microsoft-standard-WSL2",
+          "os_type": "linux",
+          "process_command_args": "[\"/opt/java/openjdk/bin/java\",\"-jar\",\"/app/application.jar\"]",
+          "process_executable_path": "/opt/java/openjdk/bin/java",
+          "process_pid": "7",
+          "process_runtime_description": "Eclipse Adoptium OpenJDK 64-Bit Server VM 21.0.12+8-LTS",
+          "process_runtime_name": "OpenJDK Runtime Environment",
+          "process_runtime_version": "21.0.12+8-LTS",
+          "scope_name": "io.incidentlens.demoworker.OrderListener",
+          "service_instance_id": "7162ec0f-40f7-4bab-ba45-1508b277b5d3",
+          "service_name": "demo-worker",
+          "service_namespace": "incidentlens",
+          "service_version": "0.1.0",
+          "severity_number": "9",
+          "severity_text": "INFO",
+          "span_id": "b6e351b4ba17c7c6",
+          "telemetry_distro_name": "opentelemetry-java-instrumentation",
+          "telemetry_distro_version": "2.20.0",
+          "telemetry_sdk_language": "java",
+          "telemetry_sdk_name": "opentelemetry",
+          "telemetry_sdk_version": "1.54.0",
+          "trace_id": "ec814865f148aa332d7c8751f0f693db"
+        },
+        "values": [
+          [
+            "1790078261753916785",
+            "order_fulfilled eventId=c688f8cc-4e89-4884-9a90-fd16a4f5b63a orderId=7870b89f-8a11-405a-85bb-1a81e9a491c0 result=PROCESSED partition=0 offset=492"
+          ]
+        ]
+      },
+      {
+        "stream": {
+          "container_id": "b6f7f534b2e1510d4ae776910b97ba26a05b520820e748bf733928ad3cd7504b",
+          "correlationId": "31120288-3cff-4c1a-884f-f305e5006adf",
+          "deployment_environment": "local",
+          "detected_level": "INFO",
+          "experimentPhase": "AFTER",
+          "flags": "1",
+          "host_arch": "amd64",
+          "host_name": "b6f7f534b2e1",
+          "incidentId": "16fa94d6-33eb-4c31-87c5-7bfaba365594",
+          "observed_timestamp": "1790078267383786709",
+          "os_description": "Linux 6.18.33.2-microsoft-standard-WSL2",
+          "os_type": "linux",
+          "process_command_args": "[\"/opt/java/openjdk/bin/java\",\"-jar\",\"/app/application.jar\"]",
+          "process_executable_path": "/opt/java/openjdk/bin/java",
+          "process_pid": "7",
+          "process_runtime_description": "Eclipse Adoptium OpenJDK 64-Bit Server VM 21.0.12+8-LTS",
+          "process_runtime_name": "OpenJDK Runtime Environment",
+          "process_runtime_version": "21.0.12+8-LTS",
+          "scope_name": "io.incidentlens.demoworker.OrderListener",
+          "service_instance_id": "7162ec0f-40f7-4bab-ba45-1508b277b5d3",
+          "service_name": "demo-worker",
+          "service_namespace": "incidentlens",
+          "service_version": "0.1.0",
+          "severity_number": "9",
+          "severity_text": "INFO",
+          "span_id": "f679ce8a6425c4c5",
+          "telemetry_distro_name": "opentelemetry-java-instrumentation",
+          "telemetry_distro_version": "2.20.0",
+          "telemetry_sdk_language": "java",
+          "telemetry_sdk_name": "opentelemetry",
+          "telemetry_sdk_version": "1.54.0",
+          "trace_id": "d13838a91be53ab3d61ca1bff563b65d"
+        },
+        "values": [
+          [
+            "1790078267383642490",
+            "order_fulfilled eventId=a32d3073-4b31-4d0a-9351-55d5e496ac14 orderId=e009e73f-5099-4d77-994e-e2b2616fd5fe result=PROCESSED partition=2 offset=505"
+          ]
+        ]
+      },
+      {
+        "stream": {
+          "container_id": "b6f7f534b2e1510d4ae776910b97ba26a05b520820e748bf733928ad3cd7504b",
+          "correlationId": "245ce545-e355-4fbf-9776-ab943eb5ebca",
+          "deployment_environment": "local",
+          "detected_level": "INFO",
+          "experimentPhase": "AFTER",
+          "flags": "1",
+          "host_arch": "amd64",
+          "host_name": "b6f7f534b2e1",
+          "incidentId": "16fa94d6-33eb-4c31-87c5-7bfaba365594",
+          "observed_timestamp": "1790078258719390222",
+          "os_description": "Linux 6.18.33.2-microsoft-standard-WSL2",
+          "os_type": "linux",
+          "process_command_args": "[\"/opt/java/openjdk/bin/java\",\"-jar\",\"/app/application.jar\"]",
+          "process_executable_path": "/opt/java/openjdk/bin/java",
+          "process_pid": "7",
+          "process_runtime_description": "Eclipse Adoptium OpenJDK 64-Bit Server VM 21.0.12+8-LTS",
+          "process_runtime_name": "OpenJDK Runtime Environment",
+          "process_runtime_version": "21.0.12+8-LTS",
+          "scope_name": "io.incidentlens.demoworker.OrderListener",
+          "service_instance_id": "7162ec0f-40f7-4bab-ba45-1508b277b5d3",
+          "service_name": "demo-worker",
+          "service_namespace": "incidentlens",
+          "service_version": "0.1.0",
+          "severity_number": "9",
+          "severity_text": "INFO",
+          "span_id": "e92b95852f94b396",
+          "telemetry_distro_name": "opentelemetry-java-instrumentation",
+          "telemetry_distro_version": "2.20.0",
+          "telemetry_sdk_language": "java",
+          "telemetry_sdk_name": "opentelemetry",
+          "telemetry_sdk_version": "1.54.0",
+          "trace_id": "31f0319d92a3de6f3ebd63b51d60b454"
+        },
+        "values": [
+          [
+            "1790078258719226828",
+            "order_fulfilled eventId=27c7c67c-34f2-4849-b1fc-9ce66a86b3c8 orderId=83ce6c17-566b-478b-b814-77e100b3caac result=PROCESSED partition=0 offset=489"
+          ]
+        ]
+      },
+      {
+        "stream": {
+          "container_id": "b6f7f534b2e1510d4ae776910b97ba26a05b520820e748bf733928ad3cd7504b",
+          "correlationId": "18f43170-d424-410b-acb1-834eeabd7abd",
+          "deployment_environment": "local",
+          "detected_level": "INFO",
+          "experimentPhase": "BEFORE",
+          "flags": "1",
+          "host_arch": "amd64",
+          "host_name": "b6f7f534b2e1",
+          "incidentId": "16fa94d6-33eb-4c31-87c5-7bfaba365594",
+          "observed_timestamp": "1790078240166399070",
+          "os_description": "Linux 6.18.33.2-microsoft-standard-WSL2",
+          "os_type": "linux",
+          "process_command_args": "[\"/opt/java/openjdk/bin/java\",\"-jar\",\"/app/application.jar\"]",
+          "process_executable_path": "/opt/java/openjdk/bin/java",
+          "process_pid": "7",
+          "process_runtime_description": "Eclipse Adoptium OpenJDK 64-Bit Server VM 21.0.12+8-LTS",
+          "process_runtime_name": "OpenJDK Runtime Environment",
+          "process_runtime_version": "21.0.12+8-LTS",
+          "scope_name": "io.incidentlens.demoworker.OrderListener",
+          "service_instance_id": "7162ec0f-40f7-4bab-ba45-1508b277b5d3",
+          "service_name": "demo-worker",
+          "service_namespace": "incidentlens",
+          "service_version": "0.1.0",
+          "severity_number": "9",
+          "severity_text": "INFO",
+          "span_id": "f963050ca672e947",
+          "telemetry_distro_name": "opentelemetry-java-instrumentation",
+          "telemetry_distro_version": "2.20.0",
+          "telemetry_sdk_language": "java",
+          "telemetry_sdk_name": "opentelemetry",
+          "telemetry_sdk_version": "1.54.0",
+          "trace_id": "ab4d616af084ff5ead8bdf238d3e4e26"
+        },
+        "values": [
+          [
+            "1790078240166294965",
+            "order_fulfilled eventId=7ea51b02-3416-4c54-bd1e-ef8ee8a39d6b orderId=fb10c080-ffe2-4d00-9e73-558e8f15ff98 result=PROCESSED partition=0 offset=486"
+          ]
+        ]
+      },
+      {
+        "stream": {
+          "container_id": "b6f7f534b2e1510d4ae776910b97ba26a05b520820e748bf733928ad3cd7504b",
+          "correlationId": "099221c0-c8c3-4535-8a00-625cae05a8ea",
+          "deployment_environment": "local",
+          "detected_level": "INFO",
+          "experimentPhase": "AFTER",
+          "flags": "1",
+          "host_arch": "amd64",
+          "host_name": "b6f7f534b2e1",
+          "incidentId": "16fa94d6-33eb-4c31-87c5-7bfaba365594",
+          "observed_timestamp": "1790078259552766116",
+          "os_description": "Linux 6.18.33.2-microsoft-standard-WSL2",
+          "os_type": "linux",
+          "process_command_args": "[\"/opt/java/openjdk/bin/java\",\"-jar\",\"/app/application.jar\"]",
+          "process_executable_path": "/opt/java/openjdk/bin/java",
+          "process_pid": "7",
+          "process_runtime_description": "Eclipse Adoptium OpenJDK 64-Bit Server VM 21.0.12+8-LTS",
+          "process_runtime_name": "OpenJDK Runtime Environment",
+          "process_runtime_version": "21.0.12+8-LTS",
+          "scope_name": "io.incidentlens.demoworker.OrderListener",
+          "service_instance_id": "7162ec0f-40f7-4bab-ba45-1508b277b5d3",
+          "service_name": "demo-worker",
+          "service_namespace": "incidentlens",
+          "service_version": "0.1.0",
+          "severity_number": "9",
+          "severity_text": "INFO",
+          "span_id": "39350acbb16e988b",
+          "telemetry_distro_name": "opentelemetry-java-instrumentation",
+          "telemetry_distro_version": "2.20.0",
+          "telemetry_sdk_language": "java",
+          "telemetry_sdk_name": "opentelemetry",
+          "telemetry_sdk_version": "1.54.0",
+          "trace_id": "b6f002630c4845ba5f130a431633a276"
+        },
+        "values": [
+          [
+            "1790078259552637921",
+            "order_fulfilled eventId=a0572894-5d76-4b2a-aeb4-2853984a0bc5 orderId=66336863-d75f-47ba-a452-df9dc9fe175f result=PROCESSED partition=0 offset=490"
+          ]
+        ]
+      },
+      {
+        "stream": {
+          "container_id": "b6f7f534b2e1510d4ae776910b97ba26a05b520820e748bf733928ad3cd7504b",
+          "correlationId": "01d1279f-c162-4ef1-b538-039e6a41a521",
+          "deployment_environment": "local",
+          "detected_level": "INFO",
+          "experimentPhase": "AFTER",
+          "flags": "1",
+          "host_arch": "amd64",
+          "host_name": "b6f7f534b2e1",
+          "incidentId": "16fa94d6-33eb-4c31-87c5-7bfaba365594",
+          "observed_timestamp": "1790078264877662862",
+          "os_description": "Linux 6.18.33.2-microsoft-standard-WSL2",
+          "os_type": "linux",
+          "process_command_args": "[\"/opt/java/openjdk/bin/java\",\"-jar\",\"/app/application.jar\"]",
+          "process_executable_path": "/opt/java/openjdk/bin/java",
+          "process_pid": "7",
+          "process_runtime_description": "Eclipse Adoptium OpenJDK 64-Bit Server VM 21.0.12+8-LTS",
+          "process_runtime_name": "OpenJDK Runtime Environment",
+          "process_runtime_version": "21.0.12+8-LTS",
+          "scope_name": "io.incidentlens.demoworker.OrderListener",
+          "service_instance_id": "7162ec0f-40f7-4bab-ba45-1508b277b5d3",
+          "service_name": "demo-worker",
+          "service_namespace": "incidentlens",
+          "service_version": "0.1.0",
+          "severity_number": "9",
+          "severity_text": "INFO",
+          "span_id": "7efa27fb1b314f31",
+          "telemetry_distro_name": "opentelemetry-java-instrumentation",
+          "telemetry_distro_version": "2.20.0",
+          "telemetry_sdk_language": "java",
+          "telemetry_sdk_name": "opentelemetry",
+          "telemetry_sdk_version": "1.54.0",
+          "trace_id": "c8bfe757cfc6c13e7831b4905693219f"
+        },
+        "values": [
+          [
+            "1790078264877523245",
+            "order_fulfilled eventId=fb13b21c-d8fa-4148-9331-3662c43b2360 orderId=1911b475-59c9-4f9a-89fb-34a17da2db18 result=PROCESSED partition=0 offset=494"
+          ]
+        ]
+      }
+    ],
+    "stats": {
+      "summary": {
+        "bytesProcessedPerSecond": 1742888,
+        "linesProcessedPerSecond": 5813,
+        "totalBytesProcessed": 14689,
+        "totalLinesProcessed": 49,
+        "execTime": 0.008428,
+        "queueTime": 0.000279,
+        "subqueries": 0,
+        "totalEntriesReturned": 22,
+        "splits": 2,
+        "shards": 2,
+        "totalPostFilterLines": 22,
+        "totalStructuredMetadataBytesProcessed": 9752
+      },
+      "querier": {
+        "store": {
+          "totalChunksRef": 0,
+          "totalChunksDownloaded": 0,
+          "chunksDownloadTime": 0,
+          "queryReferencedStructuredMetadata": false,
+          "chunk": {
+            "headChunkBytes": 0,
+            "headChunkLines": 0,
+            "decompressedBytes": 0,
+            "decompressedLines": 0,
+            "compressedBytes": 0,
+            "totalDuplicates": 0,
+            "postFilterLines": 0,
+            "headChunkStructuredMetadataBytes": 0,
+            "decompressedStructuredMetadataBytes": 0
+          },
+          "chunkRefsFetchTime": 0,
+          "congestionControlLatency": 0,
+          "pipelineWrapperFilteredLines": 0
+        }
+      },
+      "ingester": {
+        "totalReached": 2,
+        "totalChunksMatched": 1,
+        "totalBatches": 3,
+        "totalLinesSent": 22,
+        "store": {
+          "totalChunksRef": 0,
+          "totalChunksDownloaded": 0,
+          "chunksDownloadTime": 0,
+          "queryReferencedStructuredMetadata": false,
+          "chunk": {
+            "headChunkBytes": 14689,
+            "headChunkLines": 49,
+            "decompressedBytes": 0,
+            "decompressedLines": 0,
+            "compressedBytes": 0,
+            "totalDuplicates": 0,
+            "postFilterLines": 22,
+            "headChunkStructuredMetadataBytes": 9752,
+            "decompressedStructuredMetadataBytes": 0
+          },
+          "chunkRefsFetchTime": 301641,
+          "congestionControlLatency": 0,
+          "pipelineWrapperFilteredLines": 0
+        }
+      },
+      "cache": {
+        "chunk": {
+          "entriesFound": 0,
+          "entriesRequested": 0,
+          "entriesStored": 0,
+          "bytesReceived": 0,
+          "bytesSent": 0,
+          "requests": 0,
+          "downloadTime": 0,
+          "queryLengthServed": 0
+        },
+        "index": {
+          "entriesFound": 0,
+          "entriesRequested": 0,
+          "entriesStored": 0,
+          "bytesReceived": 0,
+          "bytesSent": 0,
+          "requests": 0,
+          "downloadTime": 0,
+          "queryLengthServed": 0
+        },
+        "result": {
+          "entriesFound": 0,
+          "entriesRequested": 0,
+          "entriesStored": 0,
+          "bytesReceived": 0,
+          "bytesSent": 0,
+          "requests": 0,
+          "downloadTime": 0,
+          "queryLengthServed": 0
+        },
+        "statsResult": {
+          "entriesFound": 0,
+          "entriesRequested": 0,
+          "entriesStored": 0,
+          "bytesReceived": 0,
+          "bytesSent": 0,
+          "requests": 0,
+          "downloadTime": 0,
+          "queryLengthServed": 0
+        },
+        "volumeResult": {
+          "entriesFound": 0,
+          "entriesRequested": 0,
+          "entriesStored": 0,
+          "bytesReceived": 0,
+          "bytesSent": 0,
+          "requests": 0,
+          "downloadTime": 0,
+          "queryLengthServed": 0
+        },
+        "seriesResult": {
+          "entriesFound": 0,
+          "entriesRequested": 0,
+          "entriesStored": 0,
+          "bytesReceived": 0,
+          "bytesSent": 0,
+          "requests": 0,
+          "downloadTime": 0,
+          "queryLengthServed": 0
+        },
+        "labelResult": {
+          "entriesFound": 0,
+          "entriesRequested": 0,
+          "entriesStored": 0,
+          "bytesReceived": 0,
+          "bytesSent": 0,
+          "requests": 0,
+          "downloadTime": 0,
+          "queryLengthServed": 0
+        },
+        "instantMetricResult": {
+          "entriesFound": 0,
+          "entriesRequested": 0,
+          "entriesStored": 0,
+          "bytesReceived": 0,
+          "bytesSent": 0,
+          "requests": 0,
+          "downloadTime": 0,
+          "queryLengthServed": 0
+        }
+      },
+      "index": {
+        "totalChunks": 0,
+        "postFilterChunks": 0,
+        "shardsDuration": 0,
+        "usedBloomFilters": false
+      }
+    }
+  }
+}

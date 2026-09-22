@@ -1,0 +1,62 @@
+{
+  "capturedAt": "2026-09-22T12:06:54.594Z",
+  "source": "http://localhost:13000",
+  "sessionId": "2962e2d9-30f5-4520-820d-61a4c0fb3afb",
+  "experimentId": "b8c8deb0-a1c7-4ec3-b5e9-8a43c76d6eea",
+  "scenario": "DOWNSTREAM_LATENCY",
+  "workload": {
+    "vus": 5,
+    "durationSeconds": 20
+  },
+  "before": {
+    "requestCount": 122,
+    "errorCount": 0,
+    "durationSeconds": 21.366306114,
+    "throughput": 5.709924745487993,
+    "successRate": 1,
+    "p50Ms": 1093.0171075,
+    "p95Ms": 1215.3038515,
+    "p99Ms": 1255.6017254600001,
+    "cacheHitRate": 0.9836065573770492,
+    "dbQueryP95Ms": 3.052317,
+    "kafkaLag": 1
+  },
+  "after": {
+    "requestCount": 334,
+    "errorCount": 0,
+    "durationSeconds": 20.339765844000002,
+    "throughput": 16.421034664886577,
+    "successRate": 1,
+    "p50Ms": 73.0367475,
+    "p95Ms": 870.7366884,
+    "p99Ms": 1046.37043733,
+    "cacheHitRate": 0.9940119760479041,
+    "dbQueryP95Ms": 1.70286,
+    "kafkaLag": 1
+  },
+  "evidenceCount": 90,
+  "reportProvider": "rule-based",
+  "citedEvidenceIds": [
+    "ae0cee72-0390-493a-9304-8da7d04d256c",
+    "e13d0a92-5dbd-40da-8f69-26d785436339",
+    "6eed26f1-7758-4120-8fc9-f0985c69d965",
+    "52ea448e-94a3-4be2-8b8f-a00a11675b99",
+    "651eda20-2a44-461d-99c8-9c8b56c73781",
+    "16600772-37e6-4a20-a822-5e0a168f7423",
+    "7d77c135-17fe-4187-bd56-3d9a052fe554"
+  ],
+  "screenshots": [
+    "screenshots/overview-live.png",
+    "screenshots/evidence-live.png",
+    "screenshots/rca-live.png",
+    "screenshots/comparison-live.png"
+  ],
+  "browserErrors": [],
+  "apiMutations": [],
+  "mobileDocumentOverflow": false,
+  "mobileCheckedViews": [
+    "overview",
+    "comparison"
+  ],
+  "note": "Real local API observations; no route mocks or synthetic benchmark values. Overview is aggregate telemetry at capture time; comparison belongs to the identified completed session."
+}

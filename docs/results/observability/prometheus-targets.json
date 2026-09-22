@@ -1,0 +1,80 @@
+{
+  "status": "success",
+  "data": {
+    "activeTargets": [
+      {
+        "discoveredLabels": {
+          "__address__": "demo-api:8081",
+          "__metrics_path__": "/actuator/prometheus",
+          "__scheme__": "http",
+          "__scrape_interval__": "5s",
+          "__scrape_timeout__": "5s",
+          "job": "incidentlens"
+        },
+        "labels": {
+          "instance": "demo-api:8081",
+          "job": "incidentlens"
+        },
+        "scrapePool": "incidentlens",
+        "scrapeUrl": "http://demo-api:8081/actuator/prometheus",
+        "globalUrl": "http://demo-api:8081/actuator/prometheus",
+        "lastError": "",
+        "lastScrape": "2026-09-22T12:06:09.210755019Z",
+        "lastScrapeDuration": 0.010207333,
+        "health": "up",
+        "scrapeInterval": "5s",
+        "scrapeTimeout": "5s"
+      },
+      {
+        "discoveredLabels": {
+          "__address__": "demo-worker:8082",
+          "__metrics_path__": "/actuator/prometheus",
+          "__scheme__": "http",
+          "__scrape_interval__": "5s",
+          "__scrape_timeout__": "5s",
+          "job": "incidentlens"
+        },
+        "labels": {
+          "instance": "demo-worker:8082",
+          "job": "incidentlens"
+        },
+        "scrapePool": "incidentlens",
+        "scrapeUrl": "http://demo-worker:8082/actuator/prometheus",
+        "globalUrl": "http://demo-worker:8082/actuator/prometheus",
+        "lastError": "",
+        "lastScrape": "2026-09-22T12:06:05.639689105Z",
+        "lastScrapeDuration": 0.007016104,
+        "health": "up",
+        "scrapeInterval": "5s",
+        "scrapeTimeout": "5s"
+      },
+      {
+        "discoveredLabels": {
+          "__address__": "control-plane:8080",
+          "__metrics_path__": "/actuator/prometheus",
+          "__scheme__": "http",
+          "__scrape_interval__": "5s",
+          "__scrape_timeout__": "5s",
+          "job": "incidentlens"
+        },
+        "labels": {
+          "instance": "control-plane:8080",
+          "job": "incidentlens"
+        },
+        "scrapePool": "incidentlens",
+        "scrapeUrl": "http://control-plane:8080/actuator/prometheus",
+        "globalUrl": "http://control-plane:8080/actuator/prometheus",
+        "lastError": "",
+        "lastScrape": "2026-09-22T12:06:06.243457364Z",
+        "lastScrapeDuration": 0.007895393,
+        "health": "up",
+        "scrapeInterval": "5s",
+        "scrapeTimeout": "5s"
+      }
+    ],
+    "droppedTargets": [],
+    "droppedTargetCounts": {
+      "incidentlens": 0
+    }
+  }
+}

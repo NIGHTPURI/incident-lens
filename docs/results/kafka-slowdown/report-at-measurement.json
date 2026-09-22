@@ -1,0 +1,24 @@
+{
+  "summary": "Observed symptoms support 2 candidate explanation(s).",
+  "suspectedRootCause": "A slow synchronous dependency or injected downstream delay is consistent with the request latency. The worker recorded an injected processing delay; this can reduce consumption throughput.",
+  "confidence": 0.65,
+  "evidenceIds": [
+    "af33a22c-3cb3-477f-a1c9-998ee14e6db3",
+    "75251f8c-cbd3-49f1-a671-eb4eee46d79f",
+    "ad579316-882f-43d5-a429-c65f7f696bb6",
+    "dfdf3966-96a5-41a7-8df1-9c532451ba83",
+    "2a057d38-bc2a-4690-a6c9-f0933eb61d3f",
+    "cc038fa9-1eb6-4575-80f5-fcb1136213df"
+  ],
+  "impact": "Observed counts and latency are listed in the cited evidence; user impact beyond this local workload is unknown.",
+  "recommendedActions": [
+    "Inspect the cited trace spans, restore the downstream path, and repeat the same workload."
+  ],
+  "uncertainties": [
+    "Rules identify correlated symptoms, not proven causation; confidence is a heuristic, not a calibrated probability.",
+    "Kafka lag and outbox backlog are shared gauges; unrelated traffic can affect them.",
+    "Compare BEFORE and AFTER under the same load; a single sample cannot establish a performance improvement."
+  ],
+  "provider": "rule-based",
+  "generatedAt": "2026-09-22T11:44:09.490300115Z"
+}

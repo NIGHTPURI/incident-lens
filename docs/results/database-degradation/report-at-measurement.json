@@ -1,0 +1,28 @@
+{
+  "summary": "Observed symptoms support 4 candidate explanation(s).",
+  "suspectedRootCause": "Low cache reuse may be increasing database work; cold start and disabled cache are competing explanations. Database lookup work is slow; repeated lookups or an inefficient query plan are plausible. A slow synchronous dependency or injected downstream delay is consistent with the request latency. The catalog recorded execution of the intentionally inefficient query path; repeated SQL work is a supported candidate cause.",
+  "confidence": 0.65,
+  "evidenceIds": [
+    "5dc147a6-4fa1-4781-8642-e65dbc09f72c",
+    "868fe3f4-f707-480d-9f0d-e35d62b961fb",
+    "67d0979b-861f-43bc-b18a-dd0a91ac82e0",
+    "26a1e0b7-c6d1-4d3b-9297-11af83d8cfee",
+    "09bc3dbe-312b-4fd3-ba08-e3b01d3b0486",
+    "cc8625a4-022d-483c-bcf1-95ba64b6f71e",
+    "392f1678-a9fd-4f2c-95fa-d1ac3de0ffbb",
+    "5937078f-eb50-40f9-864f-d7d2854e6145"
+  ],
+  "impact": "Observed counts and latency are listed in the cited evidence; user impact beyond this local workload is unknown.",
+  "recommendedActions": [
+    "Inspect cache misses and database query counts; restore caching and compare an identical workload after warm-up.",
+    "Compare indexed/batched queries with the degraded query path; inspect EXPLAIN and pool saturation.",
+    "Inspect the cited trace spans, restore the downstream path, and repeat the same workload."
+  ],
+  "uncertainties": [
+    "Rules identify correlated symptoms, not proven causation; confidence is a heuristic, not a calibrated probability.",
+    "Kafka lag and outbox backlog are shared gauges; unrelated traffic can affect them.",
+    "Compare BEFORE and AFTER under the same load; a single sample cannot establish a performance improvement."
+  ],
+  "provider": "rule-based",
+  "generatedAt": "2026-09-22T11:37:01.434315224Z"
+}

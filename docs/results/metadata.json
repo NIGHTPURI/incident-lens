@@ -1,0 +1,48 @@
+{
+  "measuredAt": "2026-09-22",
+  "environment": {
+    "os": "Windows 11 + Docker Desktop through WSL2",
+    "dockerDesktop": "4.85.0",
+    "dockerEngine": "29.6.2",
+    "dockerCpuCount": 8,
+    "dockerMemoryBytes": 8281260032,
+    "cpu": "Intel Core i7-9700K @ 3.60GHz",
+    "wslKernel": "6.18.33.2-microsoft-standard-WSL2",
+    "mysqlImage": "mysql:8.4.6",
+    "redisImage": "redis:7.4.5-alpine",
+    "kafkaImage": "apache/kafka:3.9.1",
+    "k6Image": "grafana/k6:1.2.3"
+  },
+  "protocol": {
+    "observabilityProfile": false,
+    "otelAgentEnabled": false,
+    "warmup": "Standalone 5 VUs / 10 seconds after cold smoke: 162 requests, 0 errors; p95=845.246ms. Warm-up results excluded from experiments.",
+    "workload": "Each VU iterates catalog GET then unique-idempotency-key order POST; 50 ms think time, 8 s request timeout, 10 s graceful completion.",
+    "normal": {
+      "vus": 5,
+      "durationSeconds": 20,
+      "recoverySeconds": 5
+    },
+    "kafka": {
+      "vus": 10,
+      "durationSeconds": 20,
+      "recoverySeconds": 20,
+      "delayMs": 2000
+    },
+    "latencyDelayMs": 1200,
+    "phases": "BEFORE degraded; AFTER restored; workload configuration identical within each experiment.",
+    "durability": "MySQL defaults retained; named persistent Docker volume; no fsync relaxation.",
+    "concurrency": "Benchmarks run sequentially after integration suites stopped. Background outbox delivery persists across scenarios; zero-backlog gate before Kafka.",
+    "runnerPreflight": "The measurements predate the automated three-sample idle guard. Kafka used an explicit zero-outbox/zero-lag gate with its drain samples retained; other scenarios were sequential without this gate. Subsequent comparison runners enforce three idle observations before activation."
+  },
+  "limitations": [
+    "One run per scenario; no statistical significance or production capacity claim.",
+    "Closed-loop constant-VU traffic reduces offered load when requests slow. Actual counts differ between phases.",
+    "Mixed percentiles combine two routes; the order route dominates the mixed p95 on this host; commit/disk overhead is a candidate cause that was not isolated by profiling. Separate route diagnostics are provided.",
+    "Database degradation bypasses cache and executes 51 SQL operations per logical catalog lookup; restored mode enables cache and batched SQL. This comparison does not isolate the independent effects.",
+    "DB lookup count counts logical loads, not individual SQL statements; DB p95 measures whole logical lookup.",
+    "Global outbox/consumer-lag gauges can include prior sessions; phase-scoped worker counts represent completed processing at snapshot time and may be incomplete while outbox drains.",
+    "Redis/catalog database work is cheap on the 50-row catalog page from 10,000 seeded products; less database work need not increase end-to-end throughput.",
+    "Trace identifiers from core-profile measurement exports are correlation references; Tempo export is disabled for these measurements. Instrumented trace proof is a separate validation run."
+  ]
+}
