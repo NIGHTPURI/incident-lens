@@ -1,0 +1,13 @@
+.git
+.agents
+.codex
+.env
+.gradle
+.local
+**/build
+**/src/test
+**/src/integrationTest
+**/node_modules
+**/dist
+artifacts
+*.log

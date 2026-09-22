@@ -1,0 +1,30 @@
+# syntax=docker/dockerfile:1
+FROM eclipse-temurin:21-jdk-jammy AS build
+WORKDIR /workspace
+COPY gradlew build.gradle settings.gradle gradle.properties ./
+COPY gradle ./gradle
+COPY libs ./libs
+COPY apps/control-plane ./apps/control-plane
+COPY apps/demo-api ./apps/demo-api
+COPY apps/demo-worker ./apps/demo-worker
+ARG APP
+# The shared cache lock also prevents three Gradle JVMs competing on a laptop.
+RUN --mount=type=cache,target=/root/.gradle,sharing=locked \
+    chmod +x gradlew && ./gradlew :apps:${APP}:bootJar --no-daemon
+
+FROM eclipse-temurin:21-jre-jammy AS runtime
+RUN apt-get update && apt-get install -y --no-install-recommends curl ca-certificates \
+    && rm -rf /var/lib/apt/lists/* \
+    && groupadd --system incidentlens && useradd --system --gid incidentlens incidentlens
+ARG OTEL_VERSION=2.20.0
+ARG OTEL_SHA256=191666bf4346ab0677f92304bb272cd85f5954f49c03bb9636134e59c9a3276d
+RUN curl --fail --location --retry 3 \
+    https://github.com/open-telemetry/opentelemetry-java-instrumentation/releases/download/v${OTEL_VERSION}/opentelemetry-javaagent.jar \
+    --output /opt/opentelemetry-javaagent.jar \
+    && echo "${OTEL_SHA256}  /opt/opentelemetry-javaagent.jar" | sha256sum --check -
+WORKDIR /app
+ARG APP
+COPY --from=build --chown=incidentlens:incidentlens /workspace/apps/${APP}/build/libs/*.jar /app/application.jar
+USER incidentlens
+ENV JAVA_TOOL_OPTIONS="-javaagent:/opt/opentelemetry-javaagent.jar -XX:MaxRAMPercentage=65 -XX:+ExitOnOutOfMemoryError"
+ENTRYPOINT ["java", "-jar", "/app/application.jar"]

@@ -1,0 +1,223 @@
+name: incidentlens
+
+x-app-environment: &app-environment
+  DB_USER: ${DB_USER:-incidentlens}
+  DB_PASSWORD: ${DB_PASSWORD:-incidentlens-local}
+  REDIS_HOST: redis
+  KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+  OTEL_SDK_DISABLED: ${OTEL_SDK_DISABLED:-true}
+  OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4318
+  OTEL_EXPORTER_OTLP_PROTOCOL: http/protobuf
+  OTEL_METRICS_EXPORTER: none
+  OTEL_LOGS_EXPORTER: otlp
+  OTEL_TRACES_EXPORTER: otlp
+  OTEL_INSTRUMENTATION_LOGBACK_APPENDER_EXPERIMENTAL_CAPTURE_MDC_ATTRIBUTES: correlationId,incidentId,experimentPhase
+  OTEL_INSTRUMENTATION_LOGBACK_APPENDER_EXPERIMENTAL_CAPTURE_KEY_VALUE_PAIR_ATTRIBUTES: 'true'
+  OTEL_RESOURCE_ATTRIBUTES: deployment.environment=local,service.namespace=incidentlens
+  OTEL_TRACES_SAMPLER: parentbased_always_on
+
+x-app: &app
+  init: true
+  mem_limit: 640m
+  restart: unless-stopped
+  depends_on:
+    mysql: {condition: service_healthy}
+    redis: {condition: service_healthy}
+    kafka: {condition: service_healthy}
+  healthcheck:
+    test: [CMD-SHELL, 'curl --fail --silent http://localhost:$${SERVER_PORT}/actuator/health/readiness >/dev/null']
+    interval: 10s
+    timeout: 5s
+    start_period: 90s
+    retries: 30
+
+services:
+  mysql:
+    image: mysql:8.4.6
+    mem_limit: 768m
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-incidentlens-root-local}
+      MYSQL_DATABASE: control_plane
+      MYSQL_USER: ${DB_USER:-incidentlens}
+      MYSQL_PASSWORD: ${DB_PASSWORD:-incidentlens-local}
+    command: [--innodb-buffer-pool-size=256M, --max-connections=100]
+    volumes:
+      - mysql-data:/var/lib/mysql
+      - ./infra/mysql/01-databases.sh:/docker-entrypoint-initdb.d/01-databases.sh:ro
+    healthcheck:
+      test: [CMD-SHELL, 'MYSQL_PWD="$${MYSQL_PASSWORD}" mysql -u"$${MYSQL_USER}" -e "SELECT 1" demo_worker >/dev/null 2>&1']
+      interval: 5s
+      timeout: 5s
+      start_period: 60s
+      retries: 72
+
+  redis:
+    image: redis:7.4.5-alpine
+    mem_limit: 128m
+    command: [redis-server, --maxmemory, 96mb, --maxmemory-policy, allkeys-lru]
+    healthcheck:
+      test: [CMD, redis-cli, ping]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  kafka:
+    image: apache/kafka:3.9.1
+    mem_limit: 896m
+    environment:
+      KAFKA_NODE_ID: 1
+      KAFKA_PROCESS_ROLES: broker,controller
+      KAFKA_LISTENERS: PLAINTEXT://:9092,CONTROLLER://:9093
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@kafka:9093
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: 'false'
+      KAFKA_LOG_DIRS: /var/lib/kafka/data
+      KAFKA_HEAP_OPTS: -Xms256m -Xmx512m
+      CLUSTER_ID: MkU3OEVBNTcwNTJENDM2Qk
+    volumes: [kafka-data:/var/lib/kafka/data]
+    healthcheck:
+      test: [CMD-SHELL, '/opt/kafka/bin/kafka-topics.sh --bootstrap-server localhost:9092 --list >/dev/null 2>&1']
+      interval: 10s
+      timeout: 10s
+      start_period: 40s
+      retries: 20
+
+  control-plane:
+    <<: *app
+    build: {context: ., dockerfile: infra/Dockerfile.backend, args: {APP: control-plane}}
+    environment:
+      <<: *app-environment
+      SERVER_PORT: 8080
+      DB_URL: jdbc:mysql://mysql:3306/control_plane?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+      DEMO_API_URL: http://demo-api:8081
+      DEMO_WORKER_URL: http://demo-worker:8082
+      RCA_BASE_URL: ${RCA_BASE_URL:-https://api.openai.com/v1}
+      RCA_API_KEY: ${RCA_API_KEY:-}
+      RCA_MODEL: ${RCA_MODEL:-}
+      OTEL_SERVICE_NAME: control-plane
+    ports: [127.0.0.1:8080:8080]
+
+  demo-api:
+    <<: *app
+    build: {context: ., dockerfile: infra/Dockerfile.backend, args: {APP: demo-api}}
+    environment:
+      <<: *app-environment
+      SERVER_PORT: 8081
+      DB_URL: jdbc:mysql://mysql:3306/demo_api?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+      OTEL_SERVICE_NAME: demo-api
+    ports: [127.0.0.1:8081:8081]
+
+  demo-worker:
+    <<: *app
+    build: {context: ., dockerfile: infra/Dockerfile.backend, args: {APP: demo-worker}}
+    environment:
+      <<: *app-environment
+      SERVER_PORT: 8082
+      DB_URL: jdbc:mysql://mysql:3306/demo_worker?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+      OTEL_SERVICE_NAME: demo-worker
+    ports: [127.0.0.1:8082:8082]
+
+  web:
+    build: {context: apps/web, dockerfile: Dockerfile}
+    mem_limit: 128m
+    ports: ['127.0.0.1:${WEB_PORT:-3000}:8080']
+    depends_on:
+      control-plane: {condition: service_healthy}
+    healthcheck:
+      test: [CMD-SHELL, 'wget -q -O /dev/null http://127.0.0.1:8080/']
+      interval: 10s
+      timeout: 3s
+      retries: 10
+
+  k6:
+    image: grafana/k6:1.2.3
+    profiles: [loadtest]
+    user: '0:0'
+    volumes:
+      - ./loadtest:/scripts:ro
+      - ./artifacts:/results
+    environment:
+      BASE_URL: http://demo-api:8081
+    entrypoint: [k6]
+    command: [run, /scripts/baseline.js]
+
+  prometheus:
+    image: prom/prometheus:v3.5.0
+    profiles: [observability]
+    mem_limit: 384m
+    command: [--config.file=/etc/prometheus/prometheus.yml, --storage.tsdb.retention.time=24h, --storage.tsdb.retention.size=512MB]
+    volumes:
+      - ./infra/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus-data:/prometheus
+    ports: [127.0.0.1:9090:9090]
+    healthcheck:
+      test: [CMD, wget, -q, -O, /dev/null, 'http://127.0.0.1:9090/-/ready']
+      interval: 10s
+      timeout: 5s
+      retries: 30
+
+  grafana:
+    image: grafana/grafana:12.1.1
+    profiles: [observability]
+    mem_limit: 256m
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD:-incidentlens-local}
+      GF_USERS_ALLOW_SIGN_UP: 'false'
+      GF_PLUGINS_PREINSTALL_DISABLED: 'true'
+    volumes:
+      - ./infra/grafana/provisioning/datasources:/etc/grafana/provisioning/datasources:ro
+      - ./infra/grafana/provisioning/dashboards:/etc/grafana/provisioning/dashboards:ro
+      - ./infra/grafana/dashboards:/var/lib/grafana/dashboards:ro
+      - grafana-data:/var/lib/grafana
+    ports: ['127.0.0.1:${GRAFANA_PORT:-3001}:3000']
+    healthcheck:
+      test: [CMD, wget, -q, -O, /dev/null, 'http://127.0.0.1:3000/api/health']
+      interval: 10s
+      timeout: 5s
+      start_period: 60s
+      retries: 54
+
+  loki:
+    image: grafana/loki:3.5.4
+    profiles: [observability]
+    mem_limit: 384m
+    command: [-config.file=/etc/loki/config.yml]
+    volumes:
+      - ./infra/loki/loki.yml:/etc/loki/config.yml:ro
+      - loki-data:/loki
+
+  tempo:
+    image: grafana/tempo:2.8.2
+    profiles: [observability]
+    mem_limit: 384m
+    command: [-config.file=/etc/tempo/config.yml]
+    volumes:
+      - ./infra/tempo/tempo.yml:/etc/tempo/config.yml:ro
+      - tempo-data:/var/tempo
+
+  otel-collector:
+    image: otel/opentelemetry-collector-contrib:0.132.0
+    profiles: [observability]
+    mem_limit: 512m
+    environment:
+      GOMEMLIMIT: 384MiB
+    command: [--config=/etc/otelcol/config.yml]
+    volumes:
+      - ./infra/otel/collector.yml:/etc/otelcol/config.yml:ro
+    depends_on: [loki, tempo]
+
+volumes:
+  mysql-data:
+  kafka-data:
+  prometheus-data:
+  grafana-data:
+  loki-data:
+  tempo-data:
