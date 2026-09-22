@@ -4,7 +4,7 @@ This document records execution in the development workspace on **2026-09-22**. 
 
 ## Environment
 
-- Windows 11 host with WSL2 Linux development shell.
+- Windows 10 Pro host (CIM-confirmed build 19045) with WSL2 Linux development shell. Windows 11 is the requested target, not the measured host. Earlier prose used the target label; this audit corrects that assumption.
 - Java 21.0.12, Gradle wrapper 8.14.3, Node 22.23.2, npm 10.9.8.
 - Docker Desktop 4.85.0 / Engine 29.6.2 / Compose 5.3.1; approximately 8 GB allocated to the Linux engine.
 - PowerShell 7.5.2 was downloaded to a temporary directory to execute the actual PowerShell verification script under Linux. Native Windows PowerShell has not been separately exercised.
@@ -20,9 +20,9 @@ This document records execution in the development workspace on **2026-09-22**. 
 | `pwsh -NoProfile -File scripts/verify.ps1 -Integration` | Final primary verification workflow passes, including runner protocol checks and infrastructure tests |
 | `pwsh -NoProfile -File scripts/tests/compare-protocol.tests.ps1` | Idle gating, phase completion, failure cleanup, missing telemetry and existing-run rejection pass |
 | `npm --prefix apps/web ci` | Clean lockfile installation succeeds; audit reports 0 vulnerabilities |
-| `npm --prefix apps/web test -- --run` | 27 frontend tests pass after Korean/English localization |
+| `npm --prefix apps/web test -- --run` | 33 frontend tests pass after UI polish; includes six freshness/state regressions |
 | `npm --prefix apps/web run build` | TypeScript check and Vite production build pass |
-| `npm --prefix apps/web run test:browser` | 8 Playwright desktop/mobile tests passed after Korean/English localization with installed Chromium; API fixtures explicitly labelled |
+| `npm --prefix apps/web run test:browser` | 15 Playwright desktop/laptop/mobile tests passed after UI polish with installed Chromium; API fixtures explicitly labelled |
 | `docker compose --profile observability --profile loadtest config --quiet` | All profiles validate |
 | `docker compose build` | Web and all three Java runtime images build |
 | `docker compose up -d --wait --wait-timeout 600` | Core MySQL/Redis/Kafka/API/worker/control/web healthy after host-port configuration |
@@ -74,3 +74,13 @@ Only frontend presentation and its tests/documentation changed. The 27 frontend 
 Optional localization image rebuild: `docker compose build web` was interrupted during slow base-image resolution (metadata requests alone took about 142 seconds). It is not a successful Docker-image validation for this follow-up. Existing containers were unchanged; the npm production build and all mandatory frontend/browser checks passed.
 
 Real frontend integration was separately checked through a temporary Vite proxy to the unchanged running control plane, without fixtures: four services UP; Korean default → English → reload persistence; a real saved session timeline; no browser errors, API writes or horizontal overflow. Provenance and screenshots are in ignored `apps/web/test-results/live-localization*`; the temporary server was stopped.
+
+## Portfolio polish verification
+
+`npm_config_cache=/tmp/incidentlens-npm-cache bash scripts/verify.sh` passed after the final mobile typography correction: Gradle build/test tasks were up-to-date (unchanged backend), clean frontend install audited 166 packages with zero reported vulnerabilities, all 33 frontend tests passed, TypeScript and production build passed, and all Compose profiles validated. No new backend integration run is implied by those up-to-date tasks; the historical 15 real-container tests remain the preceding verified baseline.
+
+The six new state tests cover stale overview/detail responses, session isolation during mutations, independent detail-error recovery, measured zero versus missing samples and fault-store unavailability. All 15 browser cases passed after the final CSS correction, with no retries. The suite checks three viewport sizes (1440×900, 1280×720, 390×844), both locales, persistence, keyboard focus/navigation, textual statuses/deltas, citations, report jumps, mobile hypothesis width and scroll containment.
+
+Thirteen final real screenshots were captured from the deployed nginx web on port 13000, in Korean and English at desktop and mobile sizes. Their [manifest](../apps/web/screenshots/live-capture.json) records matching final JS/CSS assets, selected text contrast (minimum 4.89:1), zero browser errors/API writes/document overflow and unchanged saved experiment values. Actual mobile RCA review prompted the final stacked confidence layout; the complete screen-reader/WCAG audit remains outside the executed checks.
+
+The final fixed-source native build took **4.31 seconds**, and `docker compose --progress plain build web` took **35.95 seconds** (RUN 10.3 seconds). Web-only deployment passed its health check. [Docker diagnostics](DOCKER_BUILD_DIAGNOSTICS.md) preserve baseline, ordinary-container, forced-BuildKit and earlier updated-UI measurements. The historical 326-second report did not recur; no configuration performance fix is claimed.

@@ -148,8 +148,6 @@ test("Korean default and English switching localize every populated view and per
 }, testInfo) => {
   // This case renders and captures eight views, then verifies two reloads and a new tab.
   test.setTimeout(60_000);
-  if (testInfo.project.name === "desktop")
-    await page.setViewportSize({ width: 1440, height: 1000 });
   const mutations = await mockPopulatedApi(context);
   const errors: string[] = [];
   page.on("pageerror", (error) => errors.push(error.message));
@@ -273,6 +271,20 @@ test("Korean default and English switching localize every populated view and per
     await expect(page.locator(".hypothesis .eyebrow")).toHaveText(
       korean ? "근본 원인 가설 · 추론" : "ROOT CAUSE HYPOTHESIS · INFERENCE",
     );
+    if (testInfo.project.name === "mobile") {
+      const hypothesisText = await page
+        .locator(".hypothesis > div")
+        .first()
+        .boundingBox();
+      const confidence = await page.locator(".confidence").boundingBox();
+      expect(hypothesisText).not.toBeNull();
+      expect(confidence).not.toBeNull();
+      // Long API hypotheses need the card width; confidence must not squeeze them into a narrow column.
+      expect(hypothesisText!.width).toBeGreaterThanOrEqual(240);
+      expect(confidence!.y).toBeGreaterThanOrEqual(
+        hypothesisText!.y + hypothesisText!.height - 1,
+      );
+    }
     await expect(page.locator(".timeline")).toContainText(
       korean ? "장애 비활성화" : "Fault disabled",
     );
@@ -283,6 +295,10 @@ test("Korean default and English switching localize every populated view and per
     await expect(
       page.getByText(evidence.traceId, { exact: true }),
     ).toBeVisible();
+    await page.locator('a[href="#rca-report"]').click();
+    await expect(page.locator("#rca-report")).toBeInViewport();
+    await page.locator('a[href="#observed-evidence"]').click();
+    await expect(page.locator("#observed-evidence")).toBeInViewport();
     const citation = page.locator(`[href="#evidence-${evidence.id}"]`);
     await expect(citation).toHaveCount(1);
     await citation.click();
@@ -321,6 +337,34 @@ test("Korean default and English switching localize every populated view and per
       }),
     ).toBeVisible();
     await expect(page.locator(".comparison-table tbody tr")).toHaveCount(10);
+    await expect(page.locator(".comparison-table .delta-label")).toHaveCount(
+      10,
+    );
+    await expect(
+      page
+        .locator(".comparison-table tbody tr")
+        .filter({
+          hasText: korean ? "p95 요청 지연시간" : "p95 request latency",
+        })
+        .locator(".delta-label"),
+    ).toHaveText(korean ? "개선 방향" : "Improved direction");
+    const comparisonRegion = page
+      .locator(".table-scroll")
+      .filter({ has: page.locator(".comparison-table") });
+    await expect(comparisonRegion).toHaveAttribute("role", "region");
+    await expect(comparisonRegion).toHaveAttribute("tabindex", "0");
+    await expect(comparisonRegion).not.toHaveAccessibleName("");
+    if (
+      await comparisonRegion.evaluate(
+        (element) => element.scrollWidth > element.clientWidth,
+      )
+    ) {
+      await comparisonRegion.focus();
+      await comparisonRegion.press("ArrowRight");
+      await expect
+        .poll(() => comparisonRegion.evaluate((element) => element.scrollLeft))
+        .toBeGreaterThan(0);
+    }
     await expect(
       page.locator(".status").filter({ hasText: korean ? "완료" : "complete" }),
     ).toBeVisible();

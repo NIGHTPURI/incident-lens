@@ -34,6 +34,8 @@ These decisions were reviewed by the coding agents and exercised by tests where 
 | Actual local runs accumulated unpublished outbox rows even when Kafka lag was low | Added an evidence-cited producer-backlog hypothesis and a regression test; backlog snapshots are framed as competing explanations rather than proof of an increasing queue |
 | Live populated Overview overflowed the mobile viewport although comparison tests passed | Contained the accessible table header within its scroll region and extended browser checks to the populated Overview |
 | A PowerShell test double left a nonzero native exit code after an expected failure | Restored the prior exit code and verified the exact GitHub Actions shell exit behavior |
+| Frontend async action could display session A evidence under session B; overlapping polls could erase fresh data or hide a detail error | Reproduced the cross-session flow in an intercepted browser; added selection/revision guards, distinct read errors, and deferred-response tests |
+| Initial environment prose assumed Windows 11 from the requested target | Queried the actual OS with CIM (Windows 10 Pro/build 19045); corrected prose and annotated historical metadata without changing measurements |
 
 These are examples of why generated code needs executable checks and independent review. They are not invented production incidents.
 

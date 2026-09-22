@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import type { FormEvent, ReactNode } from "react";
 import { api, ApiError } from "./api";
 import * as format from "./format";
@@ -158,12 +158,21 @@ function Status({ value }: { value: string }) {
     "COMPLETE",
     "DISABLED",
   ].includes(value.toUpperCase());
+  const problem = ["DOWN", "UNHEALTHY", "ABORTED", "FAULT_ACTIVE"].includes(
+    value.toUpperCase(),
+  );
   return (
-    <span className={`status ${healthy ? "good" : "neutral"}`}>
-      <span />
-      {statusKeys[value.toUpperCase()]
-        ? t(statusKeys[value.toUpperCase()])
-        : value}
+    <span
+      className={`status ${healthy ? "good" : problem ? "problem" : "neutral"}`}
+    >
+      <span className="status-icon" aria-hidden="true">
+        {healthy ? "✓" : problem ? "!" : "—"}
+      </span>
+      <span className="status-label">
+        {statusKeys[value.toUpperCase()]
+          ? t(statusKeys[value.toUpperCase()])
+          : value}
+      </span>
     </span>
   );
 }
@@ -171,10 +180,12 @@ function Stat({
   label,
   value,
   detail,
+  help,
 }: {
   label: string;
   value: string;
   detail: string;
+  help?: string;
 }) {
   const { t } = useI18n();
   return (
@@ -186,6 +197,7 @@ function Stat({
         {value}
       </strong>
       <span className="stat-detail">{detail}</span>
+      {help && <p className="stat-help">{help}</p>}
     </article>
   );
 }
@@ -205,8 +217,11 @@ export default function App() {
   const [overview, setOverview] = useState<Overview | null>(null);
   const [sessions, setSessions] = useState<IncidentSession[]>([]);
   const [selectedId, setSelectedId] = useState("");
-  const [detail, setDetail] = useState<SessionDetail | null>(null);
+  const [loadedDetail, setDetail] = useState<SessionDetail | null>(null);
+  const detail = loadedDetail?.session.id === selectedId ? loadedDetail : null;
   const [error, setError] = useState<DisplayError | null>(null);
+  const [overviewError, setOverviewError] = useState<DisplayError | null>(null);
+  const [detailError, setDetailError] = useState<DisplayError | null>(null);
   const [notice, setNotice] = useState<TranslationKey | "">("");
   const [busy, setBusy] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -214,21 +229,45 @@ export default function App() {
   const [collectionPhase, setCollectionPhase] = useState<"BEFORE" | "AFTER">(
     "BEFORE",
   );
+  const selectedIdRef = useRef(selectedId);
+  selectedIdRef.current = selectedId;
+  const overviewRevision = useRef(0);
+  const detailRevision = useRef(0);
+  const displayedError = error ?? detailError ?? overviewError;
 
   const refresh = useCallback(async () => {
+    const revision = ++overviewRevision.current;
     try {
       const [nextOverview, nextSessions] = await Promise.all([
         api.overview(),
         api.sessions(),
       ]);
+      if (revision !== overviewRevision.current) return;
       setOverview(nextOverview);
       setSessions(nextSessions);
       setUpdatedAt(new Date().toISOString());
-      setError(null);
+      setOverviewError(null);
     } catch (cause) {
-      setError({ cause, fallback: "error.controlPlane" });
+      if (revision === overviewRevision.current)
+        setOverviewError({ cause, fallback: "error.controlPlane" });
     } finally {
-      setLoading(false);
+      if (revision === overviewRevision.current) setLoading(false);
+    }
+  }, []);
+
+  const refreshDetail = useCallback(async (id: string) => {
+    const revision = ++detailRevision.current;
+    try {
+      const next = await api.session(id);
+      // A late response must never replace a different selection or a newer refresh.
+      if (selectedIdRef.current === id && revision === detailRevision.current) {
+        setDetail(next);
+        setDetailError(null);
+      }
+    } catch (cause) {
+      if (selectedIdRef.current === id && revision === detailRevision.current) {
+        setDetailError({ cause, fallback: "error.incident" });
+      }
     }
   }, []);
 
@@ -237,32 +276,27 @@ export default function App() {
     const interval = setInterval(() => {
       void refresh();
     }, 10_000);
-    return () => clearInterval(interval);
+    return () => {
+      clearInterval(interval);
+      overviewRevision.current++;
+    };
   }, [refresh]);
   useEffect(() => {
     if (!selectedId && sessions.length) setSelectedId(sessions[0].id);
   }, [sessions, selectedId]);
   useEffect(() => {
     if (!selectedId) return;
-    let alive = true;
     setDetail(null);
-    const load = async () => {
-      try {
-        const next = await api.session(selectedId);
-        if (alive) setDetail(next);
-      } catch (cause) {
-        if (alive) setError({ cause, fallback: "error.incident" });
-      }
-    };
-    void load();
+    setDetailError(null);
+    void refreshDetail(selectedId);
     const interval = setInterval(() => {
-      void load();
+      void refreshDetail(selectedId);
     }, 10_000);
     return () => {
-      alive = false;
+      detailRevision.current++;
       clearInterval(interval);
     };
-  }, [selectedId]);
+  }, [selectedId, refreshDetail]);
 
   async function action(
     operation: () => Promise<unknown>,
@@ -271,10 +305,12 @@ export default function App() {
     setBusy(true);
     setError(null);
     setNotice("");
+    detailRevision.current++;
     try {
       await operation();
       await refresh();
-      if (selectedId) setDetail(await api.session(selectedId));
+      if (selectedId && selectedIdRef.current === selectedId)
+        await refreshDetail(selectedId);
       setNotice(success);
     } catch (cause) {
       setError({ cause, fallback: "error.operation" });
@@ -300,6 +336,12 @@ export default function App() {
   }
 
   const active = overview?.activeFault?.enabled ? overview.activeFault : null;
+  const faultStatusKnown =
+    !overviewError &&
+    overview?.services.some(
+      (service) =>
+        service.name === "redis" && service.status.toUpperCase() === "UP",
+    );
   const selection = (
     <label className="session-select">
       <span>{t("common.incidentSession")}</span>
@@ -327,6 +369,9 @@ export default function App() {
 
   return (
     <div className="app-shell">
+      <a className="skip-link" href="#main-content">
+        {t("shell.skipToContent")}
+      </a>
       <aside className="sidebar">
         <a
           className="brand"
@@ -405,7 +450,7 @@ export default function App() {
             </button>
           </div>
         </header>
-        <div className="page-content">
+        <div className="page-content" id="main-content" tabIndex={-1}>
           {active && (
             <div className="fault-banner" role="status">
               <span className="warning-icon">!</span>
@@ -437,10 +482,10 @@ export default function App() {
               </button>
             </div>
           )}
-          {error && (
+          {displayedError && (
             <div className="message error" role="alert">
-              <strong>{t("error.heading")}</strong> {errorText(error, t)}{" "}
-              <span>{t("error.help")}</span>
+              <strong>{t("error.heading")}</strong>{" "}
+              {errorText(displayedError, t)} <span>{t("error.help")}</span>
             </div>
           )}
           {notice && (
@@ -483,11 +528,33 @@ export default function App() {
 
           {page === "overview" && (
             <>
+              <div className="overview-state">
+                <strong>
+                  {overview?.services.length
+                    ? t("overview.connectedCount", {
+                        connected: overview.services.filter(
+                          (service) => service.status.toUpperCase() === "UP",
+                        ).length,
+                        total: overview.services.length,
+                      })
+                    : t("overview.connectionUnknown")}
+                </strong>
+                {active || faultStatusKnown ? (
+                  <Status value={active ? "FAULT_ACTIVE" : "FAULT_DISABLED"} />
+                ) : (
+                  <span>{t("overview.faultUnknown")}</span>
+                )}
+              </div>
               <div className="stats-grid">
                 <Stat
                   label={t("metric.requestCount")}
                   value={number(overview?.metrics.requestCount)}
                   detail={t("overview.requestCountDetail")}
+                  help={
+                    overview?.metrics.requestCount == null
+                      ? t("overview.missingTelemetry")
+                      : undefined
+                  }
                 />
                 <Stat
                   label={t("metric.requestErrorRate")}
@@ -501,16 +568,38 @@ export default function App() {
                   detail={t("overview.errorCountDetail", {
                     count: number(overview?.metrics.errorCount),
                   })}
+                  help={
+                    overview?.metrics.requestCount === 0
+                      ? t("overview.noRequestSamples")
+                      : overview?.metrics.requestCount == null ||
+                          overview.metrics.errorCount == null
+                        ? t("overview.missingTelemetry")
+                        : undefined
+                  }
                 />
                 <Stat
                   label={t("metric.sampledP95")}
                   value={milliseconds(overview?.metrics.p95Ms)}
                   detail={t("overview.latencyDetail")}
+                  help={
+                    overview?.metrics.p95Ms == null
+                      ? t(
+                          overview?.metrics.requestCount === 0
+                            ? "overview.noRequestSamples"
+                            : "overview.missingTelemetry",
+                        )
+                      : undefined
+                  }
                 />
                 <Stat
                   label={t("metric.consumerLag")}
                   value={number(overview?.metrics.kafkaLag)}
                   detail={t("overview.lagDetail")}
+                  help={
+                    overview?.metrics.kafkaLag == null
+                      ? t("overview.missingTelemetry")
+                      : undefined
+                  }
                 />
               </div>
               <p className="telemetry-scope">{t("overview.telemetryScope")}</p>
@@ -606,24 +695,36 @@ export default function App() {
                   </button>
                 </div>
                 {sessions.length ? (
-                  <div className="table-scroll">
+                  <div
+                    className="table-scroll"
+                    role="region"
+                    aria-label={t("overview.recentSessions")}
+                    tabIndex={0}
+                  >
                     <table>
+                      <caption className="sr-only">
+                        {t("overview.recentSessions")}
+                      </caption>
                       <thead>
                         <tr>
-                          <th>{t("common.session")}</th>
-                          <th>{t("common.scenario")}</th>
-                          <th>{t("common.status")}</th>
-                          <th>{t("common.created")}</th>
-                          <th>
-                            <span className="sr-only">{t("common.open")}</span>
-                          </th>
+                          <th scope="col">{t("common.session")}</th>
+                          <th scope="col">{t("common.scenario")}</th>
+                          <th scope="col">{t("common.status")}</th>
+                          <th scope="col">{t("common.created")}</th>
+                          <th scope="col">{t("common.action")}</th>
                         </tr>
                       </thead>
                       <tbody>
                         {sessions.map((session) => (
                           <tr key={session.id}>
                             <td>
-                              <strong>{session.name}</strong>
+                              <strong
+                                className="session-name"
+                                id={`session-${session.id}`}
+                                title={session.name}
+                              >
+                                {session.name}
+                              </strong>
                               <small className="mono">
                                 {session.id.slice(0, 8)}
                               </small>
@@ -636,6 +737,8 @@ export default function App() {
                             <td>
                               <button
                                 className="text-button"
+                                disabled={busy}
+                                aria-describedby={`session-${session.id}`}
                                 onClick={() => {
                                   setSelectedId(session.id);
                                   setPage("evidence");
@@ -660,6 +763,30 @@ export default function App() {
 
           {page === "lab" && (
             <>
+              <section className="lab-guide" aria-labelledby="lab-guide-title">
+                <h2 id="lab-guide-title">{t("lab.guideTitle")}</h2>
+                <ol>
+                  <li>
+                    <strong>{t("lab.guideSetup")}</strong>
+                    <p>{t("lab.guideSetupHelp")}</p>
+                  </li>
+                  <li>
+                    <strong>{t("lab.guideTraffic")}</strong>
+                    <p>{t("lab.guideTrafficHelp")}</p>
+                  </li>
+                  <li>
+                    <strong>{t("lab.guideRecovery")}</strong>
+                    <p>{t("lab.guideRecoveryHelp")}</p>
+                  </li>
+                </ol>
+                <button
+                  className="button secondary"
+                  disabled={!detail || busy}
+                  onClick={() => setPage("comparison")}
+                >
+                  {t("lab.prepareComparison")}
+                </button>
+              </section>
               <IncidentLab busy={busy} createSession={createSession} />
               <section className="panel">
                 <div className="panel-header">
@@ -689,7 +816,11 @@ export default function App() {
                   <Empty
                     title={
                       selectedId
-                        ? t("common.loadingIncident")
+                        ? t(
+                            detailError
+                              ? "common.incidentUnavailable"
+                              : "common.loadingIncident",
+                          )
                         : t("lab.startTitle")
                     }
                   >
@@ -745,10 +876,22 @@ export default function App() {
                   </button>
                 </div>
               </div>
+              <p className="phase-help">
+                {t("evidence.phaseHelp")}{" "}
+                {detail?.report && (
+                  <a className="text-button" href="#rca-report">
+                    {t("rca.viewReport")}
+                  </a>
+                )}
+              </p>
               {detail ? (
                 <>
                   <div className="evidence-layout">
-                    <section className="panel">
+                    <section
+                      className="panel observed-panel"
+                      id="observed-evidence"
+                      tabIndex={-1}
+                    >
                       <div className="panel-header">
                         <div>
                           <span className="eyebrow">
@@ -758,6 +901,9 @@ export default function App() {
                         </div>
                         <span className="count">{detail.evidence.length}</span>
                       </div>
+                      <p className="evidence-note">
+                        {t("evidence.observationHelp")}
+                      </p>
                       {detail.evidence.length ? (
                         <div className="evidence-list">
                           {detail.evidence.map((item) => (
@@ -824,7 +970,11 @@ export default function App() {
                   <Empty
                     title={
                       selectedId
-                        ? t("common.loadingIncident")
+                        ? t(
+                            detailError
+                              ? "common.incidentUnavailable"
+                              : "common.loadingIncident",
+                          )
                         : t("common.selectSession")
                     }
                   >
@@ -873,7 +1023,15 @@ export default function App() {
                 </>
               ) : (
                 <section className="panel">
-                  <Empty title={t("common.selectSession")}>
+                  <Empty
+                    title={t(
+                      detailError
+                        ? "common.incidentUnavailable"
+                        : selectedId
+                          ? "common.loadingIncident"
+                          : "common.selectSession",
+                    )}
+                  >
                     {t("experiment.selectDescription")}
                   </Empty>
                 </section>
@@ -1024,7 +1182,11 @@ function FaultControl({
 export function EvidenceCard({ evidence }: { evidence: Evidence }) {
   const { t, number, date } = usePresentation();
   return (
-    <article className="evidence-card" id={`evidence-${evidence.id}`}>
+    <article
+      className="evidence-card"
+      id={`evidence-${evidence.id}`}
+      tabIndex={-1}
+    >
       <div className="evidence-title">
         <span className="tag">{evidence.service}</span>
         {evidence.phase && (
@@ -1070,7 +1232,7 @@ export function EvidenceCard({ evidence }: { evidence: Evidence }) {
 export function RcaReport({ report }: { report: Report | null }) {
   const { t, percent, date } = usePresentation();
   return (
-    <section className="panel rca-panel">
+    <section className="panel rca-panel" id="rca-report" tabIndex={-1}>
       <div className="panel-header">
         <div>
           <span className="eyebrow">{t("rca.analysis")}</span>
@@ -1080,6 +1242,7 @@ export function RcaReport({ report }: { report: Report | null }) {
       </div>
       {report ? (
         <div className="rca-content">
+          <p className="analysis-note">{t("rca.inferenceHelp")}</p>
           <p className="report-summary">{report.summary}</p>
           <div className="hypothesis">
             <div>
@@ -1094,11 +1257,20 @@ export function RcaReport({ report }: { report: Report | null }) {
           <div className="report-citations">
             <strong>{t("rca.supportingEvidence")}</strong>
             {report.evidenceIds.map((id) => (
-              <a key={id} className="citation mono" href={`#evidence-${id}`}>
+              <a
+                key={id}
+                className="citation mono"
+                href={`#evidence-${id}`}
+                title={id}
+              >
                 {id.slice(0, 12)} ↗
               </a>
             ))}
           </div>
+          <p className="citation-help">
+            {t("rca.citationHelp")}{" "}
+            <a href="#observed-evidence">{t("rca.backToEvidence")}</a>
+          </p>
           <div className="report-grid">
             <div>
               <h3>{t("rca.impact")}</h3>
@@ -1347,20 +1519,26 @@ export function ExperimentCard({
       {experiment.status === "ABORTED" && (
         <div className="experiment-guidance">{t("experiment.abortedHelp")}</div>
       )}
-      <div className="table-scroll">
+      <div
+        className="table-scroll"
+        role="region"
+        aria-label={t("experiment.comparison")}
+        tabIndex={0}
+      >
         <table className="comparison-table">
+          <caption className="sr-only">{t("experiment.comparison")}</caption>
           <thead>
             <tr>
-              <th>{t("experiment.measurement")}</th>
-              <th>
+              <th scope="col">{t("experiment.measurement")}</th>
+              <th scope="col">
                 {t("phase.before")}
                 <span>{t("phase.faultActive")}</span>
               </th>
-              <th>
+              <th scope="col">
                 {t("phase.after")}
                 <span>{t("phase.faultDisabled")}</span>
               </th>
-              <th>{t("experiment.relativeChange")}</th>
+              <th scope="col">{t("experiment.relativeChange")}</th>
             </tr>
           </thead>
           <tbody>
@@ -1368,11 +1546,20 @@ export function ExperimentCard({
               const before = experiment.before?.[row.key];
               const after = experiment.after?.[row.key];
               const delta = change(before, after);
+              const comparable =
+                before != null &&
+                after != null &&
+                Number.isFinite(before) &&
+                Number.isFinite(after);
+              const directional =
+                row.key !== "requestCount" && row.key !== "errorCount";
               const better =
+                directional &&
                 before != null &&
                 after != null &&
                 (row.lowerBetter ? after < before : after > before);
               const worse =
+                directional &&
                 before != null &&
                 after != null &&
                 (row.lowerBetter ? after > before : after < before);
@@ -1397,6 +1584,23 @@ export function ExperimentCard({
                     }
                   >
                     {delta}
+                    <span className="delta-label">
+                      {t(
+                        !comparable
+                          ? "experiment.notComparable"
+                          : before === after
+                            ? "experiment.unchanged"
+                            : before === 0
+                              ? "experiment.zeroBaseline"
+                              : better
+                                ? "experiment.improved"
+                                : worse
+                                  ? "experiment.worsened"
+                                  : after! > before!
+                                    ? "experiment.increased"
+                                    : "experiment.decreased",
+                      )}
+                    </span>
                   </td>
                 </tr>
               );

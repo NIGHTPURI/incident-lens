@@ -1,6 +1,14 @@
 {
-  "capturedAt": "2026-09-22T12:06:54.594Z",
+  "capturedAt": "2026-09-22T14:46:54.496Z",
   "source": "http://localhost:13000",
+  "frontendAssets": [
+    "/assets/index-BuPVkcz5.js",
+    "/assets/index-HrxRb2yW.css"
+  ],
+  "locales": [
+    "ko",
+    "en"
+  ],
   "sessionId": "2962e2d9-30f5-4520-820d-61a4c0fb3afb",
   "experimentId": "b8c8deb0-a1c7-4ec3-b5e9-8a43c76d6eea",
   "scenario": "DOWNSTREAM_LATENCY",
@@ -49,14 +57,998 @@
     "screenshots/overview-live.png",
     "screenshots/evidence-live.png",
     "screenshots/rca-live.png",
-    "screenshots/comparison-live.png"
+    "screenshots/comparison-live.png",
+    "screenshots/ko-overview-live.png",
+    "screenshots/ko-rca-live.png",
+    "screenshots/ko-comparison-live.png",
+    "screenshots/en-overview-mobile.png",
+    "screenshots/en-rca-mobile.png",
+    "screenshots/en-comparison-mobile.png",
+    "screenshots/ko-overview-mobile.png",
+    "screenshots/ko-rca-mobile.png",
+    "screenshots/ko-comparison-mobile.png"
+  ],
+  "captures": [
+    {
+      "path": "screenshots/overview-live.png",
+      "view": "overview",
+      "locale": "en",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "capturedAt": "2026-09-22T14:46:50.832Z",
+      "documentOverflow": false,
+      "textInspection": [
+        {
+          "selector": ".stat-detail",
+          "fontSize": "12px",
+          "color": "rgb(89, 106, 126)",
+          "background": "rgb(255, 255, 255)",
+          "contrastRatio": 5.54
+        },
+        {
+          "selector": ".telemetry-scope",
+          "fontSize": "12px",
+          "color": "rgb(89, 106, 126)",
+          "background": "rgb(245, 247, 250)",
+          "contrastRatio": 5.17
+        },
+        {
+          "selector": ".service > div > span",
+          "fontSize": "12px",
+          "color": "rgb(89, 106, 126)",
+          "background": "rgb(255, 255, 255)",
+          "contrastRatio": 5.54
+        },
+        {
+          "selector": ".eyebrow",
+          "fontSize": "11px",
+          "color": "rgb(89, 106, 126)",
+          "background": "rgb(245, 247, 250)",
+          "contrastRatio": 5.17
+        },
+        {
+          "selector": ".last-updated",
+          "fontSize": "12px",
+          "color": "rgb(89, 106, 126)",
+          "background": "rgb(245, 247, 250)",
+          "contrastRatio": 5.17
+        },
+        {
+          "selector": ".status.good",
+          "fontSize": "12px",
+          "color": "rgb(33, 104, 71)",
+          "background": "rgb(238, 249, 243)",
+          "contrastRatio": 6.21
+        },
+        {
+          "selector": ".page-footer",
+          "fontSize": "11px",
+          "color": "rgb(89, 106, 126)",
+          "background": "rgb(245, 247, 250)",
+          "contrastRatio": 5.17
+        }
+      ]
+    },
+    {
+      "path": "screenshots/evidence-live.png",
+      "view": "evidence",
+      "locale": "en",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "capturedAt": "2026-09-22T14:46:51.764Z",
+      "documentOverflow": false,
+      "textInspection": [
+        {
+          "selector": ".eyebrow",
+          "fontSize": "11px",
+          "color": "rgb(89, 106, 126)",
+          "background": "rgb(245, 247, 250)",
+          "contrastRatio": 5.17
+        },
+        {
+          "selector": ".last-updated",
+          "fontSize": "12px",
+          "color": "rgb(89, 106, 126)",
+          "background": "rgb(245, 247, 250)",
+          "contrastRatio": 5.17
+        },
+        {
+          "selector": ".page-footer",
+          "fontSize": "11px",
+          "color": "rgb(89, 106, 126)",
+          "background": "rgb(245, 247, 250)",
+          "contrastRatio": 5.17
+        },
+        {
+          "selector": ".evidence-card dt",
+          "fontSize": "12px",
+          "color": "rgb(89, 106, 126)",
+          "background": "rgb(255, 255, 255)",
+          "contrastRatio": 5.54
+        },
+        {
+          "selector": ".timeline time",
+          "fontSize": "11px",
+          "color": "rgb(89, 106, 126)",
+          "background": "rgb(255, 255, 255)",
+          "contrastRatio": 5.54
+        },
+        {
+          "selector": ".report-summary",
+          "fontSize": "14px",
+          "color": "rgb(82, 101, 119)",
+          "background": "rgb(255, 255, 255)",
+          "contrastRatio": 6.02
+        },
+        {
+          "selector": ".confidence span",
+          "fontSize": "11px",
+          "color": "rgb(89, 106, 126)",
+          "background": "rgb(255, 251, 242)",
+          "contrastRatio": 5.37
+        },
+        {
+          "selector": ".uncertainties > p",
+          "fontSize": "12px",
+          "color": "rgb(89, 106, 126)",
+          "background": "rgb(255, 255, 255)",
+          "contrastRatio": 5.54
+        }
+      ]
+    },
+    {
+      "path": "screenshots/rca-live.png",
+      "view": "rca",
+      "locale": "en",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "capturedAt": "2026-09-22T14:46:51.934Z",
+      "documentOverflow": false,
+      "textInspection": [
+        {
+          "selector": ".eyebrow",
+          "fontSize": "11px",
+          "color": "rgb(89, 106, 126)",
+          "background": "rgb(245, 247, 250)",
+          "contrastRatio": 5.17
+        },
+        {
+          "selector": ".last-updated",
+          "fontSize": "12px",
+          "color": "rgb(89, 106, 126)",
+          "background": "rgb(245, 247, 250)",
+          "contrastRatio": 5.17
+        },
+        {
+          "selector": ".page-footer",
+          "fontSize": "11px",
+          "color": "rgb(89, 106, 126)",
+          "background": "rgb(245, 247, 250)",
+          "contrastRatio": 5.17
+        },
+        {
+          "selector": ".evidence-card dt",
+          "fontSize": "12px",
+          "color": "rgb(89, 106, 126)",
+          "background": "rgb(255, 255, 255)",
+          "contrastRatio": 5.54
+        },
+        {
+          "selector": ".timeline time",
+          "fontSize": "11px",
+          "color": "rgb(89, 106, 126)",
+          "background": "rgb(255, 255, 255)",
+          "contrastRatio": 5.54
+        },
+        {
+          "selector": ".report-summary",
+          "fontSize": "14px",
+          "color": "rgb(82, 101, 119)",
+          "background": "rgb(255, 255, 255)",
+          "contrastRatio": 6.02
+        },
+        {
+          "selector": ".confidence span",
+          "fontSize": "11px",
+          "color": "rgb(89, 106, 126)",
+          "background": "rgb(255, 251, 242)",
+          "contrastRatio": 5.37
+        },
+        {
+          "selector": ".uncertainties > p",
+          "fontSize": "12px",
+          "color": "rgb(89, 106, 126)",
+          "background": "rgb(255, 255, 255)",
+          "contrastRatio": 5.54
+        }
+      ]
+    },
+    {
+      "path": "screenshots/comparison-live.png",
+      "view": "comparison",
+      "locale": "en",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "capturedAt": "2026-09-22T14:46:52.476Z",
+      "documentOverflow": false,
+      "textInspection": [
+        {
+          "selector": ".eyebrow",
+          "fontSize": "11px",
+          "color": "rgb(89, 106, 126)",
+          "background": "rgb(245, 247, 250)",
+          "contrastRatio": 5.17
+        },
+        {
+          "selector": ".last-updated",
+          "fontSize": "12px",
+          "color": "rgb(89, 106, 126)",
+          "background": "rgb(245, 247, 250)",
+          "contrastRatio": 5.17
+        },
+        {
+          "selector": ".status.good",
+          "fontSize": "12px",
+          "color": "rgb(33, 104, 71)",
+          "background": "rgb(238, 249, 243)",
+          "contrastRatio": 6.21
+        },
+        {
+          "selector": ".page-footer",
+          "fontSize": "11px",
+          "color": "rgb(89, 106, 126)",
+          "background": "rgb(245, 247, 250)",
+          "contrastRatio": 5.17
+        },
+        {
+          "selector": ".comparison-table th",
+          "fontSize": "11px",
+          "color": "rgb(89, 106, 126)",
+          "background": "rgb(251, 252, 253)",
+          "contrastRatio": 5.4
+        },
+        {
+          "selector": ".delta-label",
+          "fontSize": "12px",
+          "color": "rgb(100, 114, 135)",
+          "background": "rgb(255, 255, 255)",
+          "contrastRatio": 4.89
+        }
+      ]
+    },
+    {
+      "path": "screenshots/ko-overview-live.png",
+      "view": "overview",
+      "locale": "ko",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "capturedAt": "2026-09-22T14:46:52.708Z",
+      "documentOverflow": false,
+      "textInspection": [
+        {
+          "selector": ".stat-detail",
+          "fontSize": "12px",
+          "color": "rgb(89, 106, 126)",
+          "background": "rgb(255, 255, 255)",
+          "contrastRatio": 5.54
+        },
+        {
+          "selector": ".telemetry-scope",
+          "fontSize": "12px",
+          "color": "rgb(89, 106, 126)",
+          "background": "rgb(245, 247, 250)",
+          "contrastRatio": 5.17
+        },
+        {
+          "selector": ".service > div > span",
+          "fontSize": "12px",
+          "color": "rgb(89, 106, 126)",
+          "background": "rgb(255, 255, 255)",
+          "contrastRatio": 5.54
+        },
+        {
+          "selector": ".eyebrow",
+          "fontSize": "11px",
+          "color": "rgb(89, 106, 126)",
+          "background": "rgb(245, 247, 250)",
+          "contrastRatio": 5.17
+        },
+        {
+          "selector": ".last-updated",
+          "fontSize": "12px",
+          "color": "rgb(89, 106, 126)",
+          "background": "rgb(245, 247, 250)",
+          "contrastRatio": 5.17
+        },
+        {
+          "selector": ".status.good",
+          "fontSize": "12px",
+          "color": "rgb(33, 104, 71)",
+          "background": "rgb(238, 249, 243)",
+          "contrastRatio": 6.21
+        },
+        {
+          "selector": ".page-footer",
+          "fontSize": "11px",
+          "color": "rgb(89, 106, 126)",
+          "background": "rgb(245, 247, 250)",
+          "contrastRatio": 5.17
+        }
+      ]
+    },
+    {
+      "path": "screenshots/ko-rca-live.png",
+      "view": "rca",
+      "locale": "ko",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "capturedAt": "2026-09-22T14:46:53.099Z",
+      "documentOverflow": false,
+      "textInspection": [
+        {
+          "selector": ".eyebrow",
+          "fontSize": "11px",
+          "color": "rgb(89, 106, 126)",
+          "background": "rgb(245, 247, 250)",
+          "contrastRatio": 5.17
+        },
+        {
+          "selector": ".last-updated",
+          "fontSize": "12px",
+          "color": "rgb(89, 106, 126)",
+          "background": "rgb(245, 247, 250)",
+          "contrastRatio": 5.17
+        },
+        {
+          "selector": ".page-footer",
+          "fontSize": "11px",
+          "color": "rgb(89, 106, 126)",
+          "background": "rgb(245, 247, 250)",
+          "contrastRatio": 5.17
+        },
+        {
+          "selector": ".evidence-card dt",
+          "fontSize": "12px",
+          "color": "rgb(89, 106, 126)",
+          "background": "rgb(255, 255, 255)",
+          "contrastRatio": 5.54
+        },
+        {
+          "selector": ".timeline time",
+          "fontSize": "11px",
+          "color": "rgb(89, 106, 126)",
+          "background": "rgb(255, 255, 255)",
+          "contrastRatio": 5.54
+        },
+        {
+          "selector": ".report-summary",
+          "fontSize": "14px",
+          "color": "rgb(82, 101, 119)",
+          "background": "rgb(255, 255, 255)",
+          "contrastRatio": 6.02
+        },
+        {
+          "selector": ".confidence span",
+          "fontSize": "11px",
+          "color": "rgb(89, 106, 126)",
+          "background": "rgb(255, 251, 242)",
+          "contrastRatio": 5.37
+        },
+        {
+          "selector": ".uncertainties > p",
+          "fontSize": "12px",
+          "color": "rgb(89, 106, 126)",
+          "background": "rgb(255, 255, 255)",
+          "contrastRatio": 5.54
+        }
+      ]
+    },
+    {
+      "path": "screenshots/ko-comparison-live.png",
+      "view": "comparison",
+      "locale": "ko",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "capturedAt": "2026-09-22T14:46:53.260Z",
+      "documentOverflow": false,
+      "textInspection": [
+        {
+          "selector": ".eyebrow",
+          "fontSize": "11px",
+          "color": "rgb(89, 106, 126)",
+          "background": "rgb(245, 247, 250)",
+          "contrastRatio": 5.17
+        },
+        {
+          "selector": ".last-updated",
+          "fontSize": "12px",
+          "color": "rgb(89, 106, 126)",
+          "background": "rgb(245, 247, 250)",
+          "contrastRatio": 5.17
+        },
+        {
+          "selector": ".status.good",
+          "fontSize": "12px",
+          "color": "rgb(33, 104, 71)",
+          "background": "rgb(238, 249, 243)",
+          "contrastRatio": 6.21
+        },
+        {
+          "selector": ".page-footer",
+          "fontSize": "11px",
+          "color": "rgb(89, 106, 126)",
+          "background": "rgb(245, 247, 250)",
+          "contrastRatio": 5.17
+        },
+        {
+          "selector": ".comparison-table th",
+          "fontSize": "11px",
+          "color": "rgb(89, 106, 126)",
+          "background": "rgb(251, 252, 253)",
+          "contrastRatio": 5.4
+        },
+        {
+          "selector": ".delta-label",
+          "fontSize": "12px",
+          "color": "rgb(100, 114, 135)",
+          "background": "rgb(255, 255, 255)",
+          "contrastRatio": 4.89
+        }
+      ]
+    },
+    {
+      "path": "screenshots/en-overview-mobile.png",
+      "view": "overview",
+      "locale": "en",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "capturedAt": "2026-09-22T14:46:53.443Z",
+      "documentOverflow": false,
+      "textInspection": [
+        {
+          "selector": ".stat-detail",
+          "fontSize": "11px",
+          "color": "rgb(89, 106, 126)",
+          "background": "rgb(255, 255, 255)",
+          "contrastRatio": 5.54
+        },
+        {
+          "selector": ".telemetry-scope",
+          "fontSize": "12px",
+          "color": "rgb(89, 106, 126)",
+          "background": "rgb(245, 247, 250)",
+          "contrastRatio": 5.17
+        },
+        {
+          "selector": ".service > div > span",
+          "fontSize": "12px",
+          "color": "rgb(89, 106, 126)",
+          "background": "rgb(255, 255, 255)",
+          "contrastRatio": 5.54
+        },
+        {
+          "selector": ".eyebrow",
+          "fontSize": "11px",
+          "color": "rgb(89, 106, 126)",
+          "background": "rgb(245, 247, 250)",
+          "contrastRatio": 5.17
+        },
+        {
+          "selector": ".last-updated",
+          "fontSize": "12px",
+          "color": "rgb(89, 106, 126)",
+          "background": "rgb(245, 247, 250)",
+          "contrastRatio": 5.17
+        },
+        {
+          "selector": ".status.good",
+          "fontSize": "12px",
+          "color": "rgb(33, 104, 71)",
+          "background": "rgb(238, 249, 243)",
+          "contrastRatio": 6.21
+        },
+        {
+          "selector": ".page-footer",
+          "fontSize": "10px",
+          "color": "rgb(89, 106, 126)",
+          "background": "rgb(245, 247, 250)",
+          "contrastRatio": 5.17
+        }
+      ]
+    },
+    {
+      "path": "screenshots/en-rca-mobile.png",
+      "view": "rca",
+      "locale": "en",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "capturedAt": "2026-09-22T14:46:53.740Z",
+      "documentOverflow": false,
+      "textInspection": [
+        {
+          "selector": ".eyebrow",
+          "fontSize": "11px",
+          "color": "rgb(89, 106, 126)",
+          "background": "rgb(245, 247, 250)",
+          "contrastRatio": 5.17
+        },
+        {
+          "selector": ".last-updated",
+          "fontSize": "12px",
+          "color": "rgb(89, 106, 126)",
+          "background": "rgb(245, 247, 250)",
+          "contrastRatio": 5.17
+        },
+        {
+          "selector": ".page-footer",
+          "fontSize": "10px",
+          "color": "rgb(89, 106, 126)",
+          "background": "rgb(245, 247, 250)",
+          "contrastRatio": 5.17
+        },
+        {
+          "selector": ".evidence-card dt",
+          "fontSize": "12px",
+          "color": "rgb(89, 106, 126)",
+          "background": "rgb(255, 255, 255)",
+          "contrastRatio": 5.54
+        },
+        {
+          "selector": ".timeline time",
+          "fontSize": "11px",
+          "color": "rgb(89, 106, 126)",
+          "background": "rgb(255, 255, 255)",
+          "contrastRatio": 5.54
+        },
+        {
+          "selector": ".report-summary",
+          "fontSize": "14px",
+          "color": "rgb(82, 101, 119)",
+          "background": "rgb(255, 255, 255)",
+          "contrastRatio": 6.02
+        },
+        {
+          "selector": ".confidence span",
+          "fontSize": "12px",
+          "color": "rgb(89, 106, 126)",
+          "background": "rgb(255, 251, 242)",
+          "contrastRatio": 5.37
+        },
+        {
+          "selector": ".uncertainties > p",
+          "fontSize": "12px",
+          "color": "rgb(89, 106, 126)",
+          "background": "rgb(255, 255, 255)",
+          "contrastRatio": 5.54
+        }
+      ]
+    },
+    {
+      "path": "screenshots/en-comparison-mobile.png",
+      "view": "comparison",
+      "locale": "en",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "capturedAt": "2026-09-22T14:46:53.841Z",
+      "documentOverflow": false,
+      "textInspection": [
+        {
+          "selector": ".eyebrow",
+          "fontSize": "11px",
+          "color": "rgb(89, 106, 126)",
+          "background": "rgb(245, 247, 250)",
+          "contrastRatio": 5.17
+        },
+        {
+          "selector": ".last-updated",
+          "fontSize": "12px",
+          "color": "rgb(89, 106, 126)",
+          "background": "rgb(245, 247, 250)",
+          "contrastRatio": 5.17
+        },
+        {
+          "selector": ".status.good",
+          "fontSize": "12px",
+          "color": "rgb(33, 104, 71)",
+          "background": "rgb(238, 249, 243)",
+          "contrastRatio": 6.21
+        },
+        {
+          "selector": ".page-footer",
+          "fontSize": "10px",
+          "color": "rgb(89, 106, 126)",
+          "background": "rgb(245, 247, 250)",
+          "contrastRatio": 5.17
+        },
+        {
+          "selector": ".comparison-table th",
+          "fontSize": "10px",
+          "color": "rgb(89, 106, 126)",
+          "background": "rgb(251, 252, 253)",
+          "contrastRatio": 5.4
+        },
+        {
+          "selector": ".delta-label",
+          "fontSize": "12px",
+          "color": "rgb(100, 114, 135)",
+          "background": "rgb(255, 255, 255)",
+          "contrastRatio": 4.89
+        }
+      ]
+    },
+    {
+      "path": "screenshots/ko-overview-mobile.png",
+      "view": "overview",
+      "locale": "ko",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "capturedAt": "2026-09-22T14:46:54.014Z",
+      "documentOverflow": false,
+      "textInspection": [
+        {
+          "selector": ".stat-detail",
+          "fontSize": "11px",
+          "color": "rgb(89, 106, 126)",
+          "background": "rgb(255, 255, 255)",
+          "contrastRatio": 5.54
+        },
+        {
+          "selector": ".telemetry-scope",
+          "fontSize": "12px",
+          "color": "rgb(89, 106, 126)",
+          "background": "rgb(245, 247, 250)",
+          "contrastRatio": 5.17
+        },
+        {
+          "selector": ".service > div > span",
+          "fontSize": "12px",
+          "color": "rgb(89, 106, 126)",
+          "background": "rgb(255, 255, 255)",
+          "contrastRatio": 5.54
+        },
+        {
+          "selector": ".eyebrow",
+          "fontSize": "11px",
+          "color": "rgb(89, 106, 126)",
+          "background": "rgb(245, 247, 250)",
+          "contrastRatio": 5.17
+        },
+        {
+          "selector": ".last-updated",
+          "fontSize": "12px",
+          "color": "rgb(89, 106, 126)",
+          "background": "rgb(245, 247, 250)",
+          "contrastRatio": 5.17
+        },
+        {
+          "selector": ".status.good",
+          "fontSize": "12px",
+          "color": "rgb(33, 104, 71)",
+          "background": "rgb(238, 249, 243)",
+          "contrastRatio": 6.21
+        },
+        {
+          "selector": ".page-footer",
+          "fontSize": "10px",
+          "color": "rgb(89, 106, 126)",
+          "background": "rgb(245, 247, 250)",
+          "contrastRatio": 5.17
+        }
+      ]
+    },
+    {
+      "path": "screenshots/ko-rca-mobile.png",
+      "view": "rca",
+      "locale": "ko",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "capturedAt": "2026-09-22T14:46:54.361Z",
+      "documentOverflow": false,
+      "textInspection": [
+        {
+          "selector": ".eyebrow",
+          "fontSize": "11px",
+          "color": "rgb(89, 106, 126)",
+          "background": "rgb(245, 247, 250)",
+          "contrastRatio": 5.17
+        },
+        {
+          "selector": ".last-updated",
+          "fontSize": "12px",
+          "color": "rgb(89, 106, 126)",
+          "background": "rgb(245, 247, 250)",
+          "contrastRatio": 5.17
+        },
+        {
+          "selector": ".page-footer",
+          "fontSize": "10px",
+          "color": "rgb(89, 106, 126)",
+          "background": "rgb(245, 247, 250)",
+          "contrastRatio": 5.17
+        },
+        {
+          "selector": ".evidence-card dt",
+          "fontSize": "12px",
+          "color": "rgb(89, 106, 126)",
+          "background": "rgb(255, 255, 255)",
+          "contrastRatio": 5.54
+        },
+        {
+          "selector": ".timeline time",
+          "fontSize": "11px",
+          "color": "rgb(89, 106, 126)",
+          "background": "rgb(255, 255, 255)",
+          "contrastRatio": 5.54
+        },
+        {
+          "selector": ".report-summary",
+          "fontSize": "14px",
+          "color": "rgb(82, 101, 119)",
+          "background": "rgb(255, 255, 255)",
+          "contrastRatio": 6.02
+        },
+        {
+          "selector": ".confidence span",
+          "fontSize": "12px",
+          "color": "rgb(89, 106, 126)",
+          "background": "rgb(255, 251, 242)",
+          "contrastRatio": 5.37
+        },
+        {
+          "selector": ".uncertainties > p",
+          "fontSize": "12px",
+          "color": "rgb(89, 106, 126)",
+          "background": "rgb(255, 255, 255)",
+          "contrastRatio": 5.54
+        }
+      ]
+    },
+    {
+      "path": "screenshots/ko-comparison-mobile.png",
+      "view": "comparison",
+      "locale": "ko",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "capturedAt": "2026-09-22T14:46:54.481Z",
+      "documentOverflow": false,
+      "textInspection": [
+        {
+          "selector": ".eyebrow",
+          "fontSize": "11px",
+          "color": "rgb(89, 106, 126)",
+          "background": "rgb(245, 247, 250)",
+          "contrastRatio": 5.17
+        },
+        {
+          "selector": ".last-updated",
+          "fontSize": "12px",
+          "color": "rgb(89, 106, 126)",
+          "background": "rgb(245, 247, 250)",
+          "contrastRatio": 5.17
+        },
+        {
+          "selector": ".status.good",
+          "fontSize": "12px",
+          "color": "rgb(33, 104, 71)",
+          "background": "rgb(238, 249, 243)",
+          "contrastRatio": 6.21
+        },
+        {
+          "selector": ".page-footer",
+          "fontSize": "10px",
+          "color": "rgb(89, 106, 126)",
+          "background": "rgb(245, 247, 250)",
+          "contrastRatio": 5.17
+        },
+        {
+          "selector": ".comparison-table th",
+          "fontSize": "10px",
+          "color": "rgb(89, 106, 126)",
+          "background": "rgb(251, 252, 253)",
+          "contrastRatio": 5.4
+        },
+        {
+          "selector": ".delta-label",
+          "fontSize": "12px",
+          "color": "rgb(100, 114, 135)",
+          "background": "rgb(255, 255, 255)",
+          "contrastRatio": 4.89
+        }
+      ]
+    }
+  ],
+  "overviewSnapshots": [
+    {
+      "locale": "en",
+      "device": "desktop",
+      "observedAt": "2026-09-22T14:46:50.665Z",
+      "data": {
+        "services": [
+          {
+            "name": "control-plane",
+            "status": "UP"
+          },
+          {
+            "name": "demo-api",
+            "status": "UP"
+          },
+          {
+            "name": "demo-worker",
+            "status": "UP"
+          },
+          {
+            "name": "redis",
+            "status": "UP"
+          }
+        ],
+        "metrics": {
+          "requestCount": 0,
+          "errorCount": 0,
+          "dbQueryCount": 0,
+          "latencySampleCount": 0,
+          "cacheHits": 0,
+          "cacheMisses": 0,
+          "processedCount": 0,
+          "duplicateCount": 0,
+          "retryCount": 0,
+          "outboxPending": 0,
+          "kafkaLag": 0
+        },
+        "activeFault": null
+      }
+    },
+    {
+      "locale": "ko",
+      "device": "desktop",
+      "observedAt": "2026-09-22T14:46:52.551Z",
+      "data": {
+        "services": [
+          {
+            "name": "control-plane",
+            "status": "UP"
+          },
+          {
+            "name": "demo-api",
+            "status": "UP"
+          },
+          {
+            "name": "demo-worker",
+            "status": "UP"
+          },
+          {
+            "name": "redis",
+            "status": "UP"
+          }
+        ],
+        "metrics": {
+          "requestCount": 0,
+          "errorCount": 0,
+          "dbQueryCount": 0,
+          "latencySampleCount": 0,
+          "cacheHits": 0,
+          "cacheMisses": 0,
+          "processedCount": 0,
+          "duplicateCount": 0,
+          "retryCount": 0,
+          "outboxPending": 0,
+          "kafkaLag": 0
+        },
+        "activeFault": null
+      }
+    },
+    {
+      "locale": "en",
+      "device": "mobile",
+      "observedAt": "2026-09-22T14:46:53.331Z",
+      "data": {
+        "services": [
+          {
+            "name": "control-plane",
+            "status": "UP"
+          },
+          {
+            "name": "demo-api",
+            "status": "UP"
+          },
+          {
+            "name": "demo-worker",
+            "status": "UP"
+          },
+          {
+            "name": "redis",
+            "status": "UP"
+          }
+        ],
+        "metrics": {
+          "requestCount": 0,
+          "errorCount": 0,
+          "dbQueryCount": 0,
+          "latencySampleCount": 0,
+          "cacheHits": 0,
+          "cacheMisses": 0,
+          "processedCount": 0,
+          "duplicateCount": 0,
+          "retryCount": 0,
+          "outboxPending": 0,
+          "kafkaLag": 0
+        },
+        "activeFault": null
+      }
+    },
+    {
+      "locale": "ko",
+      "device": "mobile",
+      "observedAt": "2026-09-22T14:46:53.915Z",
+      "data": {
+        "services": [
+          {
+            "name": "control-plane",
+            "status": "UP"
+          },
+          {
+            "name": "demo-api",
+            "status": "UP"
+          },
+          {
+            "name": "demo-worker",
+            "status": "UP"
+          },
+          {
+            "name": "redis",
+            "status": "UP"
+          }
+        ],
+        "metrics": {
+          "requestCount": 0,
+          "errorCount": 0,
+          "dbQueryCount": 0,
+          "latencySampleCount": 0,
+          "cacheHits": 0,
+          "cacheMisses": 0,
+          "processedCount": 0,
+          "duplicateCount": 0,
+          "retryCount": 0,
+          "outboxPending": 0,
+          "kafkaLag": 0
+        },
+        "activeFault": null
+      }
+    }
   ],
   "browserErrors": [],
   "apiMutations": [],
   "mobileDocumentOverflow": false,
   "mobileCheckedViews": [
     "overview",
+    "evidence",
+    "rca",
     "comparison"
   ],
-  "note": "Real local API observations; no route mocks or synthetic benchmark values. Overview is aggregate telemetry at capture time; comparison belongs to the identified completed session."
+  "note": "Real local API observations; no route mocks or synthetic benchmark values. Overview snapshots are current retained telemetry and can be empty after restart. Comparison values belong to the identified completed experiment and are verified unchanged after capture. Korean UI preserves raw API narratives and technical identifiers."
 }

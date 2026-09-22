@@ -10,7 +10,7 @@ The project explores a common backend problem: the request returned successfully
 
 Screenshots use English. The dashboard now defaults to Korean; select **한국어 / English** at the top right, and the browser remembers your choice. [Localization details](apps/web/README.md#korean--english-ui).
 
-Actual local measurements, not sample dashboard data. [Capture provenance](apps/web/screenshots/live-capture.json) · [Evidence-grounded report](apps/web/screenshots/rca-live.png).
+Actual local measurements, not sample dashboard data. The refreshed dashboard distinguishes recorded observations from the RCA hypothesis and labels comparison direction in text. [Capture provenance](apps/web/screenshots/live-capture.json) · [Evidence-grounded report](apps/web/screenshots/rca-live.png) · [한국어 개요](apps/web/screenshots/ko-overview-live.png).
 
 ## Run it
 
@@ -134,7 +134,7 @@ Set a real key only in the ignored `.env`. The adapter is enabled only when both
 
 The runner first waits for an idle outbox and consumer group, then creates an incident and one experiment, activates the fault, runs BEFORE, stores its measured summary/evidence, creates the RCA, disables the fault, waits for recovery, and runs AFTER with the persisted VU count and duration. Both runs use the same catalog/order workload. The API rejects changed workload settings, invalid percentiles, repeated completion and out-of-order phases.
 
-To use the dashboard workflow, create a fresh incident in Incident Lab, prepare its experiment in Experiments, and execute the displayed PowerShell command locally (Bash equivalents are documented in `loadtest/README.md`). The generated command includes the latest enabled fault parameter for that session, or 400 ms when no activation exists. Edit `-Parameter` to choose a different delay; the Bash runner uses `PARAMETER`. Prepare the experiment before sending manual traffic labelled BEFORE/AFTER: already-used scopes are rejected to prevent measurement contamination. The browser displays and controls experiments; k6 runs through the supplied command.
+To use the dashboard workflow, create a fresh incident in Incident Lab, prepare its experiment in Experiments, and execute the displayed PowerShell command locally (Bash equivalents are documented in `loadtest/README.md`). The generated command includes the latest enabled fault parameter for that session, or 400 ms when no activation exists. Edit `-Parameter` to choose a different delay; the Bash runner uses `PARAMETER`. Prepare the experiment before sending manual traffic labelled BEFORE/AFTER: already-used scopes are rejected to prevent measurement contamination. The browser displays and controls experiments; k6 runs through the supplied command. The lab explains this sequence in both languages; RCA explicitly analyzes BEFORE evidence, while AFTER validates recovery.
 
 The dashboard compares throughput, success rate, p50/p95/p99, errors, database lookup p95, Kafka lag and cache hit rate where available. Raw k6 summaries are stored in ignored `artifacts/`; experiment results/evidence are durable in MySQL. The lab uses a database lease to prevent overlapping controlled runs. Emergency fault disable aborts an active run. Interrupted runs should be replaced by a new session rather than mixed into old histograms.
 
@@ -142,7 +142,7 @@ A fixed-VU workload has feedback: slow requests reduce offered throughput. The d
 
 ## Recorded local results
 
-One 20-second run per phase, Windows 11 / Docker Desktop, 8 vCPU and approximately 8 GB Docker memory. Five VUs except Kafka (10); observability export disabled during timing. All eight measured phases returned zero HTTP errors.
+One 20-second run per phase, Windows host / Docker Desktop (subsequently verified as Windows 10 Pro; Windows 11 is the target), 8 vCPU and approximately 8 GB Docker memory. Five VUs except Kafka (10); observability export disabled during timing. All eight measured phases returned zero HTTP errors.
 
 | Scenario | BEFORE → AFTER observation | Interpretation |
 |---|---|---|
@@ -177,7 +177,7 @@ This checks required files, Gradle build/tests, infrastructure integration tests
 - Frontend: API failures, absent metrics, fault ownership, citations, comparisons and browser interactions.
 - CI: build/test, Docker image build, full Compose startup and a degraded/recovered experiment; no LLM key or paid service needed.
 
-Executed locally: **35 backend unit/application tests, 15 real-container integration tests, 27 frontend tests and 8 browser tests passed**. The complete PowerShell verification script passed under WSL with PowerShell 7. See [validation evidence](docs/VALIDATION.md) for commands and [SESSION_STATE.md](SESSION_STATE.md) for the current environment. Synthetic test fixture values are not benchmark results.
+Executed locally: **35 backend unit/application tests, 15 real-container integration tests, 33 frontend tests and 15 browser tests passed**. The complete PowerShell verification script passed under WSL with PowerShell 7. See [validation evidence](docs/VALIDATION.md) for commands and [SESSION_STATE.md](SESSION_STATE.md) for the current environment. Synthetic test fixture values are not benchmark results.
 
 ## Tradeoffs and limitations
 
@@ -195,3 +195,5 @@ Future work should start with retention, authenticated fault controls, isolated 
 - [AI engineering record](docs/AI_ENGINEERING.md): what was generated and how it was reviewed/tested.
 - [AWS deployment design](docs/AWS_DEPLOYMENT.md): a proposed mapping; no cloud resources are provisioned.
 - [API examples](docs/API.md) and [operations](docs/OPERATIONS.md).
+
+The [publication review](docs/PUBLICATION_REVIEW.md) records the UI correctness/accessibility findings and remaining owner checks. [Docker build diagnostics](docs/DOCKER_BUILD_DIAGNOSTICS.md) separate application compilation from image/layer overhead; no unmeasured build workaround is included.

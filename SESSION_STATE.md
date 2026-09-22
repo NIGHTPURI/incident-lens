@@ -2,9 +2,19 @@
 
 Updated: 2026-09-22. **The local core is implemented, running and verified.** No external blocker remains.
 
-## Current task: Korean / English UI localization
+## Current task: portfolio UI polish and Docker diagnostics
 
-Frontend-only follow-up requested after the original backend handoff. Existing backend implementations, REST paths, wire fields, scenario/phase machine values and all infrastructure configuration remain unchanged.
+Baseline: clean working tree at `be795ad` on 2026-09-22. Backend contracts, measured experiments and visual identity are preserved. Implemented larger/higher-contrast type, explicit keyboard focus and skip link, text/icon states, missing-metric explanations, lab guidance, observation/inference framing, report jump links, accessible tables and textual comparison direction. Fixed reproduced cross-session/late-response races and independent resource error recovery; six new regression tests bring frontend total to 33. Redis unavailability does not imply fault disabled. No new dependency or backend feature.
+
+Verified: 33 frontend tests, TypeScript and production build; 15 desktop/laptop/mobile Chromium cases in both locales; aggregate `bash scripts/verify.sh` passed after the final mobile correction. Final visual review found a narrow mobile hypothesis column; confidence is now stacked below it, and Korean paragraph words are kept together. The repeated browser suite checks that geometry and passes without retries. Thirteen final real GET-only screenshots match the deployed assets; saved measurements are unchanged, with zero browser errors/API mutations or document overflow. Selected rendered text contrasts are at least 4.89:1; this is not a full WCAG certification.
+
+Docker diagnostics compare an immutable baseline: native 4.48–5.11s, ordinary Alpine 5.27–6.12s, forced BuildKit command 5.57–5.63s. Actual Docker VHD is SATA HDD-backed while WSL/source uses NVMe. The original user-reported 218s RUN did not reproduce; no speculative configuration fix was committed. The final source passed at native **4.31s / Compose 35.95s** (RUN 10.3s); web-only deployment is healthy on port 13000 with matching JS/CSS assets. The earlier UI build measured 4.25s / 37.80s and is preserved separately in the diagnostics. No daemon cleanup, data removal or disk migration occurred. The actual host is CIM-confirmed Windows 10 Pro; Windows 11 remains the target. See docs/DOCKER_BUILD_DIAGNOSTICS.md.
+
+Implementation and required verification are complete. No outstanding backend change is needed. Next owner checks are a captured recurrence or controlled Docker-disk relocation experiment, native Windows 11 validation and a manual screen-reader review; none was claimed as completed. Use `git log --oneline` for the separate UI and diagnostics milestones.
+
+## Previous task: Korean / English UI localization
+
+Historical record of the frontend-only follow-up requested after the original backend handoff. Its test counts and interrupted Docker build below are superseded by the current polish verification and successful deployment above. Existing backend implementations, REST paths, wire fields, scenario/phase machine values and all infrastructure configuration remain unchanged.
 
 Completed: typed two-language dictionaries in `apps/web/src/i18n/translations.ts`; React Context provider; default Korean; accessible top-right selector; `incidentlens.locale` localStorage persistence; document language/title/description; localized numeric/date/missing-data presentation. All four dashboard pages, incident detail/timeline, controls, notices, error/empty states, badges and comparison headings use the dictionary. No package or lockfile changes. CSS changes are limited to the selector, Korean font fallbacks, heading word wrapping and mobile header containment.
 
@@ -34,15 +44,16 @@ All required localization checks pass. An optional `docker compose build web` wa
 | `./gradlew integrationTest --no-daemon` | 15 real MySQL/Kafka/Redis integration tests pass; 0 failures/errors/skips |
 | `bash scripts/verify.sh` | Pass |
 | `pwsh -NoLogo -NoProfile -File scripts/verify.ps1 -Integration` | Final aggregate pass, including runner protocol regressions; actual PowerShell 7.5.2 under WSL |
-| `npm --prefix apps/web ci`, `npm --prefix apps/web test -- --run`, `npm --prefix apps/web run build` | Pass; latest localization run: 27 frontend tests; clean install/audit reports 0 vulnerabilities |
-| `npm --prefix apps/web run test:browser` | Latest localization run: 8 desktop/mobile Playwright tests pass with explicitly labelled fixtures |
-| Real Playwright capture | Actual completed experiment, every RCA citation resolves, no browser errors/API mutations, no overview/comparison mobile document overflow |
+| `npm --prefix apps/web ci`, `npm --prefix apps/web test -- --run`, `npm --prefix apps/web run build` | Pass; latest polish run: 33 frontend tests; clean install/audit reports 0 vulnerabilities |
+| `npm --prefix apps/web run test:browser` | Latest polish run: 15 desktop/laptop/mobile Playwright tests pass with explicitly labelled fixtures, both locales and persistence |
+| Real Playwright capture | 13 final KO/EN images from the deployed web and an actual completed experiment; citations resolve, measurements unchanged, no browser errors/API mutations/document overflow |
+| `docker compose --progress plain build web` | Latest source passes in 35.95s; RUN 10.3s, npm ci cached; web-only deploy healthy |
 | `docker compose --profile observability --profile loadtest config --quiet` | All profiles valid |
 | `pwsh -NoProfile -File scripts/dev-up.ps1 -Observability` | Final runtime images build; core and optional observability start |
 | PowerShell four-scenario comparisons | All COMPLETE; eight measured phases, 0 HTTP errors; raw data preserved |
 | Bash instrumented timeout/recovery comparison | COMPLETE; BEFORE 4 expected timeouts/8 requests, AFTER 0 errors/36 requests; queue-idle preflight exercised |
 
-The final aggregate verification reran the changed control-plane MySQL suite; unchanged demo integration tasks reused their previously passing outputs. H2 HTTP tests and real MySQL tests are deliberately distinguished. Integration MySQL uses ephemeral tmpfs; Compose retains a durable named volume. No missing Docker tests are silently skipped. Browser fixture values are never represented as benchmark results.
+The earlier core aggregate verification reran the changed control-plane MySQL suite; unchanged demo integration tasks reused their previously passing outputs. The current UI-only aggregate ran `scripts/verify.sh`: Gradle's 24 unchanged tasks were up-to-date, with no new backend integration execution. H2 HTTP tests and real MySQL tests are deliberately distinguished. Integration MySQL uses ephemeral tmpfs; Compose retains a durable named volume. No missing Docker tests are silently skipped. Browser fixture values are never represented as benchmark results.
 
 ## Measured and runtime evidence
 
@@ -58,7 +69,7 @@ The final aggregate verification reran the changed control-plane MySQL suite; un
 
 ## Environment and exact demo commands
 
-Windows 11 host, WSL2 shell, Java 21.0.12, Node 22.23.2/npm10.9.8. Docker Desktop 4.85.0 / Engine 29.6.2 / Compose 5.3.1; 8 vCPU and approximately 8 GB engine memory. Docker started successfully after initially being stopped.
+Confirmed Windows 10 Pro host (build 19045), WSL2 shell; Windows 11 remains the requested target. Earlier prose inferred the host OS from the target and is corrected here. Java 21.0.12, Node 22.23.2/npm10.9.8. Docker Desktop 4.85.0 / Engine 29.6.2 / Compose 5.3.1; 8 vCPU and approximately 8 GB engine memory. Docker started successfully after initially being stopped.
 
 Current ignored `.env`: `WEB_PORT=13000`, `GRAFANA_PORT=13001` because Windows reserves default ports 3000/3001 on this host. Current services remain running: dashboard http://localhost:13000, Grafana http://localhost:13001, control API http://localhost:8080, demo API http://localhost:8081, Prometheus http://localhost:9090. Fresh checkouts default to 3000/3001; startup prints actual URLs.
 

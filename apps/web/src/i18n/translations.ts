@@ -2,6 +2,45 @@ export type Locale = "ko" | "en";
 export type TranslationParams = Record<string, string | number>;
 
 const en = {
+  "shell.skipToContent": "Skip to main content",
+  "common.action": "Action",
+  "common.incidentUnavailable": "Incident data could not be loaded",
+  "overview.connectedCount":
+    "{connected} / {total} service endpoints connected",
+  "overview.connectionUnknown": "Service connectivity not yet available",
+  "overview.faultUnknown": "Fault status unavailable",
+  "overview.noRequestSamples":
+    "No measured requests in the current diagnostic window. Run a workload to collect samples.",
+  "overview.missingTelemetry":
+    "The telemetry source has not supplied this value. Check service connectivity and run a workload.",
+  "lab.guideTitle": "From controlled failure to a measured recovery",
+  "lab.guideSetup": "Choose and configure",
+  "lab.guideSetupHelp":
+    "Select a scenario, create a session, then set its fault parameter below.",
+  "lab.guideTraffic": "Inject and run traffic",
+  "lab.guideTrafficHelp":
+    "Enable the fault to inspect it. Fault activation alone sends no traffic. Prepare an experiment in Experiments and run its displayed workload command.",
+  "lab.guideRecovery": "Collect, recover and compare",
+  "lab.guideRecoveryHelp":
+    "The runner collects BEFORE evidence with the fault active, disables it, then repeats the workload for AFTER. Review the evidence, RCA citations and measured comparison.",
+  "lab.prepareComparison": "Prepare comparison →",
+  "evidence.phaseHelp":
+    "The phase selector applies to evidence collection. RCA analyzes the latest BEFORE evidence; AFTER observations help validate recovery.",
+  "evidence.observationHelp":
+    "These are recorded observations with source, time window and evidence IDs. They establish what happened, not necessarily why.",
+  "rca.inferenceHelp":
+    "This report is a hypothesis derived from cited evidence. Check the sources and recovery measurements before accepting a cause.",
+  "rca.citationHelp":
+    "Each evidence ID opens its recorded observation. Source observations and provider conclusions remain separate.",
+  "rca.viewReport": "View RCA report ↓",
+  "rca.backToEvidence": "Back to observed evidence ↑",
+  "experiment.improved": "Improved direction",
+  "experiment.worsened": "Worsened direction",
+  "experiment.unchanged": "Unchanged",
+  "experiment.increased": "Increased",
+  "experiment.decreased": "Decreased",
+  "experiment.notComparable": "Not comparable",
+  "experiment.zeroBaseline": "Zero baseline; relative change undefined",
   "language.label": "Select language",
   "language.korean": "한국어",
   "language.english": "English",
@@ -48,7 +87,7 @@ const en = {
     "Controlled local experiments · Missing data is never replaced with sample measurements.",
   "overview.title": "Understand what changed.",
   "overview.description":
-    "A focused view of service health, runtime signals, and your latest investigations.",
+    "Reproduce a failure, connect metrics, logs and traces to evidence, then compare the same workload after recovery.",
   "overview.requestCountDetail": "Cumulative across retained session scopes",
   "overview.errorCountDetail": "{count} errors across retained session scopes",
   "overview.latencyDetail": "Bounded sample across retained session scopes",
@@ -149,7 +188,7 @@ const en = {
   "rca.hypothesis": "ROOT CAUSE HYPOTHESIS · INFERENCE",
   "rca.confidence": "provider confidence",
   "rca.supportingEvidence": "Supporting evidence",
-  "rca.impact": "Observed impact",
+  "rca.impact": "Reported impact",
   "rca.actions": "Recommended actions",
   "rca.uncertainties": "Uncertainties",
   "rca.confidenceHelp":
@@ -268,6 +307,44 @@ const en = {
 export type TranslationKey = keyof typeof en;
 
 const ko: Record<TranslationKey, string> = {
+  "shell.skipToContent": "본문으로 바로가기",
+  "common.action": "작업",
+  "common.incidentUnavailable": "장애 정보를 불러오지 못했습니다",
+  "overview.connectedCount": "서비스 엔드포인트 {connected} / {total}개 연결됨",
+  "overview.connectionUnknown": "서비스 연결 상태 확인 전",
+  "overview.faultUnknown": "장애 상태 확인 불가",
+  "overview.noRequestSamples":
+    "현재 진단 구간에 측정된 요청이 없습니다. 워크로드 실행 후 표시됩니다.",
+  "overview.missingTelemetry":
+    "출처에서 아직 값을 제공하지 않았습니다. 서비스 연결을 확인하고 워크로드를 실행하세요.",
+  "lab.guideTitle": "장애 주입부터 복구 결과 비교까지",
+  "lab.guideSetup": "선택 및 설정",
+  "lab.guideSetupHelp":
+    "시나리오를 선택하고 세션을 만든 뒤, 아래에서 장애 파라미터를 설정하세요.",
+  "lab.guideTraffic": "장애 주입 및 트래픽 실행",
+  "lab.guideTrafficHelp":
+    "장애를 활성화해 관찰하세요. 활성화만으로 트래픽이 생기지는 않습니다. 실험 비교에서 실험을 준비하고 표시된 워크로드 명령을 실행하세요.",
+  "lab.guideRecovery": "증거 수집 · 복구 · 비교",
+  "lab.guideRecoveryHelp":
+    "명령이 장애 상태(BEFORE)의 증거를 수집하고 장애를 비활성화한 뒤, 같은 워크로드를 복구 후(AFTER)에 반복합니다. 증거와 RCA 인용, 측정값을 함께 확인하세요.",
+  "lab.prepareComparison": "비교 실험 준비 →",
+  "evidence.phaseHelp":
+    "단계 선택은 증거 수집에 적용됩니다. RCA는 최신 BEFORE 증거를 분석하며, AFTER 관측값은 복구 결과를 검증하는 데 사용합니다.",
+  "evidence.observationHelp":
+    "출처·관측 구간·증거 ID가 있는 실제 관측 기록입니다. 무엇이 일어났는지를 보여주며, 그 자체가 원인을 확정하지는 않습니다.",
+  "rca.inferenceHelp":
+    "인용된 증거에서 도출한 가설입니다. 원인으로 받아들이기 전에 출처와 복구 측정값을 확인하세요.",
+  "rca.citationHelp":
+    "증거 ID를 누르면 해당 관측 기록으로 이동합니다. 원본 관측값과 분석 제공자의 판단을 구분해 확인하세요.",
+  "rca.viewReport": "RCA 보고서 보기 ↓",
+  "rca.backToEvidence": "관측된 증거로 돌아가기 ↑",
+  "experiment.improved": "개선 방향",
+  "experiment.worsened": "악화 방향",
+  "experiment.unchanged": "변화 없음",
+  "experiment.increased": "증가",
+  "experiment.decreased": "감소",
+  "experiment.notComparable": "비교 불가",
+  "experiment.zeroBaseline": "기준값 0 · 상대 변화율 정의 불가",
   "language.label": "언어 선택",
   "language.korean": "한국어",
   "language.english": "English",
@@ -313,7 +390,7 @@ const ko: Record<TranslationKey, string> = {
     "통제된 로컬 실험 · 누락된 데이터를 예시 측정값으로 대체하지 않습니다.",
   "overview.title": "장애 전후에 무엇이 달라졌는지 확인하세요.",
   "overview.description":
-    "서비스 상태, 런타임 신호, 최근 장애 분석을 한눈에 확인하세요.",
+    "장애를 재현하고 Metric · Log · Trace를 근거로 원인을 분석한 뒤, 같은 워크로드로 복구 전후를 비교합니다.",
   "overview.requestCountDetail": "보관 중인 세션 범위의 누적 요청",
   "overview.errorCountDetail": "보관 중인 세션 범위에서 오류 {count}건",
   "overview.latencyDetail": "보관 중인 세션 범위의 제한된 표본",
@@ -414,7 +491,7 @@ const ko: Record<TranslationKey, string> = {
   "rca.hypothesis": "근본 원인 가설 · 추론",
   "rca.confidence": "분석 제공자의 신뢰도",
   "rca.supportingEvidence": "가설을 뒷받침하는 증거",
-  "rca.impact": "관측된 영향",
+  "rca.impact": "보고된 영향",
   "rca.actions": "권장 조치",
   "rca.uncertainties": "불확실성",
   "rca.confidenceHelp":
