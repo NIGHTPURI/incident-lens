@@ -6,6 +6,8 @@ IncidentLens is a local incident laboratory: generate traffic, introduce a contr
 
 The project explores a common backend problem: the request returned successfully, but asynchronous work is late, caches are ineffective, or database round trips dominate latency. A metric alone rarely identifies the cause. IncidentLens combines explicit business consistency, bounded telemetry, fault history, and measured comparisons so those explanations can be challenged.
 
+Latest verification: [2026-10-01 publication audit](docs/PUBLICATION_AUDIT_2026-10-01.md) — 50 backend tests, 33 frontend tests, 15 browser tests, Docker startup, all four incident scenarios and live observability verified. The audit records the Tempo memory fix, preserved data and Git history privacy checks. Historical performance measurements below remain dated 2026-09-22.
+
 ![Real local BEFORE/AFTER experiment in IncidentLens](apps/web/screenshots/comparison-live.png)
 
 Screenshots use English. The dashboard now defaults to Korean; select **한국어 / English** at the top right, and the browser remembers your choice. [Localization details](apps/web/README.md#korean--english-ui).
@@ -14,7 +16,7 @@ Actual local measurements, not sample dashboard data. The refreshed dashboard di
 
 ## Run it
 
-Prerequisites: Windows 11, PowerShell, Git and running Docker Desktop with Linux containers / Compose. Building inside Docker does not require a host Java installation. Local development/test commands additionally require Java 21 and Node.js 22. Bash equivalents require `curl` and `jq`.
+Prerequisites: Git and a running Docker Engine/Desktop with Linux containers and Docker Compose. Windows uses PowerShell; Linux/macOS use Bash, `curl` and `jq`. Building inside Docker does not require a host Java installation. Local development/tests additionally require Java 21 and Node.js 22.
 
 From the repository root:
 
@@ -44,6 +46,19 @@ VUS=2 DURATION_SECONDS=10 PARAMETER=1200 bash scripts/demo-compare.sh --scenario
 
 Core planning budget: approximately 6 GB available to Docker; allow 8 GB for observability and additional headroom during image builds. These are planning estimates, not measured minimum requirements. `dev-down.ps1` / `dev-down.sh` preserve named volumes. `docker compose down -v` deliberately deletes local data.
 
+The equivalent core Docker commands are:
+
+```bash
+# Preserve any existing local settings and database credentials.
+test -f .env || cp .env.example .env
+docker compose --profile observability --profile loadtest config --quiet
+docker compose build
+docker compose up -d --wait --wait-timeout 600
+docker compose ps
+```
+
+For instrumented execution, use `bash scripts/dev-up.sh --observability` or set `OTEL_SDK_DISABLED=false` when running `docker compose --profile observability up -d --wait --wait-timeout 600`. The profile alone does not enable the Java agent's exporters.
+
 ## Architecture
 
 ```mermaid
@@ -53,10 +68,10 @@ flowchart LR
     API --> DB1[(MySQL: demo_api)]
     API --> R[(Redis: cache + expiring fault)]
     DB1 --> Relay[Outbox relay in demo-api]
-    Relay --> K[Kafka: orders.v1]
+    Relay --> K[Kafka: incidentlens.orders.v1]
     K --> W[demo-worker :8082]
     W --> DB2[(MySQL: demo_worker)]
-    W --> DLQ[Kafka: orders.v1.dlq]
+    W --> DLQ[Kafka: incidentlens.orders.v1.dlq]
     CP --> DB3[(MySQL: control_plane)]
     CP --> R
     CP -->|scoped telemetry| API
@@ -84,6 +99,28 @@ Three applications reflect three failure/ownership boundaries. The control plane
 
 See [ARCHITECTURE.md](ARCHITECTURE.md) for schemas, state transitions and failure reasoning.
 
+## Project structure
+
+```text
+apps/
+  control-plane/       Incident sessions, fault control, evidence, RCA, experiments
+  demo-api/            Catalog, idempotent orders and transactional outbox
+  demo-worker/         Kafka consumer, deduplication, fulfillment and lag sampling
+  web/                 React/TypeScript dashboard, Vitest and Playwright tests
+libs/common/           Event/context/telemetry contracts and HTTP safeguards
+infra/                 Backend Dockerfile, database init and observability configs
+loadtest/              Existing k6 catalog/order workloads
+scripts/               Bash/PowerShell startup, verification and comparison runners
+docs/                  APIs, operations, architecture decisions and audit records
+docs/results/          Reviewed historical measurement evidence
+gradle/                Gradle wrapper; four Java projects in settings.gradle
+.github/workflows/     Backend, frontend and Compose CI
+.env.example           Local demo configuration; .env remains ignored
+docker-compose.yml     Core services plus observability/loadtest profiles
+```
+
+Raw runtime output, database backups and local validation tools belong in ignored `artifacts/`; they are not publication inputs. Flyway migrations, the Gradle wrapper, npm lockfile and reviewed `docs/results/` remain versioned.
+
 ## Request and event flow
 
 1. `GET /api/catalog?category=books` takes the cache/query/downstream path.
@@ -92,6 +129,15 @@ See [ARCHITECTURE.md](ARCHITECTURE.md) for schemas, state transitions and failur
 4. The relay claims a due outbox row under a short database lock and publishes outside the transaction. Kafka acknowledgement precedes marking the row published.
 5. The worker transaction records the event and fulfillment together. Duplicate deliveries are successful no-ops; conflicting reuse is rejected.
 6. HTTP/session/correlation identifiers travel in the event. W3C trace context is persisted through the outbox and restored for Kafka publication.
+
+| Service / default port | Main endpoints |
+|---|---|
+| control-plane / 8080 | `GET /api/overview`, `GET/POST /api/sessions`, session fault/evidence/RCA and experiment APIs |
+| demo-api / 8081 | `GET /api/catalog?category=books`, `POST /api/orders` with `Idempotency-Key`, `GET /api/orders/{id}` |
+| demo-worker / 8082 | `GET /internal/telemetry`; order processing happens through Kafka |
+| All three Java services | `/actuator/health`, `/actuator/health/readiness`, `/actuator/prometheus` |
+
+Control-plane and demo-api expose `/v3/api-docs`; the web proxies `/api` to control-plane. Full request bodies and lifecycle examples are in [API documentation](docs/API.md).
 
 **Why not save then publish?** A crash after the DB commit can permanently lose the event; publishing first can emit an order that later rolls back. The outbox makes the state change and the *intent to publish* atomic. A crash after Kafka acknowledgement can still cause duplicate publication, so the worker remains idempotent. This is at-least-once delivery with an idempotent business effect, not a claim of end-to-end exactly-once delivery. See [ADR 003](docs/adr/003-transactional-outbox.md).
 
@@ -177,7 +223,21 @@ This checks required files, Gradle build/tests, infrastructure integration tests
 - Frontend: API failures, absent metrics, fault ownership, citations, comparisons and browser interactions.
 - CI: build/test, Docker image build, full Compose startup and a degraded/recovered experiment; no LLM key or paid service needed.
 
-Executed locally: **35 backend unit/application tests, 15 real-container integration tests, 33 frontend tests and 15 browser tests passed**. The complete PowerShell verification script passed under WSL with PowerShell 7. See [validation evidence](docs/VALIDATION.md) for commands and [SESSION_STATE.md](SESSION_STATE.md) for the current environment. Synthetic test fixture values are not benchmark results.
+Explicit commands from the repository root:
+
+```bash
+./gradlew test --no-daemon
+./gradlew clean build --no-daemon
+./gradlew integrationTest --no-daemon
+npm --prefix apps/web ci
+npm --prefix apps/web run build
+npm --prefix apps/web test
+npm --prefix apps/web run test:browser
+```
+
+Playwright requires Chromium installed as described in [the web README](apps/web/README.md). There is no `lint` script. `test` and `clean build` exclude the `integration` tag; the last Gradle command is required for all 15 real-container tests. `clean` removes generated build output, not database volumes.
+
+Re-executed on **2026-10-01**: **35 backend unit/application tests, 15 real-container integration tests, 33 frontend tests and 15 browser tests passed**, with no failures or skipped tests. Three existing browser cases also passed after correcting their screenshot output path. See the [current audit](docs/PUBLICATION_AUDIT_2026-10-01.md) for actual Docker/failure/recovery results. The earlier PowerShell verification and historical experiments remain in [2026-09-22 validation](docs/VALIDATION.md) and [SESSION_STATE.md](SESSION_STATE.md); PowerShell was not re-executed in the latest Bash audit. Synthetic test fixture values are not benchmark results.
 
 ## Tradeoffs and limitations
 

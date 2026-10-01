@@ -182,7 +182,7 @@ test("the actual empty dashboard remains usable when the control plane is unavai
   await expect(page.getByText("Unavailable", { exact: true })).toHaveCount(5);
   if (testInfo.project.name === "desktop") {
     await page.screenshot({
-      path: "screenshots/dashboard-empty.png",
+      path: testInfo.outputPath("dashboard-empty.png"),
       fullPage: true,
     });
   }

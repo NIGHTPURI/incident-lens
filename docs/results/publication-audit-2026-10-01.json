@@ -1,0 +1,497 @@
+{
+  "verifiedAt": "2026-10-01",
+  "purpose": "Short local functional/recovery checks; not a capacity benchmark",
+  "backendUnit": {
+    "apps/control-plane": {
+      "tests": 18,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "apps/demo-api": {
+      "tests": 7,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "apps/demo-worker": {
+      "tests": 4,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "libs/common": {
+      "tests": 6,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    }
+  },
+  "backendIntegration": {
+    "apps/control-plane": {
+      "tests": 5,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "apps/demo-api": {
+      "tests": 4,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "apps/demo-worker": {
+      "tests": 6,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "libs/common": {
+      "tests": 0,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    }
+  },
+  "frontend": {
+    "install": "PASS",
+    "npmAuditVulnerabilities": 0,
+    "build": "PASS",
+    "unitTests": {
+      "total": 33,
+      "passed": 33,
+      "failed": 0
+    },
+    "browserTests": {
+      "total": 15,
+      "passed": 15,
+      "failed": 0
+    },
+    "lint": "NOT_DEFINED",
+    "screenshotRegressionCasesPassed": 3
+  },
+  "docker": {
+    "control-plane": {
+      "state": "running",
+      "health": "healthy"
+    },
+    "demo-api": {
+      "state": "running",
+      "health": "healthy"
+    },
+    "demo-worker": {
+      "state": "running",
+      "health": "healthy"
+    },
+    "grafana": {
+      "state": "running",
+      "health": "healthy"
+    },
+    "kafka": {
+      "state": "running",
+      "health": "healthy"
+    },
+    "loki": {
+      "state": "running",
+      "health": ""
+    },
+    "mysql": {
+      "state": "running",
+      "health": "healthy"
+    },
+    "otel-collector": {
+      "state": "running",
+      "health": ""
+    },
+    "prometheus": {
+      "state": "running",
+      "health": "healthy"
+    },
+    "redis": {
+      "state": "running",
+      "health": "healthy"
+    },
+    "tempo": {
+      "state": "running",
+      "health": ""
+    },
+    "web": {
+      "state": "running",
+      "health": "healthy"
+    }
+  },
+  "beforeSmoke": {
+    "orders": 1504,
+    "outboxRows": 1504,
+    "processedEvents": 1504,
+    "fulfillments": 1504,
+    "outboxPending": 0,
+    "ordersWithoutOutbox": 0,
+    "ordersWithoutFulfillment": 0,
+    "fulfillmentsWithoutOrder": 0,
+    "duplicateOutboxOrders": 0,
+    "payloadMismatch": 0,
+    "kafkaLag": 0.0,
+    "activeFault": null,
+    "serviceHealth": [
+      {
+        "name": "control-plane",
+        "status": "UP"
+      },
+      {
+        "name": "demo-api",
+        "status": "UP"
+      },
+      {
+        "name": "demo-worker",
+        "status": "UP"
+      },
+      {
+        "name": "redis",
+        "status": "UP"
+      }
+    ],
+    "observedAt": "2026-10-01T12:30:06Z"
+  },
+  "finalConsistency": {
+    "orders": 1750,
+    "outboxRows": 1750,
+    "processedEvents": 1750,
+    "fulfillments": 1750,
+    "outboxPending": 0,
+    "ordersWithoutOutbox": 0,
+    "ordersWithoutFulfillment": 0,
+    "fulfillmentsWithoutOrder": 0,
+    "duplicateOutboxOrders": 0,
+    "payloadMismatch": 0,
+    "kafkaLag": 0.0,
+    "activeFault": null,
+    "serviceHealth": [
+      {
+        "name": "control-plane",
+        "status": "UP"
+      },
+      {
+        "name": "demo-api",
+        "status": "UP"
+      },
+      {
+        "name": "demo-worker",
+        "status": "UP"
+      },
+      {
+        "name": "redis",
+        "status": "UP"
+      }
+    ],
+    "observedAt": "2026-10-01T12:35:59Z"
+  },
+  "smoke": {
+    "control-plane/actuator/health": "UP",
+    "control-plane/actuator/health/readiness": "UP",
+    "demo-api/actuator/health": "UP",
+    "demo-api/actuator/health/readiness": "UP",
+    "demo-worker/actuator/health": "UP",
+    "demo-worker/actuator/health/readiness": "UP",
+    "sessionId": "82cca6b0-9763-4db2-8af3-25968fae142f",
+    "orderId": "e334461f-7f3d-40b2-b39a-b7e848938a21",
+    "catalogRows": 50,
+    "orderCreation": 201,
+    "idempotentReplay": 200,
+    "conflictingReplay": 409,
+    "eventualFulfillment": 1,
+    "serviceHealth": [
+      {
+        "name": "control-plane",
+        "status": "UP"
+      },
+      {
+        "name": "demo-api",
+        "status": "UP"
+      },
+      {
+        "name": "demo-worker",
+        "status": "UP"
+      },
+      {
+        "name": "redis",
+        "status": "UP"
+      }
+    ],
+    "result": "PASS"
+  },
+  "failureScenarios": [
+    {
+      "scenario": "DOWNSTREAM_LATENCY",
+      "parameter": 1800,
+      "vus": 2,
+      "durationSeconds": 5,
+      "recoverySeconds": 5,
+      "sessionId": "3ccb3fcc-b966-4c6d-9626-9d33a378d092",
+      "experimentId": "6452ba80-21a9-4dc2-b2ea-f1e018b3dfd4",
+      "before": {
+        "requestCount": 12.0,
+        "errorCount": 6.0,
+        "durationSeconds": 5.679692419,
+        "throughput": 2.112790467289563,
+        "successRate": 0.5,
+        "p50Ms": 944.6737955,
+        "p95Ms": 1512.02585405,
+        "p99Ms": 1512.22513401,
+        "kafkaLag": 0.0
+      },
+      "after": {
+        "requestCount": 38.0,
+        "errorCount": 0.0,
+        "durationSeconds": 5.194410733,
+        "throughput": 7.315555498641389,
+        "successRate": 1.0,
+        "p50Ms": 121.34169050000001,
+        "p95Ms": 652.29456045,
+        "p99Ms": 749.7146392300002,
+        "cacheHitRate": 0.9473684210526315,
+        "dbQueryP95Ms": 1.71905,
+        "kafkaLag": 1.0
+      },
+      "faultEvidence": "DOWNSTREAM_TIMEOUT",
+      "peakKafkaLag": 1.0,
+      "peakOutboxPending": 13.0,
+      "recovered": true,
+      "phaseEvidenceMetrics": {
+        "AFTER": {
+          "PROCESSED_COUNT": 0.0,
+          "KAFKA_LAG": 1.0,
+          "DB_LOOKUP_COUNT": 1.0,
+          "CACHE_HIT_RATE": 0.9473684210526315,
+          "DB_QUERY_P95": 1.71905
+        },
+        "BEFORE": {
+          "PROCESSED_COUNT": 0.0,
+          "DB_LOOKUP_COUNT": 0.0,
+          "KAFKA_LAG": 0.0
+        }
+      }
+    },
+    {
+      "scenario": "DATABASE_DEGRADATION",
+      "parameter": 400,
+      "vus": 2,
+      "durationSeconds": 5,
+      "recoverySeconds": 5,
+      "sessionId": "77053b3f-80db-4c7f-af51-a6a42e8227d6",
+      "experimentId": "cbf4e456-d26a-4aee-a366-b1a349f45152",
+      "before": {
+        "requestCount": 10.0,
+        "errorCount": 0.0,
+        "durationSeconds": 6.037692332,
+        "throughput": 1.656261937528618,
+        "successRate": 1.0,
+        "p50Ms": 521.7034625,
+        "p95Ms": 3900.9528407499993,
+        "p99Ms": 4207.26890815,
+        "cacheHitRate": 0.0,
+        "dbQueryP95Ms": 42.443911,
+        "kafkaLag": 1.0
+      },
+      "after": {
+        "requestCount": 38.0,
+        "errorCount": 0.0,
+        "durationSeconds": 5.6914382759999995,
+        "throughput": 6.676695442739087,
+        "successRate": 1.0,
+        "p50Ms": 148.49037,
+        "p95Ms": 825.17648995,
+        "p99Ms": 874.9994269100002,
+        "cacheHitRate": 0.9473684210526315,
+        "dbQueryP95Ms": 1.742978,
+        "kafkaLag": 1.0
+      },
+      "faultEvidence": "INEFFICIENT_QUERY",
+      "peakKafkaLag": 1.0,
+      "peakOutboxPending": 11.0,
+      "recovered": true,
+      "phaseEvidenceMetrics": {
+        "AFTER": {
+          "PROCESSED_COUNT": 0.0,
+          "DB_LOOKUP_COUNT": 1.0,
+          "KAFKA_LAG": 1.0,
+          "DB_QUERY_P95": 1.742978,
+          "CACHE_HIT_RATE": 0.9473684210526315
+        },
+        "BEFORE": {
+          "DB_LOOKUP_COUNT": 5.0,
+          "PROCESSED_COUNT": 0.0,
+          "KAFKA_LAG": 1.0,
+          "CACHE_HIT_RATE": 0.0,
+          "DB_QUERY_P95": 42.443911
+        }
+      }
+    },
+    {
+      "scenario": "CACHE_DEGRADATION",
+      "parameter": 400,
+      "vus": 2,
+      "durationSeconds": 5,
+      "recoverySeconds": 5,
+      "sessionId": "b4d36879-50fe-42b8-9bd5-efcd8bae00ce",
+      "experimentId": "13a64673-931e-4254-8a52-a3b89503f007",
+      "before": {
+        "requestCount": 32.0,
+        "errorCount": 0.0,
+        "durationSeconds": 5.239932549,
+        "throughput": 6.106948839657669,
+        "successRate": 1.0,
+        "p50Ms": 153.367697,
+        "p95Ms": 772.3062807,
+        "p99Ms": 1077.1842967300004,
+        "cacheHitRate": 0.0,
+        "dbQueryP95Ms": 4.225744,
+        "kafkaLag": 1.0
+      },
+      "after": {
+        "requestCount": 52.0,
+        "errorCount": 0.0,
+        "durationSeconds": 5.425842977,
+        "throughput": 9.583764259383578,
+        "successRate": 1.0,
+        "p50Ms": 85.6700975,
+        "p95Ms": 542.4332076,
+        "p99Ms": 633.2836663100002,
+        "cacheHitRate": 0.9615384615384616,
+        "dbQueryP95Ms": 1.180424,
+        "kafkaLag": 1.0
+      },
+      "faultEvidence": "CACHE_BYPASS",
+      "peakKafkaLag": 1.0,
+      "peakOutboxPending": 18.0,
+      "recovered": true,
+      "phaseEvidenceMetrics": {
+        "AFTER": {
+          "PROCESSED_COUNT": 0.0,
+          "KAFKA_LAG": 1.0,
+          "DB_LOOKUP_COUNT": 1.0,
+          "CACHE_HIT_RATE": 0.9615384615384616,
+          "DB_QUERY_P95": 1.180424
+        },
+        "BEFORE": {
+          "KAFKA_LAG": 1.0,
+          "DB_LOOKUP_COUNT": 16.0,
+          "PROCESSED_COUNT": 0.0,
+          "DB_QUERY_P95": 4.225744,
+          "CACHE_HIT_RATE": 0.0
+        }
+      }
+    },
+    {
+      "scenario": "KAFKA_SLOWDOWN",
+      "parameter": 2000,
+      "vus": 5,
+      "durationSeconds": 10,
+      "recoverySeconds": 20,
+      "sessionId": "aac8d665-e35f-4bc4-b89c-1b214b1e1987",
+      "experimentId": "2daba604-c1dd-46e5-9f13-2948c2de0aa3",
+      "before": {
+        "requestCount": 148.0,
+        "errorCount": 0.0,
+        "durationSeconds": 11.725976862,
+        "throughput": 12.621549721765092,
+        "successRate": 1.0,
+        "p50Ms": 100.8285235,
+        "p95Ms": 1004.1868749000005,
+        "p99Ms": 1952.315328,
+        "cacheHitRate": 0.9864864864864865,
+        "dbQueryP95Ms": 1.422256,
+        "kafkaLag": 6.0
+      },
+      "after": {
+        "requestCount": 160.0,
+        "errorCount": 0.0,
+        "durationSeconds": 10.665499017,
+        "throughput": 15.001642187109303,
+        "successRate": 1.0,
+        "p50Ms": 189.513087,
+        "p95Ms": 996.0105922999992,
+        "p99Ms": 1164.80389737,
+        "cacheHitRate": 0.9875,
+        "dbQueryP95Ms": 1.806507,
+        "kafkaLag": 1.0
+      },
+      "faultEvidence": "CONSUMER_DELAY",
+      "peakKafkaLag": 7.0,
+      "peakOutboxPending": 79.0,
+      "recovered": true,
+      "phaseEvidenceMetrics": {
+        "AFTER": {
+          "KAFKA_LAG": 1.0,
+          "DB_LOOKUP_COUNT": 1.0,
+          "PROCESSED_COUNT": 0.0,
+          "CACHE_HIT_RATE": 0.9875,
+          "DB_QUERY_P95": 1.806507
+        },
+        "BEFORE": {
+          "KAFKA_LAG": 6.0,
+          "DB_LOOKUP_COUNT": 1.0,
+          "PROCESSED_COUNT": 0.0,
+          "DB_QUERY_P95": 1.422256,
+          "CACHE_HIT_RATE": 0.9864864864864865
+        }
+      }
+    }
+  ],
+  "observability": {
+    "verifiedAt": "2026-10-01T12:32:43.745Z",
+    "prometheusTargetsUp": 3,
+    "businessRequestCount": 55,
+    "dashboardPanels": 13,
+    "workerLogStreams": 30,
+    "faultEventStreams": 4,
+    "traceId": "5bf5338a62403024167a4ec5d6a208db",
+    "services": [
+      "demo-api",
+      "demo-worker"
+    ],
+    "spanNamesByService": {
+      "demo-api": [
+        "OrderRepository.findByIdempotencyKey",
+        "SELECT io.incidentlens.demoapi.PurchaseOrder",
+        "Transaction.commit",
+        "POST /api/orders",
+        "Set variable 'autocommit'",
+        "Prepare statement",
+        "Execute prepared statement",
+        "Commit",
+        "SELECT demo_api.product",
+        "INSERT demo_api.purchase_order",
+        "SELECT demo_api.purchase_order",
+        "INSERT demo_api.outbox_event",
+        "UPDATE demo_api.outbox_event",
+        "incidentlens.orders.v1 publish"
+      ],
+      "demo-worker": [
+        "incidentlens.orders.v1 process",
+        "INSERT demo_worker.processed_event",
+        "SELECT demo_worker.processed_event",
+        "INSERT demo_worker.fulfillment",
+        "SELECT demo_worker.fulfillment",
+        "Set variable 'autocommit'",
+        "Prepare statement",
+        "Execute prepared statement",
+        "Commit",
+        "GET"
+      ]
+    }
+  },
+  "history": {
+    "publishedBranch": "main",
+    "commits": 9,
+    "author": "NIGHTPURI",
+    "email": "127381985+NIGHTPURI@users.noreply.github.com",
+    "privateEmailMatches": 0,
+    "userPathMatches": 0,
+    "realSecretMatches": 0,
+    "preservedBackupRef": "refs/backup/pre-publication-2026-10-01",
+    "backupIncludedInPublication": false,
+    "pushPerformed": false,
+    "remotesChanged": false
+  }
+}

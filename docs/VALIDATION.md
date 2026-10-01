@@ -1,5 +1,7 @@
 # Executed verification
 
+Latest rerun: [2026-10-01 publication audit](PUBLICATION_AUDIT_2026-10-01.md). The results below remain the original 2026-09-22 record.
+
 This document records execution in the development workspace on **2026-09-22**. It is not a claim that GitHub Actions has run on a remote repository.
 
 ## Environment

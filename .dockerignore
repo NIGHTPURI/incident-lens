@@ -2,6 +2,12 @@
 .agents
 .codex
 .env
+.env.*
+.aws
+*.pem
+*.key
+*.p12
+*.pfx
 .gradle
 .local
 **/build
@@ -10,4 +16,14 @@
 **/node_modules
 **/dist
 artifacts
+target
+data
+volumes
+**/*-data
+dumps
+*.dump
+*.rdb
+*.aof
+*.sql.gz
+*.sql.bz2
 *.log

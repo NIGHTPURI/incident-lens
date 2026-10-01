@@ -37,7 +37,7 @@ These are short diagnostic samples with warm caches, not a statistically control
 | WSL | 2.7.14.0; kernel 6.18.33.2-microsoft-standard-WSL2 |
 | Engine resources | 8 CPUs, 8,281,260,032 bytes memory; about 7.71 GiB |
 | Image storage | `overlayfs`, `io.containerd.snapshotter.v1`; containerd image store enabled |
-| Repository filesystem | Linux ext4, `<repository-root>`, not `/mnt/c` |
+| Repository filesystem | Linux ext4, `<repository-root>`, not `/mnt/c` (local account path redacted for publication) |
 | Ubuntu WSL VHD | `E:\WSL\Ubuntu-24.04`, Samsung NVMe SSD |
 | Active Docker VHD | `D:\…\DockerDesktopWSL\disk\docker_data.vhdx`, WDC WD10EZEX SATA HDD |
 | Host free capacity | D: about 286 GiB; E: about 233 GiB; C: about 3 GiB / 98% used |
