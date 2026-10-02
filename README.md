@@ -176,6 +176,8 @@ RCA_MODEL=
 
 Set a real key only in the ignored `.env`. The adapter is enabled only when both key and model are present. It sends a bounded structured evidence package, not arbitrary raw logs. The response must satisfy the local schema, confidence bounds and known-ID citation checks. Timeout, malformed JSON, unknown citations or provider errors fall back to rules. Citation validation cannot prove that a semantic claim is true; reviewing the evidence remains necessary. [Provider design](docs/adr/005-grounded-rca.md).
 
+The compatible provider accepts at most **65,536 UTF-8 response bytes, including the JSON envelope**, checking actual bytes as chunks arrive. Non-200 responses and oversized declared lengths are rejected before requesting body data. A 20-second response-completion wait cancels the pending request on timeout; interruption also requests cancellation and preserves the thread's interrupt flag. Existing evidence validation and persisted rule-based fallback remain in use. These are local resource limits, not guarantees about provider-side generation or billing. [Implementation, regression results and interview walkthrough](docs/RCA_RESPONSE_BUDGET.md).
+
 ## BEFORE vs AFTER
 
 The runner first waits for an idle outbox and consumer group, then creates an incident and one experiment, activates the fault, runs BEFORE, stores its measured summary/evidence, creates the RCA, disables the fault, waits for recovery, and runs AFTER with the persisted VU count and duration. Both runs use the same catalog/order workload. The API rejects changed workload settings, invalid percentiles, repeated completion and out-of-order phases.
@@ -218,6 +220,7 @@ bash scripts/verify.sh --integration
 This checks required files, Gradle build/tests, infrastructure integration tests, frontend tests/build and all Compose profiles. Without `-Integration` / `--integration`, Docker-backed tests are excluded deliberately. Explicit integration execution fails if Docker is unavailable; it does not silently skip the suite.
 
 - Unit tests: evidence provenance, insufficient evidence, RCA citations/fallback, invalid experiment summaries, fault behavior, cache coalescing, event validation and bounded bodies.
+- Provider boundary tests: exact byte limit, chunked/unknown length, UTF-8 fragments, error status, interrupted/incomplete responses and safe fallback. `RcaReportFlowTest` exercises controller → provider → fallback → persistence → detail using in-memory H2 and simulated HTTP delivery. It does not replace MySQL or real-socket tests.
 - Local application tests: real Spring HTTP + Flyway + database lifecycle with H2, labelled as wiring/behavior checks rather than MySQL proof.
 - Testcontainers: actual MySQL constraints/transactions and concurrent idempotency; Kafka outbox publication, consumer redelivery and malformed-event DLQ behavior.
 - Frontend: API failures, absent metrics, fault ownership, citations, comparisons and browser interactions.
