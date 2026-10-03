@@ -6,6 +6,7 @@ test("offline lessons keep position and predictions across language, refresh and
     if (route.request().method() !== "GET") writes++;
     await route.abort("connectionrefused");
   });
+  await page.addInitScript(() => localStorage.setItem("incidentlens.learning.mode", "reference"));
   await page.goto("/");
   await expect(page.getByRole("heading", { name: "요청 한 번이 지나가는 길을 따라가 보세요." })).toBeVisible();
   await page.getByRole("button", { name: "첫 학습 시작" }).click();
@@ -73,6 +74,7 @@ test("local experiment controls require explicit action for all four faults", as
     }
     await route.fulfill({ json: data });
   });
+  await page.addInitScript(() => localStorage.setItem("incidentlens.learning.mode", "reference"));
   await page.goto("/");
   await page.getByRole("button", { name: "06 · 장애 분석과 회복" }).click();
   await expect(page.getByText("로컬 컨트롤 플레인에 연결되었습니다. 실행 전 전체 서비스 상태를 확인하세요.")).toBeVisible();
@@ -93,7 +95,7 @@ test("local experiment controls require explicit action for all four faults", as
 test("embedded mode leaves navigation to the host", async ({ page }) => {
   await page.route("**/api/**", (route) => route.abort("connectionrefused"));
   await page.goto("/?embed=1");
-  await expect(page.getByRole("heading", { name: "요청 한 번이 지나가는 길을 따라가 보세요." })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "백엔드 학습 목록" })).toBeVisible();
   await expect(page.locator(".sidebar")).toBeHidden();
   await expect(page.locator(".learning-topbar")).toHaveCount(0);
   await page.goto("/?embed=1&view=lab");

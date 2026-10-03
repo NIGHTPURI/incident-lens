@@ -7,6 +7,7 @@ test("logo opens a persistent home without clearing the last lesson or predictio
     await route.abort("connectionrefused");
   });
 
+  await page.addInitScript(() => localStorage.setItem("incidentlens.learning.mode", "reference"));
   await page.goto("/");
   await page.getByRole("button", { name: "첫 학습 시작" }).click();
   await page.locator(".learning-lesson-nav button").click();
@@ -57,6 +58,7 @@ test("home retains an active fault and saved results, with disable only on expli
     return route.fulfill({ json: {} });
   });
 
+  await page.addInitScript(() => localStorage.setItem("incidentlens.learning.mode", "reference"));
   await page.goto("/");
   await page.getByRole("button", { name: "06 · 장애 분석과 회복" }).click();
   await page.getByLabel("실험 세션").selectOption(session.id);
