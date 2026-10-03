@@ -17,11 +17,19 @@ jobs:
       - uses: gradle/actions/setup-gradle@v4
       - name: Compile, unit and infrastructure integration tests
         run: ./gradlew build integrationTest --no-daemon
+      - name: Verify isolated beginner curriculum examples
+        run: |
+          python3 examples/beginner/verify.py
+          python3 examples/beginner/advanced/run.py all
+          ./gradlew -p examples/beginner/spring-api --offline --no-daemon test
+          ./gradlew -p examples/beginner/data-jpa --offline --no-daemon test
       - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: backend-test-reports
-          path: apps/*/build/reports/tests/
+          path: |
+            apps/*/build/reports/tests/
+            examples/beginner/*/build/reports/tests/
   web:
     runs-on: ubuntu-latest
     defaults:

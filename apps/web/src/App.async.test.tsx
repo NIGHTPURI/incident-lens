@@ -47,10 +47,9 @@ function detail(id: string, explanation = `Evidence for ${id}`): SessionDetail {
 }
 function deferred<T>() {
   let resolve!: (value: T) => void;
-  const promise = new Promise<T>((done) => {
-    resolve = done;
-  });
-  return { promise, resolve };
+  let reject!: (reason: unknown) => void;
+  const promise = new Promise<T>((done, fail) => { resolve = done; reject = fail; });
+  return { promise, resolve, reject };
 }
 async function mount() {
   await act(async () => {
@@ -213,5 +212,80 @@ describe("freshness and session isolation", () => {
     expect(
       within(latency).getByText(/No measured requests/),
     ).toBeInTheDocument();
+  });
+});
+
+describe("transient operation feedback scope", () => {
+  it("invalidates an in-flight lesson operation when its lesson changes", async () => {
+    localStorage.setItem("incidentlens.learning.mode", "reference");
+    localStorage.setItem("incidentlens.learning.view", "lesson");
+    localStorage.setItem("incidentlens.learning.lesson", "diagnose");
+    vi.mocked(api.overview).mockResolvedValue({ ...overview, services: ["demo-api", "demo-worker", "redis"].map(name => ({ name, status: "UP" })) });
+    const pending = deferred<[]>(); vi.spyOn(api, "collect").mockReturnValue(pending.promise);
+    await mount(); await click("Learn");
+    await click("Collect AFTER evidence");
+    expect(api.collect).toHaveBeenCalledTimes(1);
+    await click("Previous lesson");
+    await act(async () => pending.resolve([]));
+    expect(document.querySelector(".message.success")).not.toBeInTheDocument();
+  });
+  const success = "Evidence collected from the observation window.";
+  async function collectScreen() { await mount(); await click("Evidence & RCA"); }
+  async function learning() {
+    await act(async () => { fireEvent.click(document.querySelector('.sidebar .nav-item')!); });
+  }
+  it("removes a completed notice on navigation and does not restore it on return", async () => {
+    vi.spyOn(api, "collect").mockResolvedValue([]);
+    await collectScreen(); await click("Collect evidence");
+    expect(screen.getByText(success)).toBeInTheDocument();
+    await learning(); expect(screen.queryByText(success)).not.toBeInTheDocument();
+    await click("Evidence & RCA"); expect(screen.queryByText(success)).not.toBeInTheDocument();
+  });
+  it("discards a late success even when the user returns to its original route", async () => {
+    const pending = deferred<[]>(); vi.spyOn(api, "collect").mockReturnValue(pending.promise);
+    await collectScreen(); await click("Collect evidence");
+    await learning(); await click("Evidence & RCA");
+    await act(async () => pending.resolve([]));
+    expect(screen.queryByText(success)).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Collect evidence" })).toBeEnabled();
+  });
+  it("discards a late failure after navigation but still shows a current failure", async () => {
+    const pending = deferred<[]>(); vi.spyOn(api, "collect").mockReturnValueOnce(pending.promise)
+      .mockRejectedValue(new Error("current operation failed"));
+    await collectScreen(); await click("Collect evidence"); await learning();
+    await act(async () => pending.reject(new Error("obsolete operation failed")));
+    expect(screen.queryByRole("alert")).not.toBeInTheDocument();
+    await click("Evidence & RCA"); await click("Collect evidence");
+    expect(screen.getByRole("alert")).toBeInTheDocument();
+    await learning(); expect(screen.queryByRole("alert")).not.toBeInTheDocument();
+  });
+  it("invalidates feedback when the selected session changes", async () => {
+    vi.spyOn(api, "collect").mockResolvedValue([]);
+    await collectScreen(); await click("Collect evidence");
+    await act(async () => fireEvent.change(screen.getByLabelText("Incident session"), { target: { value: "session-b" } }));
+    expect(screen.queryByText(success)).not.toBeInTheDocument();
+  });
+  it("keeps the global active fault warning through lesson and tab navigation", async () => {
+    vi.mocked(api.overview).mockResolvedValue({ ...overview,
+      services: [{ name: "redis", status: "UP" }],
+      activeFault: { sessionId: "session-a", scenario: "DOWNSTREAM_LATENCY", enabled: true, parameter: 100, expiresAt: "2026-10-04T00:00:00Z" } });
+    await mount(); await learning(); await click("Start first lesson");
+    const warning = document.querySelector(".fault-banner");
+    expect(warning).toBeInTheDocument();
+    await click("Next lesson"); await act(async () => fireEvent.click(screen.getByRole("tab", { name: "Flow" })));
+    expect(document.querySelector(".fault-banner")).toHaveTextContent(warning!.textContent!);
+  });
+  it("does not let late session creation hijack a new learning context", async () => {
+    const pending = deferred<ReturnType<typeof detail>["session"]>();
+    vi.spyOn(api, "createSession").mockReturnValue(pending.promise);
+    await mount();
+    await click("Incident lab");
+    const create = screen.getByRole("button", { name: /Create session/i });
+    await act(async () => fireEvent.click(create));
+    await learning();
+    await act(async () => pending.resolve(detail("new-session").session));
+    expect(api.createSession).toHaveBeenCalledTimes(1);
+    expect(document.querySelector(".message.success")).not.toBeInTheDocument();
+    expect(localStorage.getItem("incidentlens.learning.session")).toBe("session-a");
   });
 });

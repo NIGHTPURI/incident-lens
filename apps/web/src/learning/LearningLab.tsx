@@ -1,4 +1,5 @@
 import { useState } from "react";
+import Curriculum from "./Curriculum";
 import type { Overview, IncidentSession, Scenario, SessionDetail, Workload } from "../types";
 import { useI18n } from "../i18n/I18nProvider";
 import { both, lessons, scenarios } from "./content";
@@ -133,6 +134,7 @@ function reportLanguage(value: string): "ko" | "en" | "und" {
 
 export type LearningLabProps = {
   view: "home" | "lesson";
+  onContextChange: () => void;
   onViewChange: (view: "home" | "lesson") => void;
   overview: Overview | null;
   connectionChecked: boolean;
@@ -151,6 +153,12 @@ export type LearningLabProps = {
 
 export default function LearningLab(props: LearningLabProps) {
   const { locale } = useI18n();
+  const [reference, setReference] = useState(() => stored("incidentlens.learning.mode", "curriculum") === "reference");
+  function switchMode(next: boolean) {
+    props.onContextChange();
+    setReference(next);
+    save("incidentlens.learning.mode", next ? "reference" : "curriculum");
+  }
   const t = (key: CopyKey) => {
     const value = copy[key];
     return Array.isArray(value) ? "" : (value as Text)[locale];
@@ -187,10 +195,11 @@ export default function LearningLab(props: LearningLabProps) {
   const flowParts = flows[flow];
 
   function selectLesson(index: number) {
+    props.onContextChange();
     setLessonIndex(index);
     setPrediction(stored(`incidentlens.learning.prediction.${lessons[index].id}`, ""));
     setRevealed(false);
-    setFlow(index === 0 || index === 2 ? "catalog" : "order");
+    setFlow(["request", "cache"].includes(lessons[index].id) ? "catalog" : "order");
     setFlowPart(0);
     if (lessons[index].scenario) chooseScenario(lessons[index].scenario);
     setCoachStage("flow");
@@ -198,6 +207,7 @@ export default function LearningLab(props: LearningLabProps) {
     setListOpen(false);
   }
   function chooseScenario(id: Scenario) {
+    props.onContextChange();
     setScenarioId(id);
     save("incidentlens.learning.scenario", id);
     setCoachStage("experiment");
@@ -218,8 +228,10 @@ export default function LearningLab(props: LearningLabProps) {
   const originalLanguage = detail?.report ? reportLanguage(`${detail.report.summary} ${detail.report.suspectedRootCause}`) : "und";
   const observed = detail?.report ? detail.evidence.filter((evidence) => detail.report!.evidenceIds.includes(evidence.id)) : detail?.evidence.slice(-4) ?? [];
 
+  if (!reference) return <Curriculum view={props.view} onViewChange={props.onViewChange} onContextChange={props.onContextChange} onReference={() => switchMode(true)} />;
   return (
     <div className="learning-root">
+      <button className="learn-secondary" onClick={() => switchMode(false)}>{locale === "ko" ? "15단계 기초 과정" : "15-stage foundations"}</button>
       {props.view === "home" ? (
         <section className="learning-intro">
           <span className="learning-kicker">INCIDENTLENS / {t("module")}</span>
@@ -256,7 +268,7 @@ export default function LearningLab(props: LearningLabProps) {
 
             <section className="learning-section"><h2>{t("technical")}</h2>{lesson.topics.map((entry) => <details className="learning-topic" key={entry.code}><summary>{entry.name[locale]}</summary><dl>{entry.sections.map((section, index) => <div key={index}><dt>{copy.sections[index][locale]}</dt><dd>{section[locale]}</dd></div>)}</dl><a href={`https://github.com/NIGHTPURI/incident-lens/blob/feat/backend-learning-lab/${entry.code}`} target="_blank" rel="noreferrer">{t("code")}: {entry.code.split("/").at(-1)} ↗</a></details>)}</section>
 
-            {(lesson.scenario || lessonIndex === 5) && <section className="learning-section learning-experiment" aria-labelledby="learning-experiments-title"><h2 id="learning-experiments-title">{t("experiments")}</h2><div className="learning-scenarios">{scenarios.map((entry) => <button key={entry.id} aria-pressed={scenarioId === entry.id} onClick={() => chooseScenario(entry.id)}>{entry.title[locale]}</button>)}</div>
+            {(lesson.scenario || lesson.id === "diagnose") && <section className="learning-section learning-experiment" aria-labelledby="learning-experiments-title"><h2 id="learning-experiments-title">{t("experiments")}</h2><div className="learning-scenarios">{scenarios.map((entry) => <button key={entry.id} aria-pressed={scenarioId === entry.id} onClick={() => chooseScenario(entry.id)}>{entry.title[locale]}</button>)}</div>
               <div className="learning-sequence"><strong>{t("workflow")}</strong><ol>{copy.steps.map((step, index) => <li key={index}>{step[locale]}</li>)}</ol></div>
               <div className="learning-box"><strong>{t("background")}: {scenario.title[locale]}</strong><p>{scenario.change[locale]}</p><p><b>{t("observe")}:</b> {scenario.observe[locale]}</p><p>{t("scope")}</p></div>
               <div className="learning-predict"><label htmlFor="scenario-prediction">{t("experimentPrediction")}: {scenario.question[locale]}</label><textarea id="scenario-prediction" value={scenarioPrediction} placeholder={t("predictionPlaceholder")} onFocus={() => setCoachStage("experiment")} onChange={(event) => { setScenarioPrediction(event.target.value); save(`incidentlens.learning.scenario.${scenarioId}`, event.target.value); }} /><button className="learn-secondary" aria-expanded={scenarioRevealed} onClick={() => { setScenarioRevealed(!scenarioRevealed); setCoachStage("experiment"); }}>{t("scenarioReveal")}</button>{scenarioRevealed && <div className="learning-box"><p>{scenario.expected[locale]}</p></div>}</div>

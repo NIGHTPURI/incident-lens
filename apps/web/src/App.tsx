@@ -227,14 +227,14 @@ export default function App() {
     date,
     scenarioName,
   } = usePresentation();
-  const [page, setPage] = useState<Page>(() => {
+  const [page, setPageState] = useState<Page>(() => {
     const requested = new URLSearchParams(window.location.search).get("view");
     return pages.some((item) => item.id === requested) ? requested as Page : "learn";
   });
   const [learningView, setLearningView] = useState<LearningView>(readLearningView);
   const [overview, setOverview] = useState<Overview | null>(null);
   const [sessions, setSessions] = useState<IncidentSession[]>([]);
-  const [selectedId, setSelectedId] = useState("");
+  const [selectedId, setSelectedIdState] = useState("");
   const [loadedDetail, setDetail] = useState<SessionDetail | null>(null);
   const detail = loadedDetail?.session.id === selectedId ? loadedDetail : null;
   const [error, setError] = useState<DisplayError | null>(null);
@@ -249,6 +249,25 @@ export default function App() {
   );
   const selectedIdRef = useRef(selectedId);
   selectedIdRef.current = selectedId;
+  // Invalidate feedback synchronously on navigation, including leave-and-return.
+  // Data refreshes and the global fault banner remain independent of this scope.
+  const feedbackRevision = useRef(0);
+  const operationRevision = useRef(0);
+  function invalidateFeedback() {
+    feedbackRevision.current++;
+    setNotice("");
+    setError(null);
+  }
+  function setPage(next: Page) {
+    invalidateFeedback();
+    setPageState(next);
+  }
+  function setSelectedId(next: string) {
+    if (selectedIdRef.current !== next) invalidateFeedback();
+    selectedIdRef.current = next;
+    setSelectedIdState(next);
+  }
+  useEffect(() => () => { feedbackRevision.current++; operationRevision.current++; }, []);
   const overviewRevision = useRef(0);
   const detailRevision = useRef(0);
   const displayedError = error ?? (page === "learn" ? null : detailError ?? overviewError);
@@ -328,41 +347,50 @@ export default function App() {
     operation: () => Promise<unknown>,
     success: TranslationKey,
   ) {
+    const operationId = ++operationRevision.current;
+    invalidateFeedback();
+    const scope = feedbackRevision.current;
+    const current = () => scope === feedbackRevision.current && operationId === operationRevision.current;
     setBusy(true);
-    setError(null);
-    setNotice("");
     detailRevision.current++;
     try {
       await operation();
       await refresh();
       if (selectedId && selectedIdRef.current === selectedId)
         await refreshDetail(selectedId);
-      setNotice(success);
+      if (current()) setNotice(success);
     } catch (cause) {
-      setError({ cause, fallback: "error.operation" });
+      if (current()) setError({ cause, fallback: "error.operation" });
     } finally {
-      setBusy(false);
+      if (operationId === operationRevision.current) setBusy(false);
     }
   }
 
   async function createSession(name: string, scenario: Scenario) {
+    const operationId = ++operationRevision.current;
+    invalidateFeedback();
+    const scope = feedbackRevision.current;
+    const current = () => scope === feedbackRevision.current && operationId === operationRevision.current;
     setBusy(true);
-    setError(null);
-    setNotice("");
     try {
       const created = await api.createSession(name, scenario);
       await refresh();
-      setSelectedId(created.id);
-      setNotice("notice.sessionCreated");
+      if (current()) {
+        // Selecting the result belongs to this operation, not a new user context.
+        selectedIdRef.current = created.id;
+        setSelectedIdState(created.id);
+        setNotice("notice.sessionCreated");
+      }
     } catch (cause) {
-      setError({ cause, fallback: "error.createSession" });
+      if (current()) setError({ cause, fallback: "error.createSession" });
     } finally {
-      setBusy(false);
+      if (operationId === operationRevision.current) setBusy(false);
     }
   }
 
   const active = overview?.activeFault?.enabled ? overview.activeFault : null;
   function changeLearningView(view: LearningView) {
+    invalidateFeedback();
     setLearningView(view);
     try { localStorage.setItem(learningViewKey, view); } catch { /* Storage is optional. */ }
   }
@@ -544,6 +572,7 @@ export default function App() {
           {page === "learn" && <LearningLab
             view={learningView}
             onViewChange={changeLearningView}
+            onContextChange={invalidateFeedback}
             overview={overviewError ? null : overview}
             connectionChecked={!loading}
             sessions={sessions}

@@ -1817,3 +1817,24 @@ td {
   outline: 3px solid #216847;
   outline-offset: 3px;
 }
+
+/* Curriculum stays inside the existing learning workspace. */
+.curriculum-toolbar { display: flex; flex-wrap: wrap; gap: .75rem; margin-bottom: 1.2rem; }
+.curriculum-roadmap { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr)); gap: .75rem; margin: 1.5rem 0; }
+.curriculum-roadmap button { text-align: left; padding: 1rem; border: 1px solid #bac5c0; border-radius: 10px; background: #fff; color: #243e33; }
+.curriculum-roadmap button strong, .curriculum-roadmap button span { display: block; }
+.curriculum-roadmap button span { margin-top: .5rem; font-size: .85rem; }
+.curriculum-roadmap button[aria-current="step"] { border: 2px solid #276147; }
+.curriculum-tabs { display: flex; flex-wrap: wrap; gap: .5rem; margin: 1.5rem 0; }
+.curriculum-tabs button { padding: .7rem 1rem; border: 1px solid #8caa98; border-radius: 8px; background: #fff; color: #203e2f; }
+.curriculum-tabs button[aria-selected="true"] { background: #24563c; color: #fff; }
+.curriculum pre { max-width: 100%; overflow: auto; padding: 1rem; border-radius: 8px; background: #14261d; color: #f2f7f4; font-size: .88rem; line-height: 1.65; white-space: pre-wrap; overflow-wrap: anywhere; }
+.curriculum p { line-height: 1.9; overflow-wrap: anywhere; }
+.curriculum textarea { display: block; width: 100%; min-height: 140px; margin: .75rem 0; padding: .8rem; border: 1px solid #82998c; border-radius: 8px; background: #fff; color: #172a20; }
+.curriculum-flow { display: flex; flex-wrap: wrap; gap: .5rem; }
+.curriculum details { margin: 1rem 0; padding: .75rem; border: 1px solid #bac5c0; border-radius: 8px; }
+.curriculum :focus-visible { outline: 3px solid #176344; outline-offset: 3px; }
+
+.curriculum pre, .curriculum code { font-family: "IncidentLens Korean", "SFMono-Regular", Consolas, "Liberation Mono", monospace; }
+.curriculum textarea { font: inherit; }
+.curriculum-flow [aria-pressed="true"] { border-color: #24563c; background: #e6f1e9; color: #173d28; }
