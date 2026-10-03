@@ -132,6 +132,8 @@ function reportLanguage(value: string): "ko" | "en" | "und" {
 }
 
 export type LearningLabProps = {
+  view: "home" | "lesson";
+  onViewChange: (view: "home" | "lesson") => void;
   overview: Overview | null;
   connectionChecked: boolean;
   sessions: IncidentSession[];
@@ -153,20 +155,22 @@ export default function LearningLab(props: LearningLabProps) {
     const value = copy[key];
     return Array.isArray(value) ? "" : (value as Text)[locale];
   };
-  const [started, setStarted] = useState(() => stored("incidentlens.learning.started", "false") === "true");
   const [lessonIndex, setLessonIndex] = useState(() => Math.max(0, lessons.findIndex((lesson) => lesson.id === stored("incidentlens.learning.lesson", "request"))));
   const [flow, setFlow] = useState<"catalog" | "order">("catalog");
   const [flowPart, setFlowPart] = useState(0);
   const [coachStage, setCoachStage] = useState<"flow" | "prediction" | "experiment">("flow");
-  const [scenarioId, setScenarioId] = useState<Scenario>("DOWNSTREAM_LATENCY");
+  const [scenarioId, setScenarioId] = useState<Scenario>(() => {
+    const saved = stored("incidentlens.learning.scenario", "DOWNSTREAM_LATENCY");
+    return scenarios.some((candidate) => candidate.id === saved) ? saved as Scenario : "DOWNSTREAM_LATENCY";
+  });
   const [prediction, setPrediction] = useState(() => stored(`incidentlens.learning.prediction.${lessons[lessonIndex].id}`, ""));
-  const [scenarioPrediction, setScenarioPrediction] = useState(() => stored("incidentlens.learning.scenario.DOWNSTREAM_LATENCY", ""));
+  const [scenarioPrediction, setScenarioPrediction] = useState(() => stored(`incidentlens.learning.scenario.${scenarioId}`, ""));
   const [scenarioRevealed, setScenarioRevealed] = useState(false);
   const [reflection, setReflection] = useState(() => stored("incidentlens.learning.reflection", ""));
   const [revealed, setRevealed] = useState(false);
   const [helpOpen, setHelpOpen] = useState(false);
   const [listOpen, setListOpen] = useState(false);
-  const [parameter, setParameter] = useState(350);
+  const [parameter, setParameter] = useState(() => scenarios.find((candidate) => candidate.id === scenarioId)!.parameter);
   const [vus, setVus] = useState(2);
   const [duration, setDuration] = useState(20);
   const lesson = lessons[lessonIndex];
@@ -195,6 +199,7 @@ export default function LearningLab(props: LearningLabProps) {
   }
   function chooseScenario(id: Scenario) {
     setScenarioId(id);
+    save("incidentlens.learning.scenario", id);
     setCoachStage("experiment");
     setScenarioPrediction(stored(`incidentlens.learning.scenario.${id}`, ""));
     setScenarioRevealed(false);
@@ -203,8 +208,8 @@ export default function LearningLab(props: LearningLabProps) {
     props.selectSession(existing?.id ?? "");
   }
   function start() {
-    setStarted(true);
     save("incidentlens.learning.started", "true");
+    props.onViewChange("lesson");
   }
   const command = relevantExperiment ? `SCENARIO=${scenarioId} PARAMETER=${parameter} VUS=${relevantExperiment.workload.vus} DURATION_SECONDS=${relevantExperiment.workload.durationSeconds} bash scripts/demo-compare.sh --scenario ${scenarioId} --session-id ${relevantExperiment.sessionId} --experiment-id ${relevantExperiment.id}` :
     `SCENARIO=${scenarioId} PARAMETER=${parameter} VUS=${vus} DURATION_SECONDS=${duration} bash scripts/demo-compare.sh --scenario ${scenarioId}`;
@@ -215,7 +220,7 @@ export default function LearningLab(props: LearningLabProps) {
 
   return (
     <div className="learning-root">
-      {!started ? (
+      {props.view === "home" ? (
         <section className="learning-intro">
           <span className="learning-kicker">INCIDENTLENS / {t("module")}</span>
           <h1>{t("welcome")}</h1>

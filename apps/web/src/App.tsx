@@ -59,6 +59,18 @@ const scenarios: {
 ];
 
 type Page = "learn" | "overview" | "lab" | "evidence" | "comparison";
+type LearningView = "home" | "lesson";
+const learningViewKey = "incidentlens.learning.view";
+const learningSessionKey = "incidentlens.learning.session";
+function readLearningView(): LearningView {
+  try {
+    const saved = localStorage.getItem(learningViewKey);
+    if (saved === "home" || saved === "lesson") return saved;
+    return localStorage.getItem("incidentlens.learning.started") === "true" ? "lesson" : "home";
+  } catch {
+    return "home";
+  }
+}
 const pages: { id: Page; label: TranslationKey; symbol: string }[] = [
   { id: "learn", label: "nav.learn", symbol: "◈" },
   { id: "overview", label: "nav.overview", symbol: "◫" },
@@ -219,6 +231,7 @@ export default function App() {
     const requested = new URLSearchParams(window.location.search).get("view");
     return pages.some((item) => item.id === requested) ? requested as Page : "learn";
   });
+  const [learningView, setLearningView] = useState<LearningView>(readLearningView);
   const [overview, setOverview] = useState<Overview | null>(null);
   const [sessions, setSessions] = useState<IncidentSession[]>([]);
   const [selectedId, setSelectedId] = useState("");
@@ -287,8 +300,16 @@ export default function App() {
     };
   }, [refresh]);
   useEffect(() => {
-    if (!selectedId && sessions.length) setSelectedId(sessions[0].id);
+    if (!selectedId && sessions.length) {
+      let remembered = "";
+      try { remembered = localStorage.getItem(learningSessionKey) ?? ""; } catch { /* Storage is optional. */ }
+      setSelectedId(sessions.find((session) => session.id === remembered)?.id ?? sessions[0].id);
+    }
   }, [sessions, selectedId]);
+  useEffect(() => {
+    if (!selectedId) return;
+    try { localStorage.setItem(learningSessionKey, selectedId); } catch { /* Storage is optional. */ }
+  }, [selectedId]);
   useEffect(() => {
     if (!selectedId) return;
     setDetail(null);
@@ -341,6 +362,16 @@ export default function App() {
   }
 
   const active = overview?.activeFault?.enabled ? overview.activeFault : null;
+  function changeLearningView(view: LearningView) {
+    setLearningView(view);
+    try { localStorage.setItem(learningViewKey, view); } catch { /* Storage is optional. */ }
+  }
+  function goLearningHome() {
+    changeLearningView("home");
+    setPage("learn");
+    document.documentElement.scrollTop = 0;
+    document.body.scrollTop = 0;
+  }
   const faultStatusKnown =
     !overviewError &&
     overview?.services.some(
@@ -384,7 +415,7 @@ export default function App() {
           href="#"
           onClick={(event) => {
             event.preventDefault();
-            setPage("learn");
+            goLearningHome();
           }}
           aria-label={t("shell.home")}
         >
@@ -428,7 +459,7 @@ export default function App() {
       <main>
         {page === "learn" && !embedded ? (
           <header className="learning-topbar">
-            <button className="learning-brand" onClick={() => setPage("learn")}>IncidentLens <span>/{t("nav.learn")}</span></button>
+            <button className="learning-brand" aria-label={t("shell.home")} onClick={goLearningHome}>IncidentLens <span>/{t("nav.learn")}</span></button>
             <nav aria-label={t("shell.navigation")}>
               <button onClick={() => { const target = document.querySelector<HTMLButtonElement>('.learning-lesson-nav button'); if (target) { target.click(); target.scrollIntoView({ behavior: 'smooth' }); } else document.querySelector('.learning-roadmap')?.scrollIntoView({ behavior: 'smooth' }); }}>{t("learning.lessonList")}</button>
               <button onClick={() => setPage("lab")}>{t("learning.freeExperiment")}</button>
@@ -511,6 +542,8 @@ export default function App() {
             </div>
           )}
           {page === "learn" && <LearningLab
+            view={learningView}
+            onViewChange={changeLearningView}
             overview={overviewError ? null : overview}
             connectionChecked={!loading}
             sessions={sessions}

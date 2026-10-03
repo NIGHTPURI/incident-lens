@@ -15,7 +15,7 @@ IncidentLens is a local backend learning lab. Follow a request and its data thro
 5. **Outbox and deduplication:** the relay publishes after the DB commit; Kafka acknowledgement can precede a failed outbox update, so duplicate delivery remains possible. The worker deduplicates the event effect. This is not an end-to-end exactly-once guarantee.
 6. **Diagnosis and recovery:** metrics show trends, logs record events, traces show spans, and RCA separates observations from hypotheses. The rule-based report is the default; a compatible LLM is optional.
 
-Each technology explains the problem, an analogy, actual behavior, why it was chosen, its alternatives, failure symptoms, and the relevant code. Select a node or arrow in either flow to inspect its role and failure boundary. Predictions and lesson position persist in browser storage. The right panel contains written hints, not an AI chat.
+Each technology explains the problem, an analogy, actual behavior, why it was chosen, its alternatives, failure symptoms, and the relevant code. Select a node or arrow in either flow to inspect its role and failure boundary. The IncidentLens logo returns to the learning home; **Continue learning** restores the last lesson. Predictions, selected scenario and session, and the home/lesson view persist across refreshes. The right panel contains written hints, not an AI chat.
 
 ## System flow
 
