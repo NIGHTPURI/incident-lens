@@ -86,8 +86,17 @@ class OrderOutboxIntegrationTest {
                 .thenReturn(CompletableFuture.failedFuture(new IllegalStateException("broker unavailable")));
         var failedRelay = new OutboxRelay(store, unavailable, mapper, meters, telemetry, false);
         assertThat(failedRelay.publishBatch()).isZero(); assertThat(store.pending()).isEqualTo(1);
-        jdbc.update("UPDATE outbox_event SET next_attempt_at=CURRENT_TIMESTAMP(6)");
-        assertThat(relay.publishBatch()).isEqualTo(1); assertThat(store.pending()).isZero();
+        // The container may accept connections before every partition has a leader.
+        // Retry the publish assertion through that startup window while preserving a
+        // bounded failure if Kafka never becomes usable.
+        int published = 0;
+        long publishDeadline = System.nanoTime() + Duration.ofSeconds(30).toNanos();
+        while (published == 0 && System.nanoTime() < publishDeadline) {
+            jdbc.update("UPDATE outbox_event SET next_attempt_at=CURRENT_TIMESTAMP(6)");
+            published = relay.publishBatch();
+            if (published == 0) Thread.sleep(500);
+        }
+        assertThat(published).isEqualTo(1); assertThat(store.pending()).isZero();
         try (var consumer = consumer()) {
             consumer.subscribe(java.util.List.of(OrderCreated.TOPIC));
             OrderCreated received = null; long deadline = System.nanoTime() + Duration.ofSeconds(15).toNanos();
