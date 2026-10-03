@@ -69,7 +69,7 @@ test("keyboard navigation has visible focus and service health remains readable 
           : [],
     });
   });
-  await page.goto("/");
+  await page.goto("/?view=overview");
   await expect(
     page.getByRole("heading", { name: "서비스 연결 상태" }),
   ).toBeVisible();
@@ -94,7 +94,7 @@ test("keyboard navigation has visible focus and service health remains readable 
     if (kind === "language") break;
   }
   expect([...reached].filter((item) => item.startsWith("nav:"))).toHaveLength(
-    4,
+    5,
   );
   expect(reached.has("language")).toBe(true);
   await page.keyboard.press("ArrowDown");

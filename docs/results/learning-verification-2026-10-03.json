@@ -1,0 +1,137 @@
+[
+  {
+    "scenario": "DOWNSTREAM_LATENCY",
+    "session": "105be599-d854-4722-ac95-8e60683f258c",
+    "experiment": "6e30bd18-9f30-4dbc-8b51-5a3f0cbc86a7",
+    "before": {
+      "requestCount": 4.0,
+      "errorCount": 2.0,
+      "durationSeconds": 9.242374007,
+      "throughput": 0.4327892375887921,
+      "successRate": 0.5,
+      "p50Ms": 4565.277013,
+      "p95Ms": 8007.2829569000005,
+      "p99Ms": 8007.28314818,
+      "cacheHitRate": 0.5,
+      "dbQueryP95Ms": 28.1227,
+      "kafkaLag": 0.0
+    },
+    "after": {
+      "requestCount": 12.0,
+      "errorCount": 0.0,
+      "durationSeconds": 6.274736033999999,
+      "throughput": 1.9124310464977883,
+      "successRate": 1.0,
+      "p50Ms": 610.6418104999999,
+      "p95Ms": 2394.2491135499995,
+      "p99Ms": 2671.0277867100003,
+      "cacheHitRate": 0.8333333333333334,
+      "dbQueryP95Ms": 3.157922,
+      "kafkaLag": 1.0
+    },
+    "reportProvider": "rule-based",
+    "savedReport": true,
+    "status": "COMPLETE"
+  },
+  {
+    "scenario": "DATABASE_DEGRADATION",
+    "session": "fd7ca694-3135-44cc-b171-4862eecd3d9a",
+    "experiment": "5bdaa440-f0cd-495c-8ef1-2d7341fbd94a",
+    "before": {
+      "requestCount": 12.0,
+      "errorCount": 0.0,
+      "durationSeconds": 6.374296118,
+      "throughput": 1.8825608001037017,
+      "successRate": 1.0,
+      "p50Ms": 860.571692,
+      "p95Ms": 2109.2803543,
+      "p99Ms": 2168.87159326,
+      "cacheHitRate": 0.0,
+      "dbQueryP95Ms": 470.678471,
+      "kafkaLag": 1.0
+    },
+    "after": {
+      "requestCount": 18.0,
+      "errorCount": 0.0,
+      "durationSeconds": 6.707515513000001,
+      "throughput": 2.683556969061608,
+      "successRate": 1.0,
+      "p50Ms": 322.12168699999995,
+      "p95Ms": 1820.6907737999998,
+      "p99Ms": 1868.97380116,
+      "cacheHitRate": 0.8888888888888888,
+      "dbQueryP95Ms": 3.121048,
+      "kafkaLag": 1.0
+    },
+    "reportProvider": "rule-based",
+    "savedReport": true,
+    "status": "COMPLETE"
+  },
+  {
+    "scenario": "KAFKA_SLOWDOWN",
+    "session": "d0048ec6-2b4c-49ea-9cbe-5ae0353b6784",
+    "experiment": "b99b4b32-7874-497f-9755-47fadc0dfe86",
+    "before": {
+      "requestCount": 30.0,
+      "errorCount": 0.0,
+      "durationSeconds": 5.490548910999999,
+      "throughput": 5.463934569437442,
+      "successRate": 1.0,
+      "p50Ms": 129.62257899999997,
+      "p95Ms": 1163.1869483999997,
+      "p99Ms": 1435.5540017100002,
+      "cacheHitRate": 0.9333333333333333,
+      "dbQueryP95Ms": 1.172619,
+      "kafkaLag": 1.0
+    },
+    "after": {
+      "requestCount": 40.0,
+      "errorCount": 0.0,
+      "durationSeconds": 5.362910231,
+      "throughput": 7.458636873834333,
+      "successRate": 1.0,
+      "p50Ms": 118.487142,
+      "p95Ms": 709.06811145,
+      "p99Ms": 744.3205849399999,
+      "cacheHitRate": 1.0,
+      "kafkaLag": 1.0
+    },
+    "reportProvider": "rule-based",
+    "savedReport": true,
+    "status": "COMPLETE"
+  },
+  {
+    "scenario": "CACHE_DEGRADATION",
+    "session": "309c9368-af72-4976-87fc-df555aadea48",
+    "experiment": "d6d5200b-f194-462e-b761-3a018e47e633",
+    "before": {
+      "requestCount": 32.0,
+      "errorCount": 0.0,
+      "durationSeconds": 5.075808533,
+      "throughput": 6.304414319798378,
+      "successRate": 1.0,
+      "p50Ms": 119.758745,
+      "p95Ms": 844.54751215,
+      "p99Ms": 919.9640196500002,
+      "cacheHitRate": 0.0,
+      "dbQueryP95Ms": 19.443387,
+      "kafkaLag": 1.0
+    },
+    "after": {
+      "requestCount": 32.0,
+      "errorCount": 0.0,
+      "durationSeconds": 5.7928236989999995,
+      "throughput": 5.524076281749102,
+      "successRate": 1.0,
+      "p50Ms": 159.8181705,
+      "p95Ms": 943.7089289,
+      "p99Ms": 1094.2838059200003,
+      "cacheHitRate": 0.9375,
+      "dbQueryP95Ms": 1.55279,
+      "kafkaLag": 1.0
+    },
+    "reportProvider": "rule-based",
+    "savedReport": true,
+    "status": "COMPLETE"
+  }
+]

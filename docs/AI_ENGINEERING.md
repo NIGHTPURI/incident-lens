@@ -59,6 +59,8 @@ Unchecked boxes indicate owner follow-up, not missing hidden automated results.
 
 ## Owner continuation log
 
+2026-10-02: an AI-assisted follow-up replaced post-read response size checking with bounded receipt and an explicit response-completion deadline. New subscriber/provider tests and an in-process controller/H2 flow passed; network/Docker tests could not run in the restricted environment. This is subsequent implementation evidence, not a claim that the owner has already reviewed or can independently explain it. See [the improvement record](RCA_RESPONSE_BUDGET.md) and [career/code review](CAREER_REVIEW_2026-10-02.md).
+
 | Date | Change personally reviewed | Command/evidence | Decision/tradeoff |
 |---|---|---|---|
 | _Fill after your own review_ | | | |

@@ -1,0 +1,93 @@
+{
+  "date": "2026-10-02",
+  "repository": "NIGHTPURI/incident-lens",
+  "base_commit": "77bcb483e8aa419703b990dcfb95b02bb8af059f",
+  "branch": "improve/rca-response-budget",
+  "ui_changed": false,
+  "java_runner": "javac + JUnit Platform Launcher, installed cached JARs; not Gradle",
+  "java_version": "21.0.12.1",
+  "baseline": {
+    "selected_test_classes": 8,
+    "passed": 23,
+    "failed": 0
+  },
+  "after": {
+    "production_sources_compiled": 50,
+    "test_sources_compiled": 18,
+    "selected_test_classes": 11,
+    "passed": 56,
+    "failed": 0,
+    "added_cases": 33
+  },
+  "frontend": {
+    "test_files": 5,
+    "passed": 33,
+    "failed": 0,
+    "typescript_vite_build": "passed"
+  },
+  "prior_behavior_probe": {
+    "bytes_delivered": 65537,
+    "cancelled_before_end": false,
+    "exceptional_before_end": false,
+    "ascii_characters_after_completion": 65537
+  },
+  "new_behavior_assertions": {
+    "exact_65536_bytes": "accepted",
+    "65537_bytes": "cancelled before copying the over-budget batch",
+    "utf8_split_across_chunks": "preserved",
+    "http_error_body": "not requested",
+    "incomplete_body": "timeout and pending future cancellation; fake HTTP client with 100ms test timeout",
+    "interruption": "pending future cancelled, thread flag restored",
+    "report_flow": "MockMvc + actual JDBC/H2 + simulated HTTP, successful LLM then oversized response fallback then detail reload; one report row; one fallback counter"
+  },
+  "not_run": {
+    "gradle": "failed before build: FileLockContentionHandler could not determine a usable wildcard IP; socket creation is forbidden",
+    "real_socket_tests": [
+      "OpenAiCompatibleRcaProviderTest",
+      "ControlPlaneHttpTest",
+      "ApiHttpSmokeTest",
+      "WorkerWiringSmokeTest"
+    ],
+    "docker_tests": [
+      "ControlPlaneMySqlIntegrationTest",
+      "OrderOutboxIntegrationTest",
+      "WorkerIntegrationTest"
+    ],
+    "other": [
+      "paid provider integration",
+      "browser E2E",
+      "k6 performance/cost benchmark"
+    ]
+  },
+  "caveats": [
+    "H2 is not real MySQL concurrency/Flyway validation",
+    "Mock HTTP cancellation is not proof of HTTP/1.1 or HTTP/2 transport cancellation",
+    "cached JAR selection is not Gradle dependency resolution",
+    "No model quality, cost or performance improvement percentage is claimed"
+  ],
+  "existing_test_classes": [
+    "io.incidentlens.control.ExperimentMeasurementTest",
+    "io.incidentlens.control.EvidenceAndRcaTest",
+    "io.incidentlens.control.RcaFallbackTest",
+    "io.incidentlens.demoapi.CatalogServiceTest",
+    "io.incidentlens.demoworker.FulfillmentServiceTest",
+    "io.incidentlens.common.FaultStateTest",
+    "io.incidentlens.common.SessionTelemetryTest",
+    "io.incidentlens.common.JsonBodyLimitFilterTest"
+  ],
+  "after_test_classes": [
+    "io.incidentlens.control.RcaProviderBoundaryTest",
+    "io.incidentlens.control.ExperimentMeasurementTest",
+    "io.incidentlens.control.RcaResponseBodyTest",
+    "io.incidentlens.control.EvidenceAndRcaTest",
+    "io.incidentlens.control.RcaFallbackTest",
+    "io.incidentlens.control.RcaReportFlowTest",
+    "io.incidentlens.demoapi.CatalogServiceTest",
+    "io.incidentlens.demoworker.FulfillmentServiceTest",
+    "io.incidentlens.common.FaultStateTest",
+    "io.incidentlens.common.SessionTelemetryTest",
+    "io.incidentlens.common.JsonBodyLimitFilterTest"
+  ],
+  "paid_model_api_calls": 0,
+  "implementation_commit": "f68f92aaa339c0581220b5b20bd175b4b100bc37"
+}

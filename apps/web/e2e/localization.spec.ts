@@ -151,14 +151,14 @@ test("Korean default and English switching localize every populated view and per
   const mutations = await mockPopulatedApi(context);
   const errors: string[] = [];
   page.on("pageerror", (error) => errors.push(error.message));
-  await page.goto("/");
+  await page.goto("/?view=overview");
   await expect(page.getByLabel("언어 선택")).toHaveValue("ko");
   await expect(page.getByLabel("언어 선택").locator("option")).toHaveText([
     "한국어",
     "English",
   ]);
   await expect(page.locator("html")).toHaveAttribute("lang", "ko");
-  await expect(page).toHaveTitle("IncidentLens · 장애 분석");
+  await expect(page).toHaveTitle("IncidentLens · 백엔드 실험실");
   await expect(
     page.getByRole("heading", {
       name: "장애 전후에 무엇이 달라졌는지 확인하세요.",
@@ -374,7 +374,7 @@ test("Korean default and English switching localize every populated view and per
 
   await expect(page.getByLabel("Select language")).toHaveValue("en");
   await expect(page.locator("html")).toHaveAttribute("lang", "en");
-  await expect(page).toHaveTitle("IncidentLens · Incident analysis");
+  await expect(page).toHaveTitle("IncidentLens · Backend learning lab");
   expect(
     await page.evaluate(() => localStorage.getItem("incidentlens.locale")),
   ).toBe("en");
@@ -384,7 +384,7 @@ test("Korean default and English switching localize every populated view and per
   ).toBeVisible();
   await expect(page.getByLabel("Select language")).toHaveValue("en");
   const revisited = await context.newPage();
-  await revisited.goto("/");
+  await revisited.goto("/?view=overview");
   await expect(revisited.getByLabel("Select language")).toHaveValue("en");
   await expect(
     revisited.getByRole("heading", { name: "Understand what changed." }),
@@ -409,7 +409,7 @@ test("offline errors and empty states render in Korean and switch to English wit
   page,
 }) => {
   await page.route("**/api/**", (route) => route.abort("connectionrefused"));
-  await page.goto("/");
+  await page.goto("/?view=overview");
   await expect(page.getByRole("alert")).toContainText(
     "요청을 완료하지 못했습니다.",
   );

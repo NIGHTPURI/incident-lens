@@ -5,7 +5,7 @@ export default defineConfig({
   plugins: [react()],
   server: {
     port: 5173,
-    proxy: { "/api": { target: "http://localhost:8080", changeOrigin: true } },
+    proxy: { "/api": { target: process.env.INCIDENTLENS_API_TARGET ?? "http://localhost:8080", changeOrigin: true } },
   },
   test: {
     include: ["src/**/*.test.{ts,tsx}"],

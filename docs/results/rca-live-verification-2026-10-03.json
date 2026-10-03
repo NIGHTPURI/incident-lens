@@ -1,0 +1,172 @@
+{
+  "date": "2026-10-03",
+  "branch": "improve/rca-response-budget",
+  "head": "6fe9ea5249442c4f7d42700baa1e1db138441e7a",
+  "docker": {
+    "client": "29.6.2",
+    "server": "29.6.2",
+    "compose": "5.3.1",
+    "connected": true
+  },
+  "verification": {
+    "gradleHttp": {
+      "command": "./gradlew :apps:control-plane:test --no-daemon --rerun-tasks --tests 'io.incidentlens.control.RcaHttpTransportTest'",
+      "exitCode": 0,
+      "tests": 10,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "suiteSeconds": 6.041
+    },
+    "gradleTest": {
+      "command": "./gradlew test --no-daemon",
+      "exitCode": 0,
+      "tests": 78,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "modules": [
+        {
+          "module": "apps/control-plane",
+          "tests": 61,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        {
+          "module": "apps/demo-api",
+          "tests": 7,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        {
+          "module": "apps/demo-worker",
+          "tests": 4,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        {
+          "module": "libs/common",
+          "tests": 6,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        }
+      ]
+    },
+    "gradleBuild": {
+      "command": "./gradlew build --no-daemon",
+      "exitCode": 0,
+      "testTasks": "UP-TO-DATE from the preceding successful test run"
+    },
+    "historicalDirectJUnit": {
+      "tests": 56,
+      "rerunThisAttempt": false,
+      "distinctFromGradle": true
+    },
+    "composeStartup": {
+      "command": "bash artifacts/verification-20261003/start-isolated.sh",
+      "exitCode": 0,
+      "project": "incidentlens-rca-20261003",
+      "healthyContainers": 7,
+      "apiKeyAndModelEmpty": true,
+      "appLeftRunning": true
+    },
+    "browser": {
+      "startedAt": "2026-10-03T01:55:03.066Z",
+      "url": "http://127.0.0.1:18000",
+      "mockedRequests": false,
+      "sessionName": "RCA 실제 실행 검증 2026-10-03",
+      "rcaPostCount": 1,
+      "pageErrors": [],
+      "httpErrors": [],
+      "trafficStatuses": [
+        200,
+        200,
+        200,
+        200,
+        200,
+        200,
+        200,
+        200,
+        200,
+        200
+      ],
+      "sessionCreation": "Created through UI in preserved first attempt; resumed same session",
+      "sessionId": "23450503-8b75-4279-a560-79f4df807cc6",
+      "evidenceCount": 31,
+      "provider": "rule-based",
+      "generatedAt": "2026-10-03T01:55:11.990945856Z",
+      "citationCount": 6,
+      "activeFaultAfter": null,
+      "services": [
+        {
+          "name": "control-plane",
+          "status": "UP"
+        },
+        {
+          "name": "demo-api",
+          "status": "UP"
+        },
+        {
+          "name": "demo-worker",
+          "status": "UP"
+        },
+        {
+          "name": "redis",
+          "status": "UP"
+        }
+      ],
+      "sameReportAfterReload": true,
+      "status": "passed",
+      "finishedAt": "2026-10-03T01:55:14.288Z",
+      "firstAttempt": {
+        "result": "automation locator ambiguity for two disable-fault buttons",
+        "productionDefect": false,
+        "scopeFix": ".fault-control",
+        "faultDisabledOnFailure": true,
+        "sameSessionResumed": true
+      },
+      "koreanCapture": {
+        "status": "passed",
+        "sessionId": "23450503-8b75-4279-a560-79f4df807cc6",
+        "sameReport": true,
+        "reportWrites": 0,
+        "environmentFont": "Existing Windows Malgun Gothic; local browser fontconfig only, no CSS changes",
+        "screenshots": [
+          "evidence-reloaded-ko.png",
+          "report-reloaded-ko-screen.png",
+          "report-reloaded-ko.png"
+        ]
+      }
+    },
+    "mysqlReport": {
+      "database": "MySQL 8.4.6 / control_plane",
+      "sessionId": "23450503-8b75-4279-a560-79f4df807cc6",
+      "reportRows": 1,
+      "provider": "rule-based",
+      "readOnlyQuery": true
+    }
+  },
+  "notExecuted": [
+    "HTTP/2 transport",
+    "paid external model",
+    "Gradle integrationTest (15 Testcontainers tests)",
+    "all four BEFORE/AFTER scenarios",
+    "observability profile",
+    "database/service restart recovery"
+  ],
+  "changes": {
+    "productionCode": false,
+    "preexistingTestModified": false,
+    "remoteWrites": false
+  },
+  "preservation": {
+    "originalContainerIdsAndMountsPreserved": 12,
+    "existingUncommittedTestAndHistoricalResultsUnchanged": true,
+    "incomingReadmePreservedWithOneNewParagraph": true,
+    "localCommitCreated": false
+  }
+}

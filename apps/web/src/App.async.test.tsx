@@ -60,6 +60,7 @@ async function mount() {
       </I18nProvider>,
     );
   });
+  await click("Overview");
 }
 async function click(name: string) {
   await act(async () => {
