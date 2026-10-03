@@ -107,7 +107,7 @@ test("a developer can create a fault session, inspect evidence, and prepare a re
     await route.fulfill({ json: data });
   });
 
-  await page.goto("/");
+  await page.goto("/?view=overview");
   await expect(
     page.getByText("Your first investigation starts here"),
   ).toBeVisible();
@@ -170,7 +170,7 @@ test("the actual empty dashboard remains usable when the control plane is unavai
   page,
 }, testInfo) => {
   await page.route("**/api/**", (route) => route.abort("connectionrefused"));
-  await page.goto("/");
+  await page.goto("/?view=overview");
   await expect(
     page.getByRole("heading", { name: "Understand what changed." }),
   ).toBeVisible();

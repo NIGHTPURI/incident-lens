@@ -39,6 +39,7 @@ describe("incident dashboard", () => {
     vi.spyOn(api, "overview").mockResolvedValue(emptyOverview);
     vi.spyOn(api, "sessions").mockResolvedValue([]);
     render(<App />);
+    fireEvent.click(screen.getByRole("button", { name: "Overview" }));
     await screen.findByText("demo-api");
     expect(screen.getAllByText("Unavailable")).toHaveLength(5);
     expect(
@@ -76,6 +77,7 @@ describe("incident dashboard", () => {
     );
     vi.spyOn(api, "sessions").mockResolvedValue([]);
     render(<App />);
+    fireEvent.click(screen.getByRole("button", { name: "Overview" }));
     expect(await screen.findByRole("alert")).toHaveTextContent(
       "Unable to reach the control plane.",
     );
@@ -89,6 +91,7 @@ describe("incident dashboard", () => {
     const overview = vi.spyOn(api, "overview").mockResolvedValue(emptyOverview);
     const sessions = vi.spyOn(api, "sessions").mockResolvedValue([]);
     render(<App />);
+    fireEvent.click(screen.getByRole("button", { name: "개요" }));
     await screen.findByText("demo-api");
     expect(
       screen.getByRole("heading", {
@@ -132,6 +135,7 @@ describe("incident dashboard", () => {
     );
     vi.spyOn(api, "sessions").mockResolvedValue([]);
     render(<App />);
+    fireEvent.click(screen.getByRole("button", { name: "개요" }));
     expect(await screen.findByRole("alert")).toHaveTextContent(
       `서버 응답: ${detail}`,
     );
@@ -150,6 +154,7 @@ describe("incident dashboard", () => {
     );
     vi.spyOn(api, "sessions").mockResolvedValue([]);
     render(<App />);
+    fireEvent.click(screen.getByRole("button", { name: "개요" }));
     expect(await screen.findByRole("alert")).toHaveTextContent(
       "요청에 실패했습니다 (502).",
     );

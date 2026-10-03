@@ -2,6 +2,9 @@ export type Locale = "ko" | "en";
 export type TranslationParams = Record<string, string | number>;
 
 const en = {
+  "nav.learn": "Learn",
+  "learning.lessonList": "Lesson list",
+  "learning.freeExperiment": "Free experiment",
   "shell.skipToContent": "Skip to main content",
   "common.action": "Action",
   "common.incidentUnavailable": "Incident data could not be loaded",
@@ -63,9 +66,9 @@ const en = {
   "common.selectSession": "Select an incident session",
   "common.parameter": "Parameter: {value}",
   "common.traceId": "Trace ID",
-  "shell.documentTitle": "IncidentLens · Incident analysis",
+  "shell.documentTitle": "IncidentLens · Backend learning lab",
   "shell.description":
-    "Evidence-grounded incident analysis for distributed backend systems.",
+    "Learn backend request flows and run evidence-based local incident experiments.",
   "shell.technologies": "Java · Kafka · OpenTelemetry",
   "shell.productName": "IncidentLens",
   "shell.home": "IncidentLens home",
@@ -307,6 +310,9 @@ const en = {
 export type TranslationKey = keyof typeof en;
 
 const ko: Record<TranslationKey, string> = {
+  "nav.learn": "백엔드 실험실",
+  "learning.lessonList": "학습 목록",
+  "learning.freeExperiment": "자유 실험",
   "shell.skipToContent": "본문으로 바로가기",
   "common.action": "작업",
   "common.incidentUnavailable": "장애 정보를 불러오지 못했습니다",
@@ -367,8 +373,8 @@ const ko: Record<TranslationKey, string> = {
   "common.selectSession": "장애 세션을 선택하세요",
   "common.parameter": "파라미터: {value}",
   "common.traceId": "Trace ID",
-  "shell.documentTitle": "IncidentLens · 장애 분석",
-  "shell.description": "분산 백엔드 시스템을 위한 증거 기반 장애 분석 플랫폼.",
+  "shell.documentTitle": "IncidentLens · 백엔드 실험실",
+  "shell.description": "백엔드 요청 흐름을 배우고 근거 기반 로컬 장애 실험을 직접 실행하는 학습 사이트.",
   "shell.technologies": "Java · Kafka · OpenTelemetry",
   "shell.productName": "IncidentLens",
   "shell.home": "IncidentLens 홈",

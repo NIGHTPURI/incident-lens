@@ -1,0 +1,42 @@
+{
+  "capturedAt": "2026-10-03T13:47:17.323Z",
+  "source": "Local Vite app and local control-plane proxy. Lesson screen; no benchmark measurements.",
+  "captures": [
+    {
+      "locale": "ko",
+      "size": "desktop",
+      "file": "learning-ko-desktop.png",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      }
+    },
+    {
+      "locale": "ko",
+      "size": "mobile",
+      "file": "learning-ko-mobile.png",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      }
+    },
+    {
+      "locale": "en",
+      "size": "desktop",
+      "file": "learning-en-desktop.png",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      }
+    },
+    {
+      "locale": "en",
+      "size": "mobile",
+      "file": "learning-en-mobile.png",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      }
+    }
+  ]
+}

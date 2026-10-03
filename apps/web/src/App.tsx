@@ -3,6 +3,7 @@ import type { FormEvent, ReactNode } from "react";
 import { api, ApiError } from "./api";
 import * as format from "./format";
 import { useI18n } from "./i18n/I18nProvider";
+import LearningLab from "./learning/LearningLab";
 import type { TranslationKey } from "./i18n/translations";
 import type {
   Evidence,
@@ -57,8 +58,9 @@ const scenarios: {
   },
 ];
 
-type Page = "overview" | "lab" | "evidence" | "comparison";
+type Page = "learn" | "overview" | "lab" | "evidence" | "comparison";
 const pages: { id: Page; label: TranslationKey; symbol: string }[] = [
+  { id: "learn", label: "nav.learn", symbol: "◈" },
   { id: "overview", label: "nav.overview", symbol: "◫" },
   { id: "lab", label: "nav.lab", symbol: "⌁" },
   { id: "evidence", label: "nav.evidence", symbol: "≡" },
@@ -213,7 +215,10 @@ export default function App() {
     date,
     scenarioName,
   } = usePresentation();
-  const [page, setPage] = useState<Page>("overview");
+  const [page, setPage] = useState<Page>(() => {
+    const requested = new URLSearchParams(window.location.search).get("view");
+    return pages.some((item) => item.id === requested) ? requested as Page : "learn";
+  });
   const [overview, setOverview] = useState<Overview | null>(null);
   const [sessions, setSessions] = useState<IncidentSession[]>([]);
   const [selectedId, setSelectedId] = useState("");
@@ -233,7 +238,7 @@ export default function App() {
   selectedIdRef.current = selectedId;
   const overviewRevision = useRef(0);
   const detailRevision = useRef(0);
-  const displayedError = error ?? detailError ?? overviewError;
+  const displayedError = error ?? (page === "learn" ? null : detailError ?? overviewError);
 
   const refresh = useCallback(async () => {
     const revision = ++overviewRevision.current;
@@ -367,8 +372,9 @@ export default function App() {
   );
   const currentPage = pages.find((item) => item.id === page)!;
 
+  const embedded = new URLSearchParams(window.location.search).get("embed") === "1";
   return (
-    <div className="app-shell">
+    <div className={`app-shell ${page === "learn" ? "learning-mode" : ""} ${embedded ? "embedded-mode" : ""}`}>
       <a className="skip-link" href="#main-content">
         {t("shell.skipToContent")}
       </a>
@@ -378,7 +384,7 @@ export default function App() {
           href="#"
           onClick={(event) => {
             event.preventDefault();
-            setPage("overview");
+            setPage("learn");
           }}
           aria-label={t("shell.home")}
         >
@@ -420,6 +426,16 @@ export default function App() {
       </aside>
 
       <main>
+        {page === "learn" && !embedded ? (
+          <header className="learning-topbar">
+            <button className="learning-brand" onClick={() => setPage("learn")}>IncidentLens <span>/{t("nav.learn")}</span></button>
+            <nav aria-label={t("shell.navigation")}>
+              <button onClick={() => { const target = document.querySelector<HTMLButtonElement>('.learning-lesson-nav button'); if (target) { target.click(); target.scrollIntoView({ behavior: 'smooth' }); } else document.querySelector('.learning-roadmap')?.scrollIntoView({ behavior: 'smooth' }); }}>{t("learning.lessonList")}</button>
+              <button onClick={() => setPage("lab")}>{t("learning.freeExperiment")}</button>
+              <select className="language-select" aria-label={t("language.label")} value={locale} onChange={(event) => setLocale(event.target.value === "en" ? "en" : "ko")}><option value="ko">{t("language.korean")}</option><option value="en">{t("language.english")}</option></select>
+            </nav>
+          </header>
+        ) : page !== "learn" && (
         <header className="topbar">
           <span className="breadcrumb">
             {t("shell.workspace")}
@@ -450,6 +466,7 @@ export default function App() {
             </button>
           </div>
         </header>
+        )}
         <div className="page-content" id="main-content" tabIndex={-1}>
           {active && (
             <div className="fault-banner" role="status">
@@ -493,7 +510,22 @@ export default function App() {
               {t(notice)}
             </div>
           )}
-          <div className="page-heading">
+          {page === "learn" && <LearningLab
+            overview={overviewError ? null : overview}
+            connectionChecked={!loading}
+            sessions={sessions}
+            detail={detail}
+            selectedId={selectedId}
+            selectSession={setSelectedId}
+            busy={busy}
+            onCreateSession={(name, scenario) => { void createSession(name, scenario); }}
+            onFault={(id, enabled, parameter) => { void action(() => api.setFault(id, enabled, parameter), enabled ? "notice.faultEnabled" : "notice.faultDisabledRecovery"); }}
+            onCollect={(id, phase) => { void action(() => api.collect(id, phase), "notice.evidenceCollected"); }}
+            onAnalyze={(id) => { void action(() => api.analyze(id), "notice.rcaGenerated"); }}
+            onPrepare={(id, workload) => { void action(() => api.createExperiment(id, workload), "notice.experimentCreated"); }}
+            onNavigate={setPage}
+          />}
+          {page !== "learn" && <div className="page-heading">
             <div>
               <span className="eyebrow">
                 INCIDENTLENS / {t(currentPage.label).toUpperCase()}
@@ -524,7 +556,7 @@ export default function App() {
                   ? t("shell.updated", { date: date(updatedAt) })
                   : t("shell.waitingTelemetry")}
             </span>
-          </div>
+          </div>}
 
           {page === "overview" && (
             <>
