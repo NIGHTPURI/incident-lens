@@ -1,266 +1,95 @@
 # IncidentLens
 
-**Evidence-grounded AI incident analysis for distributed backend systems.**
+[English](README.md) · [한국어](README.ko.md)
 
-IncidentLens is a local incident laboratory: generate traffic, introduce a controlled failure, collect explainable evidence, form a root-cause hypothesis, remove the fault, and compare the same workload again. The useful artifact is a reproducible experiment with citations—not a chatbot conversation.
+IncidentLens is a local backend learning lab. Follow a request and its data through real code, predict what a fault will change, run a scoped experiment, inspect evidence, remove the fault, and compare recovery. The lessons work without services; measurements require the local stack. There is no account or paid API requirement.
 
-The project explores a common backend problem: the request returned successfully, but asynchronous work is late, caches are ineffective, or database round trips dominate latency. A metric alone rarely identifies the cause. IncidentLens combines explicit business consistency, bounded telemetry, fault history, and measured comparisons so those explanations can be challenged.
+![Korean lesson screen with request flow and learning help](apps/web/screenshots/learning-ko-desktop.png)
 
-Last complete stack verification: [2026-10-01 publication audit](docs/PUBLICATION_AUDIT_2026-10-01.md) — 50 backend tests, 33 frontend tests, 15 browser tests, Docker startup, all four incident scenarios and live observability verified. The audit records the Tempo memory fix, preserved data and Git history privacy checks. Historical performance measurements below remain dated 2026-09-22.
+## Learning path
 
-RCA follow-up on 2026-10-03: direct socket-free JUnit checks passed (56 tests), but the official Gradle wrapper, real HTTP tests and app startup are blocked by this execution environment. These are not a new full-stack pass. [Exact terminal commands, isolated startup and report/reload walkthrough](docs/RCA_HTTP_VERIFICATION_2026-10-03.md).
+1. **Request and response:** HTTP/API and Spring Boot accept, validate and answer requests. An order response does not mean the worker has finished.
+2. **Database and transactions:** MySQL persists orders. A transaction saves the order and outbox event together.
+3. **Cache:** Redis serves repeated catalog reads; learn hits, misses, fallback and explicit bypass.
+4. **Asynchronous work:** Kafka separates intake from the demo worker. Docker runs isolated components and k6 reproduces a specified workload.
+5. **Outbox and deduplication:** the relay publishes after the DB commit; Kafka acknowledgement can precede a failed outbox update, so duplicate delivery remains possible. The worker deduplicates the event effect. This is not an end-to-end exactly-once guarantee.
+6. **Diagnosis and recovery:** metrics show trends, logs record events, traces show spans, and RCA separates observations from hypotheses. The rule-based report is the default; a compatible LLM is optional.
 
-Later re-verification on **2026-10-03**, after Docker Desktop became available: the restrictions described above were no longer present. **All 78 Gradle tests passed (including 10 real HTTP tests), `gradlew build` succeeded, and an isolated seven-container app passed real browser report generation, MySQL storage and retrieval after reload.** The local dashboard is on port **18000**; existing services and uncommitted work were preserved. This targeted check did not rerun the entire 2026-10-01 audit. [Results, exact scope and screen walkthrough](docs/RCA_LIVE_VERIFICATION_2026-10-03.md).
+Each technology explains the problem, an analogy, actual behavior, why it was chosen, its alternatives, failure symptoms, and the relevant code. Select a node or arrow in either flow to inspect its role and failure boundary. Predictions and lesson position persist in browser storage. The right panel contains written hints, not an AI chat.
 
-![Real local BEFORE/AFTER experiment in IncidentLens](apps/web/screenshots/comparison-live.png)
-
-Screenshots use English. The dashboard now defaults to Korean; select **한국어 / English** at the top right, and the browser remembers your choice. [Localization details](apps/web/README.md#korean--english-ui).
-
-Actual local measurements, not sample dashboard data. The refreshed dashboard distinguishes recorded observations from the RCA hypothesis and labels comparison direction in text. [Capture provenance](apps/web/screenshots/live-capture.json) · [Evidence-grounded report](apps/web/screenshots/rca-live.png) · [한국어 개요](apps/web/screenshots/ko-overview-live.png).
-
-## Run it
-
-Prerequisites: Git and a running Docker Engine/Desktop with Linux containers and Docker Compose. Windows uses PowerShell; Linux/macOS use Bash, `curl` and `jq`. Building inside Docker does not require a host Java installation. Local development/tests additionally require Java 21 and Node.js 22.
-
-From the repository root:
-
-```powershell
-.\scripts\dev-up.ps1
-.\scripts\demo-compare.ps1 -Scenario DOWNSTREAM_LATENCY -Vus 2 -DurationSeconds 10 -Parameter 1200
-```
-
-Open **http://localhost:3000**. Select the created incident to inspect evidence, the RCA report and the BEFORE/AFTER comparison. `dev-up` creates an ignored `.env` from `.env.example`, builds images, and waits for health checks. The first run downloads dependencies and images.
-
-If Windows reserves these ports, set `WEB_PORT` and `GRAFANA_PORT` in `.env`; startup prints the actual URLs. This workspace uses **13000 / 13001** because Windows reserved the default range.
-
-For traces, searchable logs and dashboards:
-
-```powershell
-.\scripts\dev-up.ps1 -Observability
-```
-
-Grafana: **http://localhost:3001** (`admin`, password from `GRAFANA_ADMIN_PASSWORD` in `.env`). API documentation: **http://localhost:8080/swagger-ui/index.html** and **http://localhost:8081/swagger-ui/index.html**. Prometheus: **http://localhost:9090** with the observability profile.
-
-Linux/macOS:
-
-```bash
-bash scripts/dev-up.sh --observability
-VUS=2 DURATION_SECONDS=10 PARAMETER=1200 bash scripts/demo-compare.sh --scenario DOWNSTREAM_LATENCY
-```
-
-Core planning budget: approximately 6 GB available to Docker; allow 8 GB for observability and additional headroom during image builds. These are planning estimates, not measured minimum requirements. `dev-down.ps1` / `dev-down.sh` preserve named volumes. `docker compose down -v` deliberately deletes local data.
-
-The equivalent core Docker commands are:
-
-```bash
-# Preserve any existing local settings and database credentials.
-test -f .env || cp .env.example .env
-docker compose --profile observability --profile loadtest config --quiet
-docker compose build
-docker compose up -d --wait --wait-timeout 600
-docker compose ps
-```
-
-For instrumented execution, use `bash scripts/dev-up.sh --observability` or set `OTEL_SDK_DISABLED=false` when running `docker compose --profile observability up -d --wait --wait-timeout 600`. The profile alone does not enable the Java agent's exporters.
-
-## Architecture
+## System flow
 
 ```mermaid
 flowchart LR
-    Browser[React dashboard] --> CP[control-plane :8080]
-    k6[k6 workload] --> API[demo-api :8081]
-    API --> DB1[(MySQL: demo_api)]
-    API --> R[(Redis: cache + expiring fault)]
-    DB1 --> Relay[Outbox relay in demo-api]
-    Relay --> K[Kafka: incidentlens.orders.v1]
-    K --> W[demo-worker :8082]
-    W --> DB2[(MySQL: demo_worker)]
-    W --> DLQ[Kafka: incidentlens.orders.v1.dlq]
-    CP --> DB3[(MySQL: control_plane)]
-    CP --> R
-    CP -->|scoped telemetry| API
-    CP -->|scoped telemetry| W
-    CP --> RCA[Rule-based RCA / optional compatible LLM]
-    API & W & CP --> Metrics[Prometheus]
-    API & W & CP --> OTel[OpenTelemetry Collector]
-    OTel --> Loki[Loki logs]
-    OTel --> Tempo[Tempo traces]
-    Metrics & Loki & Tempo --> Grafana[Grafana]
+  Browser -->|GET /api/catalog| API[Spring demo-api]
+  API -->|hit / miss| Redis
+  API -->|miss / bypass| Catalog[(MySQL catalog)]
+  Browser -->|POST /api/orders + Idempotency-Key| API
+  API -->|one transaction| Orders[(MySQL order + outbox)]
+  Orders --> Relay[Outbox relay]
+  Relay --> Kafka
+  Kafka --> Worker[demo-worker]
+  Worker --> WorkerDB[(MySQL processing record)]
+  Web[React learning lab] --> Control[control-plane]
+  Control -->|scoped fault, evidence, experiment, RCA| API
+  Control --> Worker
 ```
 
-Three applications reflect three failure/ownership boundaries. The control plane is independent of the failing workload; the API accepts orders; the worker demonstrates asynchronous processing and consumer lag. `libs/common` contains narrow event/context/telemetry contracts and HTTP safeguards. It is not another service. One MySQL instance hosts three databases for an affordable local demo; services do not read each other's business tables.
+The worker demonstrates follow-up processing; it does **not** charge a card or arrange shipping. A single local MySQL instance hosts separate service databases. Faults are scoped to an incident ID, one is active at a time, and they expire after 15 minutes. [Architecture and failure boundaries](ARCHITECTURE.md) · [API reference](docs/API.md).
 
-| Component | Concrete purpose |
-|---|---|
-| Java 21, Spring Boot, Gradle | HTTP APIs, dependency injection, transaction boundaries, repeatable builds |
-| Spring Data JPA + targeted JDBC | Entity reads and lifecycle persistence; explicit atomic upserts and outbox claiming where SQL semantics matter |
-| MySQL 8.4 + Flyway | Durable orders, deduplication, evidence and experiments; explicit constraints and indexes |
-| Redis | Catalog caching and short-lived fault configuration |
-| Kafka | Durable asynchronous order fulfillment, partitioning, lag, redelivery and DLQ demonstration |
-| Micrometer / OpenTelemetry | Low-cardinality metrics and traces across HTTP, SQL, Redis and Kafka |
-| React / TypeScript / Vite | An engineering dashboard with honest absent-data and failure states |
-| k6 / Testcontainers / GitHub Actions | Repeatable load and failure-boundary verification |
+## Run locally
 
-See [ARCHITECTURE.md](ARCHITECTURE.md) for schemas, state transitions and failure reasoning.
+Requires Docker Engine/Desktop with Compose. From the repository root:
 
-## Project structure
-
-```text
-apps/
-  control-plane/       Incident sessions, fault control, evidence, RCA, experiments
-  demo-api/            Catalog, idempotent orders and transactional outbox
-  demo-worker/         Kafka consumer, deduplication, fulfillment and lag sampling
-  web/                 React/TypeScript dashboard, Vitest and Playwright tests
-libs/common/           Event/context/telemetry contracts and HTTP safeguards
-infra/                 Backend Dockerfile, database init and observability configs
-loadtest/              Existing k6 catalog/order workloads
-scripts/               Bash/PowerShell startup, verification and comparison runners
-docs/                  APIs, operations, architecture decisions and audit records
-docs/results/          Reviewed historical measurement evidence
-gradle/                Gradle wrapper; four Java projects in settings.gradle
-.github/workflows/     Backend, frontend and Compose CI
-.env.example           Local demo configuration; .env remains ignored
-docker-compose.yml     Core services plus observability/loadtest profiles
+```bash
+bash scripts/dev-up.sh
 ```
 
-Raw runtime output, database backups and local validation tools belong in ignored `artifacts/`; they are not publication inputs. Flyway migrations, the Gradle wrapper, npm lockfile and reviewed `docs/results/` remain versioned.
+Open **http://localhost:3000** (or `WEB_PORT` from your local `.env`). Read a lesson, write a prediction, select one of the four faults, and create a session. The site shows service connectivity before enabling controls. `bash scripts/dev-down.sh` preserves named volumes. The first build downloads images and dependencies. For traces, searchable logs and Grafana, start with `bash scripts/dev-up.sh --observability`; these tools are optional for the core lesson.
 
-## Request and event flow
+For frontend development while the backend stack is running:
 
-1. `GET /api/catalog?category=books` takes the cache/query/downstream path.
-2. `POST /api/orders` validates `Idempotency-Key` and order content.
-3. A single MySQL transaction inserts the order and its outbox event. A repeated key with matching content returns the original order; conflicting content returns `409`.
-4. The relay claims a due outbox row under a short database lock and publishes outside the transaction. Kafka acknowledgement precedes marking the row published.
-5. The worker transaction records the event and fulfillment together. Duplicate deliveries are successful no-ops; conflicting reuse is rejected.
-6. HTTP/session/correlation identifiers travel in the event. W3C trace context is persisted through the outbox and restored for Kafka publication.
-
-| Service / default port | Main endpoints |
-|---|---|
-| control-plane / 8080 | `GET /api/overview`, `GET/POST /api/sessions`, session fault/evidence/RCA and experiment APIs |
-| demo-api / 8081 | `GET /api/catalog?category=books`, `POST /api/orders` with `Idempotency-Key`, `GET /api/orders/{id}` |
-| demo-worker / 8082 | `GET /internal/telemetry`; order processing happens through Kafka |
-| All three Java services | `/actuator/health`, `/actuator/health/readiness`, `/actuator/prometheus` |
-
-Control-plane and demo-api expose `/v3/api-docs`; the web proxies `/api` to control-plane. Full request bodies and lifecycle examples are in [API documentation](docs/API.md).
-
-**Why not save then publish?** A crash after the DB commit can permanently lose the event; publishing first can emit an order that later rolls back. The outbox makes the state change and the *intent to publish* atomic. A crash after Kafka acknowledgement can still cause duplicate publication, so the worker remains idempotent. This is at-least-once delivery with an idempotent business effect, not a claim of end-to-end exactly-once delivery. See [ADR 003](docs/adr/003-transactional-outbox.md).
-
-## Four reproducible incidents
-
-Faults apply only to requests/events carrying the selected incident ID. One fault owns the lab at a time, expires after 15 minutes, and can be disabled without rebuilding. Parameters are bounded.
-
-| Scenario | Degraded behavior | Corrected behavior | Evidence to inspect |
-|---|---|---|---|
-| `DOWNSTREAM_LATENCY` | Inventory span delays catalog requests; above 1,500 ms hits a simulated timeout budget | Delay removed | Request p95/p99, timeout events, trace span |
-| `DATABASE_DEGRADATION` | Non-sargable category expression plus 50 separate detail reads; cache bypassed | Indexed join, Redis caching | Catalog database lookup duration, SQL spans, logical DB loads |
-| `KAFKA_SLOWDOWN` | Worker delays processing each event before its transaction | Delay removed and backlog drains | Committed-offset lag, fulfillment events, retry metrics |
-| `CACHE_DEGRADATION` | Every catalog request bypasses Redis and coalescing | Cache + per-category local lock + 25–35 second TTL jitter | Cache hit ratio, database loads, request latency |
-
-```powershell
-.\scripts\demo-compare.ps1 -Scenario DATABASE_DEGRADATION -Vus 5 -DurationSeconds 20
-.\scripts\demo-compare.ps1 -Scenario KAFKA_SLOWDOWN -Parameter 2000 -Vus 10 -DurationSeconds 20 -RecoverySeconds 20
-.\scripts\demo-compare.ps1 -Scenario CACHE_DEGRADATION -Vus 5 -DurationSeconds 20
+```bash
+cd apps/web
+npm ci
+npm run dev
 ```
 
-The DB experiment changes query behavior **and** cache use; total request improvement cannot be attributed solely to indexing. Inspect measured database lookup durations or design a separate SQL-only benchmark. The lower-case predicate cannot use the category lookup in the same way; `ORDER BY ... LIMIT 50` may still limit scanned rows. Do not claim every request scans all 10,000 catalog entries.
+Open **http://localhost:5173**. `INCIDENTLENS_API_TARGET=http://127.0.0.1:18080 npm run dev` can point Vite's `/api` proxy at a different local control-plane port. With no backend, the lessons still render and the experiment controls explain that results are unavailable. `?view=lab` opens the existing expert incident lab directly. `?embed=1` hides IncidentLens navigation so a host menu can frame the module.
 
-## Evidence and RCA
+## Four controlled faults
 
-The control plane obtains bounded session/phase telemetry directly from the two demo services. This makes evidence collection usable without the heavier observability profile. Each durable evidence item includes an ID, timestamp/window, service, source endpoint, type, measured value/unit when present, optional trace reference, explanation and experiment phase. Unavailable telemetry becomes an explicit collection-gap event; it is never substituted with zero.
-
-The deterministic provider produces hypotheses from latency, database duration, lag, cache behavior and recorded fault events. Its output separates summary, hypothesis, impact, citations, actions and uncertainties. Confidence is explicitly a heuristic, not a calibrated probability. A lack of observed traffic results in an insufficient-evidence report.
-
-Optional compatible LLM configuration:
-
-```dotenv
-RCA_BASE_URL=https://your-compatible-provider.example/v1
-RCA_API_KEY=
-RCA_MODEL=
-```
-
-Set a real key only in the ignored `.env`. The adapter is enabled only when both key and model are present. It sends a bounded structured evidence package, not arbitrary raw logs. The response must satisfy the local schema, confidence bounds and known-ID citation checks. Timeout, malformed JSON, unknown citations or provider errors fall back to rules. Citation validation cannot prove that a semantic claim is true; reviewing the evidence remains necessary. [Provider design](docs/adr/005-grounded-rca.md).
-
-The compatible provider accepts at most **65,536 UTF-8 response bytes, including the JSON envelope**, checking actual bytes as chunks arrive. Non-200 responses and oversized declared lengths are rejected before requesting body data. A 20-second response-completion wait cancels the pending request on timeout; interruption also requests cancellation and preserves the thread's interrupt flag. Existing evidence validation and persisted rule-based fallback remain in use. These are local resource limits, not guarantees about provider-side generation or billing. [Implementation, regression results and interview walkthrough](docs/RCA_RESPONSE_BUDGET.md).
-
-## BEFORE vs AFTER
-
-The runner first waits for an idle outbox and consumer group, then creates an incident and one experiment, activates the fault, runs BEFORE, stores its measured summary/evidence, creates the RCA, disables the fault, waits for recovery, and runs AFTER with the persisted VU count and duration. Both runs use the same catalog/order workload. The API rejects changed workload settings, invalid percentiles, repeated completion and out-of-order phases.
-
-To use the dashboard workflow, create a fresh incident in Incident Lab, prepare its experiment in Experiments, and execute the displayed PowerShell command locally (Bash equivalents are documented in `loadtest/README.md`). The generated command includes the latest enabled fault parameter for that session, or 400 ms when no activation exists. Edit `-Parameter` to choose a different delay; the Bash runner uses `PARAMETER`. Prepare the experiment before sending manual traffic labelled BEFORE/AFTER: already-used scopes are rejected to prevent measurement contamination. The browser displays and controls experiments; k6 runs through the supplied command. The lab explains this sequence in both languages; RCA explicitly analyzes BEFORE evidence, while AFTER validates recovery.
-
-The dashboard compares throughput, success rate, p50/p95/p99, errors, database lookup p95, Kafka lag and cache hit rate where available. Raw k6 summaries are stored in ignored `artifacts/`; experiment results/evidence are durable in MySQL. The lab uses a database lease to prevent overlapping controlled runs. Emergency fault disable aborts an active run. Interrupted runs should be replaced by a new session rather than mixed into old histograms.
-
-A fixed-VU workload has feedback: slow requests reduce offered throughput. The default recovery wait does not guarantee a drained backlog. Warm caches, JIT, dataset growth and asynchronous carryover are documented confounders. No production capacity or user-volume claims are made. [Load protocol](loadtest/README.md) · [Recorded measurements](docs/results/README.md).
-
-## Recorded local results
-
-One 20-second run per phase, Windows host / Docker Desktop (subsequently verified as Windows 10 Pro; Windows 11 is the target), 8 vCPU and approximately 8 GB Docker memory. Five VUs except Kafka (10); observability export disabled during timing. All eight measured phases returned zero HTTP errors.
-
-| Scenario | BEFORE → AFTER observation | Interpretation |
+| Fault | Scoped change | Evidence to check |
 |---|---|---|
-| Downstream latency, 1,200 ms delay | Mixed HTTP p95: 1,215.30 → 870.74 ms | Catalog route p95: 1,252.65 → 12.49 ms; the order route still contributes latency |
-| Database degradation | DB lookup p95: 39.80 → 1.42 ms | Mixed HTTP p95: 929.70 → 941.58 ms; no overall p95 improvement demonstrated |
-| Cache degradation | Logical DB loads: 147 → 1; cache hit rate: 0 → 99.3% | Throughput: 14.30 → 14.14 req/s; no throughput improvement demonstrated |
-| Kafka slowdown, 2,000 ms delay | Sampled lag grew from 0 to a peak of 6; phase snapshots: 3 → 1 | Scoped consumer-delay evidence confirms injection; outbox backlog also limits delivery |
+| Downstream delay | Delays a simulated inventory lookup during catalog reads; above 1,500 ms it times out | Request p95, timeout event, inventory span |
+| Database degradation | Uses a less efficient catalog query **and bypasses cache** | DB query duration, logical DB loads, request p95 |
+| Worker slowdown | Delays each order event before the worker transaction | Kafka consumer lag, processing events, retries |
+| Cache bypass | Skips Redis reads and request coalescing for catalog lists | Cache hit rate, DB loads, request p95 |
 
-After draining the runs, the database check found 1,482 accepted orders and 1,482 fulfillments, with zero unpublished outbox rows. These are demonstrations, not isolated capacity estimates. Raw summaries, per-route timings, provenance and recovery checks live in [recorded results](docs/results/README.md). The outbox bottleneck prompted a separate RCA rule and queue-idle checks before subsequent experiments.
-
-## Observability
-
-The optional profile provisions Prometheus, Grafana, Loki, Tempo and the OTel Collector. Micrometer exports request/error counts, histogram latency, JVM, connection-pool, Kafka and business metrics. Grafana includes throughput, error fraction, p95/p99, heap/GC, DB pool, cache, outbox and Kafka lag panels, plus a fault timeline.
-
-Structured logs include timestamp, level, service and available correlation/incident/trace context. Trace IDs are recorded only when an actual valid context exists. Core mode can retain context identifiers while export is disabled; an identifier alone does not prove the trace is stored in Tempo. The OTel agent instruments real HTTP/JDBC/Redis/Kafka operations; explicit context persistence bridges the outbox's asynchronous boundary. Logs and traces travel over OTLP, with no Docker socket mounted into the collector. See [infra/README.md](infra/README.md).
-
-## Verification and tests
-
-```powershell
-.\scripts\verify.ps1 -Integration
-```
+The browser can create a session, enable/disable its fault, collect evidence, request RCA and prepare an experiment. **k6 runs in a terminal, never in the browser.** For a complete measured BEFORE/AFTER cycle, use the displayed command or, for example:
 
 ```bash
-bash scripts/verify.sh --integration
+SCENARIO=CACHE_DEGRADATION VUS=2 DURATION_SECONDS=10 bash scripts/demo-compare.sh
 ```
 
-This checks required files, Gradle build/tests, infrastructure integration tests, frontend tests/build and all Compose profiles. Without `-Integration` / `--integration`, Docker-backed tests are excluded deliberately. Explicit integration execution fails if Docker is unavailable; it does not silently skip the suite.
+The Bash runner requires `curl`, `jq` and Docker. It checks service health and an idle backlog, runs BEFORE with the fault active, generates RCA, disables the fault, then runs the same workload for AFTER. It has a cleanup trap. A PowerShell equivalent is `./scripts/demo-compare.ps1 -Scenario CACHE_DEGRADATION -Vus 2 -DurationSeconds 10`. Check the saved experiment in the **Experiments** view and the report in **Evidence & RCA** after refreshing. Never treat absent telemetry as zero or as proof of health. Compare workload settings, cache warmth, backlog and other traffic before attributing a change to one cause; the DB fault also bypasses cache.
 
-- Unit tests: evidence provenance, insufficient evidence, RCA citations/fallback, invalid experiment summaries, fault behavior, cache coalescing, event validation and bounded bodies.
-- Provider boundary tests: exact byte limit, chunked/unknown length, UTF-8 fragments, error status, interrupted/incomplete responses and safe fallback. `RcaReportFlowTest` exercises controller → provider → fallback → persistence → detail using in-memory H2 and simulated HTTP delivery. It does not replace MySQL or real-socket tests.
-- Local application tests: real Spring HTTP + Flyway + database lifecycle with H2, labelled as wiring/behavior checks rather than MySQL proof.
-- Testcontainers: actual MySQL constraints/transactions and concurrent idempotency; Kafka outbox publication, consumer redelivery and malformed-event DLQ behavior.
-- Frontend: API failures, absent metrics, fault ownership, citations, comparisons and browser interactions.
-- CI: build/test, Docker image build, full Compose startup and a degraded/recovered experiment; no LLM key or paid service needed.
+## Language and evidence
 
-Explicit commands from the repository root:
+Use **한국어 / English** in the header. Both languages cover lessons, diagrams, questions, hints, controls, errors and the existing dashboard. Switching languages keeps the lesson, inputs and selected experiment. Raw logs, source code, and previously generated RCA reports keep their original language; changing the UI does not translate them. Saved evidence carries its source, window, value and unit when available. RCA reports separate the observed evidence IDs, suspected cause, impact, actions and uncertainties. The optional compatible LLM response is limited to **65,536 bytes while receiving**; oversized or timed-out requests are cancelled and the rule-based report remains available. [HTTP boundary verification](docs/RCA_HTTP_VERIFICATION_2026-10-03.md).
 
-```bash
-./gradlew test --no-daemon
-./gradlew clean build --no-daemon
-./gradlew integrationTest --no-daemon
-npm --prefix apps/web ci
-npm --prefix apps/web run build
-npm --prefix apps/web test
-npm --prefix apps/web run test:browser
-```
+## Verification and limits
 
-Playwright requires Chromium installed as described in [the web README](apps/web/README.md). There is no `lint` script. `test` and `clean build` exclude the `integration` tag; the last Gradle command is required for all 15 real-container tests. `clean` removes generated build output, not database volumes.
+The redesigned UI is covered by TypeScript/build, Vitest, and Playwright checks for lesson navigation, language persistence, desktop/mobile layout, keyboard controls, disconnected state and explicit fault actions. Java tests cover request, persistence and RCA boundaries. Current run details and limits: [learning verification](docs/LEARNING_VERIFICATION_2026-10-03.md). Earlier measured experiments remain dated evidence: [2026-10-01 publication audit](docs/PUBLICATION_AUDIT_2026-10-01.md) and [2026-10-03 RCA live verification](docs/RCA_LIVE_VERIFICATION_2026-10-03.md). Screenshots are local UI captures; browser fixture tests are not benchmark data.
 
-Re-executed on **2026-10-01**: **35 backend unit/application tests, 15 real-container integration tests, 33 frontend tests and 15 browser tests passed**, with no failures or skipped tests. Three existing browser cases also passed after correcting their screenshot output path. See the [current audit](docs/PUBLICATION_AUDIT_2026-10-01.md) for actual Docker/failure/recovery results. The earlier PowerShell verification and historical experiments remain in [2026-09-22 validation](docs/VALIDATION.md) and [SESSION_STATE.md](SESSION_STATE.md); PowerShell was not re-executed in the latest Bash audit. Synthetic test fixture values are not benchmark results.
+The lab is a teaching service, not a production load or reliability claim. Shared lag gauges may include unrelated traffic; sampling windows and cache temperature can change comparisons. The optional Grafana/Tempo/Loki stack adds detail but does not replace checking the core evidence. The demo worker has no real payment or shipping integration.
 
-## Tradeoffs and limitations
+## Reuse under 쉬었음.com
 
-This is an intentionally local, single-broker laboratory. There is no authentication or tenant boundary; ports bind to loopback. Do not expose fault-control endpoints publicly. TLS, separate DB credentials, authorization and audit hardening are deployment work. Catalog locks coalesce only within one API process. Fault control uses Redis plus a SQL audit log without a distributed transaction; Redis is authoritative for actual activation, and expiry/fail-open behavior bounds orphaned faults. A crash between those writes can leave an audit gap.
+The module lives in [`apps/web/src/learning/`](apps/web/src/learning/): bilingual lesson and fault content in `content.ts`, interaction/API wiring in `LearningLab.tsx`, and design rules in `styles.css`. `App.tsx` connects it to the existing control-plane endpoints through `api.ts`. A host can mount the page with `?embed=1` and provide its own menu; it must route `/api` to a **separate local or safely controlled lab backend**. Do not point fault or load controls at a public production service.
 
-Scoped telemetry is bounded in memory (128 scopes, latest 8,192 duration samples), resets on restart and is not a durable replacement for Prometheus. Collected evidence is durable. Kafka lag/outbox backlog are shared gauges and may include other traffic. Data/outbox/dedup history needs retention before long-running production use. LLM citations reduce unsupported output but do not mathematically guarantee causal accuracy. No Resilience4j circuit breaker is added around a fake remote service; bounded budgets/retries exist where they have actual behavior to protect.
+Study/Community list caching and Todo notification queues are **hypothhetical candidates based on public features**, not claims about 쉬었음.com's internals. First measure repeated reads, DB p95, notification delay tolerance and duplicate risk. Direct DB reads or synchronous work are simpler until those measurements justify added infrastructure. This repository does not modify the 운영 site or team repository.
 
-Future work should start with retention, authenticated fault controls, isolated repeated benchmark runs and automated trace-path assertions; CDC outbox relay or multiple replicas would follow measured need. Kubernetes, multi-region deployment and Terraform are intentionally outside the local core.
+## Project map
 
-## Study before an interview
-
-- [Interview guide](docs/INTERVIEW_GUIDE.md): consistency, concurrency, Kafka/Redis, observability and scaling questions.
-- [Engineering story](docs/PROJECT_STORY.md): problem → failure mode → decision → evidence → tradeoff.
-- [Architecture decisions](docs/adr/001-service-boundaries.md): alternatives and downsides, not a technology checklist.
-- [AI engineering record](docs/AI_ENGINEERING.md): what was generated and how it was reviewed/tested.
-- [AWS deployment design](docs/AWS_DEPLOYMENT.md): a proposed mapping; no cloud resources are provisioned.
-- [API examples](docs/API.md) and [operations](docs/OPERATIONS.md).
-
-The [publication review](docs/PUBLICATION_REVIEW.md) records the UI correctness/accessibility findings and remaining owner checks. [Docker build diagnostics](docs/DOCKER_BUILD_DIAGNOSTICS.md) separate application compilation from image/layer overhead; no unmeasured build workaround is included.
+`apps/demo-api` contains catalog, orders and outbox; `apps/demo-worker` consumes events; `apps/control-plane` owns sessions, faults, evidence, comparisons and RCA; `apps/web` is the learning UI and expert dashboard. `loadtest/` holds k6 workloads, `scripts/` local runners, `infra/` container configuration, and `docs/` design and verification records. See [web development notes](apps/web/README.md) and [operations](docs/OPERATIONS.md) if present.
