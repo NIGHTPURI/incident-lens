@@ -1,0 +1,50 @@
+{
+  "date": "2026-10-03",
+  "starting_commit": "6fe9ea5",
+  "branch": "improve/rca-response-budget",
+  "starting_worktree_clean": true,
+  "gradle_test": {
+    "command": "./gradlew test --no-daemon",
+    "exit_code": 1,
+    "tests_executed": false,
+    "reason": "Gradle wrapper global distribution lock is read-only"
+  },
+  "gradle_build": {
+    "command": "./gradlew build --no-daemon",
+    "exit_code": 1,
+    "build_executed": false,
+    "reason": "Gradle wrapper global distribution lock is read-only"
+  },
+  "direct_junit": {
+    "passed": 56,
+    "failed": 0,
+    "scope": "socket-free tests only; cached JARs + javac + JUnit Launcher; NOT Gradle",
+    "includes": "MockMvc -> provider with mock HTTP -> fallback -> actual H2 persistence -> detail reload"
+  },
+  "real_http": {
+    "test_class": "RcaHttpTransportTest",
+    "cases": 10,
+    "passed": 0,
+    "failed": 10,
+    "failure_stage": "BeforeEach HttpServer socket creation",
+    "reason": "java.net.SocketException: Operation not permitted",
+    "compiled": true,
+    "skipped": 0,
+    "protocol_if_executable": "HTTP/1.1",
+    "transport_assertions_executed": false
+  },
+  "application": {
+    "docker_available": false,
+    "docker_diagnostic": "Docker command unavailable in this WSL 2 distro",
+    "vite_start_exit": 1,
+    "vite_diagnostic": "listen EPERM 127.0.0.1:14173",
+    "started": false,
+    "screen_opened": false,
+    "report_ui_generation_or_reload_verified": false
+  },
+  "preexisting_services_stopped": false,
+  "preexisting_data_deleted": false,
+  "permissions_changed": false,
+  "paid_model_calls": 0,
+  "pushed": false
+}

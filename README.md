@@ -6,7 +6,11 @@ IncidentLens is a local incident laboratory: generate traffic, introduce a contr
 
 The project explores a common backend problem: the request returned successfully, but asynchronous work is late, caches are ineffective, or database round trips dominate latency. A metric alone rarely identifies the cause. IncidentLens combines explicit business consistency, bounded telemetry, fault history, and measured comparisons so those explanations can be challenged.
 
-Latest verification: [2026-10-01 publication audit](docs/PUBLICATION_AUDIT_2026-10-01.md) — 50 backend tests, 33 frontend tests, 15 browser tests, Docker startup, all four incident scenarios and live observability verified. The audit records the Tempo memory fix, preserved data and Git history privacy checks. Historical performance measurements below remain dated 2026-09-22.
+Last complete stack verification: [2026-10-01 publication audit](docs/PUBLICATION_AUDIT_2026-10-01.md) — 50 backend tests, 33 frontend tests, 15 browser tests, Docker startup, all four incident scenarios and live observability verified. The audit records the Tempo memory fix, preserved data and Git history privacy checks. Historical performance measurements below remain dated 2026-09-22.
+
+RCA follow-up on 2026-10-03: direct socket-free JUnit checks passed (56 tests), but the official Gradle wrapper, real HTTP tests and app startup are blocked by this execution environment. These are not a new full-stack pass. [Exact terminal commands, isolated startup and report/reload walkthrough](docs/RCA_HTTP_VERIFICATION_2026-10-03.md).
+
+Later re-verification on **2026-10-03**, after Docker Desktop became available: the restrictions described above were no longer present. **All 78 Gradle tests passed (including 10 real HTTP tests), `gradlew build` succeeded, and an isolated seven-container app passed real browser report generation, MySQL storage and retrieval after reload.** The local dashboard is on port **18000**; existing services and uncommitted work were preserved. This targeted check did not rerun the entire 2026-10-01 audit. [Results, exact scope and screen walkthrough](docs/RCA_LIVE_VERIFICATION_2026-10-03.md).
 
 ![Real local BEFORE/AFTER experiment in IncidentLens](apps/web/screenshots/comparison-live.png)
 
