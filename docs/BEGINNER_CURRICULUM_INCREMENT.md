@@ -175,3 +175,109 @@ reviewed capstone with optional bounded/evaluated LLM integration.
 For each stage, author both languages, verify runnable examples, cover failures and
 observable pass criteria, then change its status from planned. The old advanced
 reference lessons are supporting material, not substitutes for these new stages.
+
+## Learner OS selector / 학습 OS 선택
+
+The 15-stage curriculum now offers Windows (PowerShell) and Linux (Bash · WSL).
+The choice is stored separately as `incidentlens.learning.platform.v1`, defaults
+from the browser host and preserves an explicit override across locale/reload.
+Changing it invalidates contextual feedback but does not alter progress, notes,
+experiment sessions, reports or the global active-fault warning. No API mutation
+is issued. Java/SQL/HTTP/Compose source formats remain their own languages;
+shell commands, preparation and troubleshooting follow the selected environment.
+
+PowerShell variants use `gradlew.bat`, `curl.exe`, session environment syntax,
+quoted paths and `;` classpaths. Process/port inspection falls back to read-only
+`netstat.exe` when `Get-NetTCPConnection` is denied. Linux uses Bash/Unix wrappers
+and `:` classpaths; WSL instructions explicitly run inside WSL. Python/H2 helpers
+accept only an existing `INCIDENTLENS_H2_JAR` and never download missing jars.
+The first two lessons require no Python or HTTP server for their validation.
+
+Verified locally on both OSes: seven foundational Java outputs, eight HTTP cases,
+and eleven advanced isolated programs. Native Windows also verified Java compile,
+semicolon classpath, child-shell environment and curl.exe 200/400/404. Linux
+offline Spring tests (4) and JPA tests (3) passed. Windows Gradle builds remain
+unverified because native Windows offline caches are absent; no download attempted.
+An existing JDK21 and Python3.13 executable were used directly on Windows because
+its default Java PATH selected Java8 and the py launcher had a stale registration.
+WSL-share JAR reads timed out; copying only the existing small jar into the
+authorized local test folder resolved execution without clearing any cache.
+
+기존 15단계에 OS/셸 선택을 추가했으며 언어·진도·예측·실험 기록과 별도로 저장합니다.
+실제 PowerShell 명령과 문제 해결 안내를 제공합니다. Windows 캐시가 없는 Gradle 검사는
+미검증으로 구분하며 설치·관리자 실행·정책 변경·캐시 정리를 수행하지 않았습니다.
+
+## Reading and interaction refinement / 읽기·상호작용 개선
+
+The current learning layout keeps its existing inner tabs and coaching sidebar.
+Lesson prose is 17px on desktop and 16px on mobile, with 1.95 line height,
+bounded text width, separated paragraphs/cards, glossary lists and ordered
+exercise steps. Formatting preserves the authored words and leaves source code
+unchanged. Native checkboxes/radios are 24px with clickable 64px label rows,
+keyboard Space semantics and visible focus; buttons and disclosure summaries
+have at least 44px targets. Native details provide optional hint/solution views.
+
+Each of the 15 stages now has one authored objective concept question with
+correct/retry feedback. This never grades free-text predictions or executes code,
+and does not award reading credit or mastery. Answers persist separately under
+`incidentlens.curriculum.checks.v1`; invalid/blocked storage is handled honestly.
+
+Reading feedback follows an explicit self-report checkbox and a successful save.
+Practice self-review can be saved only after nonempty evidence and an explicit
+comparison with criteria. The v1 progress reader tolerates an additional `reviewed`
+map containing the evidence snapshot, without migrating/deleting older records.
+Editing evidence invalidates the current confirmation. Recording “not executed”
+is allowed and never becomes execution verification or earned certification.
+Feedback animations are brief and event-driven; reduced-motion preference disables
+them and learning transitions. No sounds, paid calls or experiment mutations.
+
+Verified: TypeScript and 53 unit tests; all 48 desktop/laptop/mobile browser tests,
+including reduced motion, focus/Space, pointer targets, hint/answer/record feedback,
+locale/OS/reload persistence and existing late-notice/active-fault regressions.
+Actual 18173 screenshots in Korean/English showed no overflow, browser errors or
+API writes. The existing 18000 app and its backend remained intact.
+
+문단·카드 여백과 글 크기를 넓히고 24px 체크 표시와 64px 클릭 행을 적용했습니다.
+확인 문제는 개념만 검사하며 코드 실행·숙련 점수를 만들지 않습니다. 실습 확인은
+명시적 자기 보고로 저장하고 증거를 수정하면 확인 상태를 다시 요구합니다.
+
+
+## Shared palette and persistent themes / 공유 색상과 테마
+
+The light palette follows the observed VibeCoach lesson interior (2026-10-04):
+white surfaces, #1a1f29 headings, #333d4b text, #3182f6 blue accents,
+#e5e8eb borders and #e8f3ff selection. Small text and buttons use darker blue
+variants to retain contrast. Reference: https://xn--os4bm5dj7a.com/vibe-coach
+The reference/team site is not modified.
+
+The shared `theme.css` tokens cover learning and free-lab navigation, cards,
+controls, code, hints, feedback, populated evidence/report/comparison views
+and unavailable telemetry. Positive, warning, negative and active-fault states
+retain distinct semantic colors in both themes. Existing reading sizes, targets,
+focus outlines and reduced-motion behavior remain in place.
+
+The native, labeled Light / Dark / System selector appears in either header.
+System is the default; `incidentlens.theme.v1` stores an explicit preference
+separately from language, learning OS and all progress/experiment records.
+System responds to live OS color-scheme changes. Explicit Light/Dark ignores
+those changes. Storage denial still allows a transient choice and falls back
+to System on reload. Cross-tab storage changes update the theme only.
+The small head script resolves theme/color-scheme/background before React
+loads; the mounted hook maintains the same state and cleans up its listeners.
+Changing theme never calls an experiment mutation or changes fault state.
+
+Final local validation: 53 unit tests, production build and 66 browser tests
+across desktop/laptop/mobile passed. Browser coverage includes both themes,
+System changes, reload, independent language/OS/reading progress, keyboard
+focus, pre-React theme application, invalid/denied storage, semantic contrast,
+populated results and an API mutation guard. The isolated examples passed
+7 Java cases, 8 real HTTP cases and all 11 advanced stage programs. Actual
+18173 desktop/mobile inspection found no text-contrast audit failures,
+viewport overflow, browser errors or API writes. The existing 18000 runtime
+remains separate and intact. Vite retains a non-fatal main-bundle size advisory.
+
+라이트·다크·시스템 테마는 학습 언어·OS·진도와 별도로 저장합니다.
+시스템 설정은 실시간으로 따르며 직접 선택한 테마는 새로고침 뒤에도 유지됩니다.
+저장이 차단되면 현재 화면에서는 선택을 유지하고 다시 열 때 시스템을 따릅니다.
+성공·주의·오류·활성 장애 경고의 구분과 키보드 초점·읽기 크기를 유지했습니다.
+테마 전환은 실험 생성·장애 변경·보고서 재생성을 실행하지 않습니다.

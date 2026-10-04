@@ -1,0 +1,69 @@
+import { expect, test } from "@playwright/test";
+
+test("large reading controls, meaningful checks and honest records preserve locale/OS/reload state", async ({ page }, testInfo) => {
+  const writes: string[] = [];
+  await page.route("**/api/**", async route => { if (route.request().method() !== "GET") writes.push(route.request().url()); await route.abort("connectionrefused"); });
+  await page.goto("/"); await page.getByRole("button", { name: "첫 학습 시작" }).click();
+  const read = page.getByRole("checkbox", { name: "읽기 완료로 기록 (숙련과 별개)" });
+  const label = read.locator("..");
+  await expect(read).toHaveCSS("width", "24px"); await expect(read).toHaveCSS("height", "24px");
+  const bounds = await label.boundingBox(); expect(bounds!.height).toBeGreaterThanOrEqual(44);
+  await label.locator("span").click(); await expect(read).toBeChecked();
+  await expect(page.getByText("읽기 기록을 저장했습니다. 숙련 평가와는 별개입니다.")).toBeVisible();
+  await read.focus(); await page.keyboard.press("Space"); await expect(read).not.toBeChecked();
+  await expect(label).toHaveCSS("outline-style", "solid");
+  await page.getByRole("tab", { name: "흐름", exact: true }).click();
+  await page.getByLabel("내 예측").fill("터미널과 파일은 별개입니다");
+  await page.getByRole("button", { name: "해설 보기/접기" }).click();
+  await expect(page.locator("#prediction-explanation")).toBeVisible();
+  await page.getByRole("radio", { name: "파일이 삭제됩니다" }).check();
+  await page.getByRole("button", { name: "답 확인", exact: true }).click();
+  await expect(page.locator(".check-feedback")).toContainText("다시 생각해");
+  await page.getByRole("radio", { name: "파일은 그대로 남습니다" }).focus();
+  await page.keyboard.press("Space");
+  await page.getByRole("button", { name: "답 확인", exact: true }).click();
+  await expect(page.locator(".check-feedback")).toContainText("맞았습니다");
+  await expect(page.locator(".curriculum-reading-progress")).toContainText("0 / 15");
+  await page.getByRole("tab", { name: "혼자 풀기" }).click();
+  const hint = page.getByText("힌트", { exact: true }); await hint.focus(); await page.keyboard.press("Enter");
+  await expect(page.locator("details.learning-disclosure").first()).toHaveAttribute("open", "");
+  await page.getByText("풀이와 비교", { exact: true }).click();
+  await expect(page.locator("details.learning-disclosure").nth(1)).toHaveAttribute("open", "");
+  const save = page.getByRole("button", { name: "자기 확인 기록 저장", exact: true });
+  await expect(save).toBeDisabled();
+  await page.getByLabel("내 실행·검증 기록").fill("실행하지 않았습니다. 예상 출력과 기준을 대조했습니다.");
+  const review = page.getByRole("checkbox", { name: /통과 기준을 내 기록과/ });
+  await review.locator("..").locator("span").click(); await save.click();
+  await expect(page.locator(".practice-confirmation")).toContainText("자동 검증하지 않습니다");
+  await page.locator("#learning-platform").selectOption("windows");
+  await page.locator(".language-select").selectOption("en");
+  await expect(page.getByRole("checkbox", { name: /I compared the pass criteria/ })).toBeChecked();
+  await expect(page.getByLabel("My execution and verification record")).toHaveValue("실행하지 않았습니다. 예상 출력과 기준을 대조했습니다.");
+  await page.screenshot({ path: testInfo.outputPath("learning-practice-en.png"), fullPage: true });
+  await page.reload(); await expect(page.locator("#learning-platform")).toHaveValue("windows");
+  await page.getByRole("tab", { name: "Flow", exact: true }).click();
+  await expect(page.getByLabel("My prediction")).toHaveValue("터미널과 파일은 별개입니다");
+  await expect(page.getByRole("radio", { name: "The file remains" })).toBeChecked();
+  await expect(page.locator(".check-feedback")).toContainText("Correct");
+  await page.getByRole("tab", { name: "Independent practice" }).click();
+  await expect(page.getByRole("checkbox", { name: /I compared the pass criteria/ })).toBeChecked();
+  await expect(page.locator(".practice-confirmation")).toContainText("not certification");
+  const progress = await page.evaluate(() => JSON.parse(localStorage.getItem("incidentlens.curriculum.v1")!));
+  expect(progress.read).toEqual([]); expect(progress.reviewed.tools).toContain("실행하지 않았습니다"); expect(writes).toEqual([]);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+});
+
+test("reduced motion disables confirmation animations and keeps focus/touch targets", async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.route("**/api/**", route => route.abort("connectionrefused"));
+  await page.goto("/"); await page.getByRole("button", { name: "첫 학습 시작" }).click();
+  const read = page.getByRole("checkbox", { name: /읽기 완료로 기록/ }); await read.focus(); await page.keyboard.press("Space");
+  await expect(page.locator(".read-confirmation")).toHaveCSS("animation-name", "none");
+  await expect(page.getByRole("tab", { name: "개념", exact: true })).toHaveCSS("transition-duration", "0s");
+  const paragraph = page.locator("#curriculum-panel .lesson-prose p").first();
+  const typography = await paragraph.evaluate(el => ({ size: parseFloat(getComputedStyle(el).fontSize), line: parseFloat(getComputedStyle(el).lineHeight) }));
+  expect(typography.size).toBeGreaterThanOrEqual(16); expect(typography.line / typography.size).toBeGreaterThanOrEqual(1.9);
+  for (const element of await page.locator(".curriculum-tabs button,.curriculum summary,.curriculum select").all()) {
+    if (await element.isVisible()) expect((await element.boundingBox())!.height).toBeGreaterThanOrEqual(44);
+  }
+});

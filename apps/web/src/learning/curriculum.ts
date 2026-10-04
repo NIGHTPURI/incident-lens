@@ -20,8 +20,8 @@ export const chapters: Chapter[] = [
       "en": "Begin by reading without installing anything. One small product note starts the evolving example."
     },
     "prerequisites": {
-      "ko": "사전 지식 없음. 실행 실습은 WSL Ubuntu 터미널과 기존 Git을 사용합니다. 터미널이 없으면 예제와 예상 출력을 읽고 실행은 나중에 합니다.",
-      "en": "No prior knowledge. Hands-on steps use a WSL Ubuntu terminal and existing Git. Without a terminal, read the examples and expected output and defer execution."
+      "ko": "사전 지식 없음. 실행 실습은 Linux Bash(또는 WSL Ubuntu)와 기존 Git을 사용합니다. 터미널이 없으면 예제와 예상 출력을 읽고 실행은 나중에 합니다.",
+      "en": "No prior knowledge. Hands-on steps use Linux Bash (or WSL Ubuntu) and existing Git. Without a terminal, read the examples and expected output and defer execution."
     },
     "glossary": {
       "ko": "파일: 이름이 있는 저장 데이터. 폴더: 파일을 묶는 위치. 경로: 위치를 나타내는 주소. 터미널: 글자로 명령과 결과를 주고받는 창. 셸: 명령을 해석하는 프로그램. 프로세스: 실행 중인 프로그램. 포트: 한 컴퓨터에서 네트워크 프로그램을 구별하는 번호. 환경 변수: 프로세스에 전달하는 이름과 값. 저장소: 변경 이력을 관리하는 폴더.",

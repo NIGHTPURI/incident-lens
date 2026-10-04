@@ -122,3 +122,65 @@ work remain optional isolated extensions; never claim an unrun integration passe
 15단계 참고 구현은 순차 Service 검증이며 운영 주문 시스템이 아닙니다. HTTP 어댑터,
 소유자 조회, 동시 중복키 회복은 학습자가 독립 구현하고 검증할 과제입니다. 이것은 수업
 누락이 아니라 숙련을 확인할 과제이며 참고 실행과 독립 수행을 별도 기록합니다.
+
+## Choosing the learner OS / 학습 OS 선택
+
+The 15-stage workspace has a persistent **Learning OS / shell** selector:
+Windows (PowerShell) or Linux (Bash · WSL). It is independent of Korean/English.
+Switching only changes instructions, never lesson progress, predictions, sessions
+or reports. WSL uses Linux commands **inside WSL**, even on a Windows host.
+
+15단계의 **학습 OS / 셸**에서 PowerShell 또는 Linux Bash를 선택합니다. 언어·진도와
+독립적으로 저장됩니다. WSL은 Linux를 선택하고 WSL 안에서 실행하세요. 자동 실행은 없습니다.
+
+PowerShell at the existing repository root / 기존 저장소 루트의 PowerShell:
+
+```powershell
+Get-Location
+Get-Content -LiteralPath .\examples\beginner\product.txt
+java -version
+javac -version
+java .\examples\beginner\java\Basics.java
+# Check listeners first. If occupied, do not stop another process.
+try { Get-NetTCPConnection -State Listen -ErrorAction Stop | Where-Object { $_.LocalPort -in 18181,18182 } } catch { netstat.exe -ano -p tcp | Select-String ':18181|:18182' }
+# Terminal 1; stop only this server with Ctrl+C.
+java .\examples\beginner\http\TinyServer.java
+# Terminal 2; curl.exe avoids the Windows PowerShell curl alias.
+curl.exe -i 'http://127.0.0.1:18181/total?quantity=2'
+.\gradlew.bat -p .\examples\beginner\spring-api --offline --no-daemon test
+py -3 .\examples\beginner\verify.py
+py -3 .\examples\beginner\advanced\run.py all
+.\gradlew.bat -p .\examples\beginner\data-jpa --offline --no-daemon test
+```
+
+Use already installed Java 21, not whichever Java PATH chooses. Session-only setup,
+after replacing placeholders with verified existing paths (no installation):
+
+```powershell
+$env:JAVA_HOME = 'C:\path to installed\jdk-21'
+$env:PATH = "$env:JAVA_HOME\bin;$env:PATH"
+# If the py launcher points to a missing Python, use an existing executable:
+& 'C:\path to installed\Python\python.exe' .\examples\beginner\advanced\run.py 8
+# Optional existing H2 jar, if it is outside this OS's Gradle cache:
+$env:INCIDENTLENS_H2_JAR = 'C:\path to existing\h2-2.3.232.jar'
+```
+
+```bash
+export JAVA_HOME='/path to installed/jdk-21'
+export PATH="$JAVA_HOME/bin:$PATH"
+# Optional existing H2 jar; neither helper downloads missing dependencies.
+export INCIDENTLENS_H2_JAR='/path to existing/h2-2.3.232.jar'
+python3 examples/beginner/advanced/run.py 8
+```
+
+Java classpath lists use `;` on Windows and `:` on Linux; quote the entire value.
+Commands for compile output, process inspection, environment values and read-only
+Compose configuration checks are in the example tab's expandable shell reference.
+No PowerShell `.ps1` script or execution-policy change is required.
+Missing offline Windows Gradle caches are distinct from WSL caches. Record blocked
+execution and continue reading instead of downloading dependencies or clearing caches.
+
+Windows PATH가 Java 8을 선택하면 이미 설치된 21의 경로를 현재 셸에서 지정하세요.
+Python 실행기의 등록이 오래됐다면 실제 설치 파일을 직접 호출합니다. JAR는 이미 있는
+파일만 사용합니다. Gradle 캐시가 없다면 실행 차단을 기록하며 설치·정리하지 않습니다.
+PowerShell 스크립트 정책 변경이나 관리자 권한이 필요하지 않습니다.
