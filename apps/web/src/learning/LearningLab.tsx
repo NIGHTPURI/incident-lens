@@ -6,7 +6,7 @@ import { both, lessons, scenarios } from "./content";
 import type { Text } from "./content";
 
 const copy = {
-  module: both("백엔드 실험실", "Backend learning lab"),
+  module: both("백엔드 학습실", "Backend Learning"),
   welcome: both("요청 한 번이 지나가는 길을 따라가 보세요.", "Follow the path of a single request."),
   intro: both("개념을 읽고 결과를 예측한 뒤, 준비가 되면 로컬 장애를 직접 켜고 측정합니다. 설명은 서비스 없이도 읽을 수 있습니다.", "Read the idea, predict a result, then enable and measure a local fault when ready. Lessons work without running services."),
   first: both("첫 학습 시작", "Start first lesson"),

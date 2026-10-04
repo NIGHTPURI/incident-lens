@@ -158,7 +158,7 @@ test("Korean default and English switching localize every populated view and per
     "English",
   ]);
   await expect(page.locator("html")).toHaveAttribute("lang", "ko");
-  await expect(page).toHaveTitle("IncidentLens · 백엔드 실험실");
+  await expect(page).toHaveTitle("IncidentLens · 백엔드 학습실");
   await expect(
     page.getByRole("heading", {
       name: "장애 전후에 무엇이 달라졌는지 확인하세요.",
@@ -202,7 +202,7 @@ test("Korean default and English switching localize every populated view and per
 
     await nav
       .getByRole("button", {
-        name: korean ? "장애 실험실" : "Incident lab",
+        name: korean ? "자유실험실" : "Free experiment lab",
         exact: true,
       })
       .click();
@@ -374,7 +374,7 @@ test("Korean default and English switching localize every populated view and per
 
   await expect(page.getByLabel("Select language")).toHaveValue("en");
   await expect(page.locator("html")).toHaveAttribute("lang", "en");
-  await expect(page).toHaveTitle("IncidentLens · Backend learning lab");
+  await expect(page).toHaveTitle("IncidentLens · Backend Learning");
   expect(
     await page.evaluate(() => localStorage.getItem("incidentlens.locale")),
   ).toBe("en");
@@ -423,7 +423,7 @@ test("offline errors and empty states render in Korean and switch to English wit
   await expectContainedLayout(page);
   await page
     .locator("nav")
-    .getByRole("button", { name: "장애 실험실", exact: true })
+    .getByRole("button", { name: "자유실험실", exact: true })
     .click();
   await expect(
     page.getByText("세션을 만들어 시작하세요", { exact: true }),

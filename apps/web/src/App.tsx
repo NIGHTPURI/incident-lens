@@ -492,7 +492,6 @@ export default function App() {
             <button className="learning-brand" aria-label={t("shell.home")} onClick={goLearningHome}>IncidentLens <span>/{t("nav.learn")}</span></button>
             <nav aria-label={t("shell.navigation")}>
               <ThemeSelector {...theme} />
-              <button onClick={() => { const target = document.querySelector<HTMLButtonElement>('.learning-lesson-nav button'); if (target) { target.click(); target.scrollIntoView({ behavior: 'smooth' }); } else document.querySelector('.learning-roadmap')?.scrollIntoView({ behavior: 'smooth' }); }}>{t("learning.lessonList")}</button>
               <button onClick={() => setPage("lab")}>{t("learning.freeExperiment")}</button>
               <select className="language-select" aria-label={t("language.label")} value={locale} onChange={(event) => setLocale(event.target.value === "en" ? "en" : "ko")}><option value="ko">{t("language.korean")}</option><option value="en">{t("language.english")}</option></select>
             </nav>

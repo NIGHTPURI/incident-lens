@@ -28,7 +28,7 @@ test("learning and free lab share reference tokens, states and accessible semant
   await checkbox.focus();await page.keyboard.press("Space");await expect(row).toHaveCSS("outline-color","rgb(37, 116, 199)");
   await page.getByRole("tab",{name:"흐름",exact:true}).click();await page.getByRole("radio",{name:"파일은 그대로 남습니다"}).check();await page.getByRole("button",{name:"답 확인",exact:true}).click();
   await expect(page.locator(".check-feedback.correct")).toHaveCSS("color","rgb(33, 104, 71)");
-  await page.getByRole("button",{name:"자유 실험",exact:true}).click();
+  await page.getByRole("button",{name:"자유실험실",exact:true}).click();
   await expect(page.locator(".sidebar")).toHaveCSS("background-color","rgb(255, 255, 255)");
   await expect(page.locator(".button.primary").first()).toHaveCSS("background-color","rgb(37, 116, 199)");
   await expect(page.locator(".scenario-card.chosen")).toHaveCSS("background-color","rgb(232, 243, 255)");
@@ -41,7 +41,7 @@ test("learning and free lab share reference tokens, states and accessible semant
 
 test("errors remain red and distinct from blue actions when the backend is unavailable",async({page})=>{
   await page.route("**/api/**",route=>route.fulfill({status:500,json:{detail:"Palette fixture: backend unavailable"}}));
-  await page.goto("/");await page.getByRole("button",{name:"자유 실험",exact:true}).click();
+  await page.goto("/");await page.getByRole("button",{name:"자유실험실",exact:true}).click();
   const error=page.locator(".message.error");await expect(error).toBeVisible();await expect(error).toHaveCSS("color","rgb(157, 51, 44)");
   const colors=await error.evaluate(el=>({fg:getComputedStyle(el).color,bg:getComputedStyle(el).backgroundColor}));expect(contrast(colors.fg,colors.bg)).toBeGreaterThanOrEqual(4.5);
 });

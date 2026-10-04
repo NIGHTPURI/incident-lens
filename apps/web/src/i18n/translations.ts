@@ -2,9 +2,9 @@ export type Locale = "ko" | "en";
 export type TranslationParams = Record<string, string | number>;
 
 const en = {
-  "nav.learn": "Learn",
+  "nav.learn": "Backend Learning",
   "learning.lessonList": "Lesson list",
-  "learning.freeExperiment": "Free experiment",
+  "learning.freeExperiment": "Free experiment lab",
   "shell.skipToContent": "Skip to main content",
   "common.action": "Action",
   "common.incidentUnavailable": "Incident data could not be loaded",
@@ -48,7 +48,7 @@ const en = {
   "language.korean": "한국어",
   "language.english": "English",
   "nav.overview": "Overview",
-  "nav.lab": "Incident lab",
+  "nav.lab": "Free experiment lab",
   "nav.evidence": "Evidence & RCA",
   "nav.comparison": "Experiments",
   "common.unavailable": "Unavailable",
@@ -66,7 +66,7 @@ const en = {
   "common.selectSession": "Select an incident session",
   "common.parameter": "Parameter: {value}",
   "common.traceId": "Trace ID",
-  "shell.documentTitle": "IncidentLens · Backend learning lab",
+  "shell.documentTitle": "IncidentLens · Backend Learning",
   "shell.description":
     "Learn backend request flows and run evidence-based local incident experiments.",
   "shell.technologies": "Java · Kafka · OpenTelemetry",
@@ -310,9 +310,9 @@ const en = {
 export type TranslationKey = keyof typeof en;
 
 const ko: Record<TranslationKey, string> = {
-  "nav.learn": "백엔드 실험실",
+  "nav.learn": "백엔드 학습실",
   "learning.lessonList": "학습 목록",
-  "learning.freeExperiment": "자유 실험",
+  "learning.freeExperiment": "자유실험실",
   "shell.skipToContent": "본문으로 바로가기",
   "common.action": "작업",
   "common.incidentUnavailable": "장애 정보를 불러오지 못했습니다",
@@ -355,7 +355,7 @@ const ko: Record<TranslationKey, string> = {
   "language.korean": "한국어",
   "language.english": "English",
   "nav.overview": "개요",
-  "nav.lab": "장애 실험실",
+  "nav.lab": "자유실험실",
   "nav.evidence": "증거 및 RCA",
   "nav.comparison": "실험 비교",
   "common.unavailable": "확인 불가",
@@ -373,7 +373,7 @@ const ko: Record<TranslationKey, string> = {
   "common.selectSession": "장애 세션을 선택하세요",
   "common.parameter": "파라미터: {value}",
   "common.traceId": "Trace ID",
-  "shell.documentTitle": "IncidentLens · 백엔드 실험실",
+  "shell.documentTitle": "IncidentLens · 백엔드 학습실",
   "shell.description": "백엔드 요청 흐름을 배우고 근거 기반 로컬 장애 실험을 직접 실행하는 학습 사이트.",
   "shell.technologies": "Java · Kafka · OpenTelemetry",
   "shell.productName": "IncidentLens",
