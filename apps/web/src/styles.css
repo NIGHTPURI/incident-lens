@@ -1838,3 +1838,94 @@ td {
 .curriculum pre, .curriculum code { font-family: "IncidentLens Korean", "SFMono-Regular", Consolas, "Liberation Mono", monospace; }
 .curriculum textarea { font: inherit; }
 .curriculum-flow [aria-pressed="true"] { border-color: #24563c; background: #e6f1e9; color: #173d28; }
+
+.curriculum-platform { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem; font-weight: 600; }
+.curriculum-platform select { max-width: 100%; padding: .65rem; border: 1px solid #82998c; border-radius: 8px; background: #fff; color: #172a20; font: inherit; }
+@media (max-width: 650px) { .curriculum-platform { width: 100%; } .curriculum-platform select { flex: 1; min-width: 0; } }
+/* Readable lesson rhythm; scoped to learning, with no dashboard redesign. */
+.learning-root .learning-main p,
+.learning-root .learning-main li,
+.learning-root .learning-main dd { color: #35465a; font-size: 17px; line-height: 1.95; }
+.learning-root .learning-main h2 { line-height: 1.45; }
+.learning-root .learning-main .learning-section { margin-top: 3rem; padding-top: 2rem; }
+.learning-root input[type="checkbox"], .learning-root input[type="radio"] { width: 24px; height: 24px; accent-color: #24563c; }
+.curriculum .learning-grid { grid-template-columns: minmax(0, 1fr) 280px; gap: clamp(28px, 4vw, 64px); }
+.curriculum .learning-main { padding: 32px 0 80px; max-width: 780px; }
+.curriculum .learning-coach { padding-left: 28px; }
+.curriculum .learning-coach p { color: #43556b; font-size: 15px; line-height: 1.95; margin: 1rem 0; }
+.curriculum .learning-header { margin-bottom: 2rem; }
+.curriculum .learning-header h1 { margin: .65rem 0 1rem; line-height: 1.3; }
+.curriculum .learning-header p, .curriculum #learning-platform-description { max-width: 72ch; }
+.curriculum #learning-platform-description { margin: 1.25rem 0 1.5rem; color: #43556b; font-size: 16px; }
+.curriculum .learning-box { padding: 26px 28px; margin: 28px 0; background: #f7f9fb; border-color: #dbe3e9; }
+.curriculum .learning-box h2 { margin: 0 0 1rem; font-size: 21px; }
+.curriculum #curriculum-panel > h2 { margin: 2.5rem 0 .9rem; font-size: 22px; }
+.curriculum #curriculum-panel > h2:first-child { margin-top: 0; }
+.curriculum #curriculum-panel > h3 { margin: 2rem 0 .85rem; }
+.curriculum #curriculum-panel > section:not(.knowledge-check) { margin: 2.25rem 0; }
+.curriculum .lesson-prose { max-width: 72ch; }
+.curriculum .lesson-prose p { margin: 0 0 1.05rem; }
+.curriculum .lesson-prose p:last-child { margin-bottom: 0; }
+.curriculum .lesson-glossary { display: grid; gap: .85rem; padding-left: 1.35rem; max-width: 72ch; margin: 1.25rem 0 2rem; }
+.curriculum ul:not(.lesson-glossary), .curriculum ol { padding-left: 1.4rem; margin: 1rem 0 1.75rem; }
+.curriculum li + li { margin-top: .65rem; }
+.curriculum pre { margin: 1.1rem 0 1.75rem; padding: 22px; font-size: 14px; line-height: 1.85; }
+.curriculum button, .curriculum summary, .curriculum select { min-height: 44px; }
+.curriculum button { transition: background-color 140ms ease, border-color 140ms ease; }
+.curriculum button:disabled { opacity: .6; cursor: not-allowed; }
+.curriculum textarea { min-height: 170px; margin: .9rem 0 1.6rem; padding: 18px; font-size: 17px; line-height: 1.85; }
+.curriculum label[for="practice-evidence"], .curriculum label[for="curriculum-prediction"] { display: block; margin-top: 1.8rem; font-weight: 650; color: #253b31; }
+.curriculum .curriculum-tabs { gap: .7rem; margin: 1.75rem 0 2rem; }
+.curriculum .curriculum-flow { gap: .8rem; margin: 1.5rem 0; }
+.curriculum .curriculum-flow [aria-pressed="true"] { border-width: 2px; padding: 9px 15px; font-weight: 700; }
+.curriculum .curriculum-reading-progress { display: flex; align-items: center; flex-wrap: wrap; gap: .8rem 1.25rem; margin: 1rem 0; color: #354b40; font-size: 14px; }
+.curriculum progress { width: 150px; height: 8px; accent-color: #24563c; }
+.curriculum .learning-checkbox-row, .curriculum .learning-choice { display: flex; align-items: center; gap: 14px; min-height: 64px; margin: 1.4rem 0 .8rem; padding: 16px 18px; border: 1px solid #aabbb0; border-radius: 10px; background: #fff; cursor: pointer; font-size: 17px; color: #243f31; line-height: 1.6; }
+.curriculum .learning-checkbox-row input[type="checkbox"], .curriculum .learning-choice input[type="radio"] { flex: 0 0 24px; display: block; width: 24px; height: 24px; margin: 0; padding: 0; }
+.curriculum .learning-checkbox-row:has(:checked), .curriculum .learning-choice:has(:checked) { border-color: #326d4e; background: #eef6f0; }
+.curriculum .learning-checkbox-row:hover, .curriculum .learning-choice:hover { border-color: #24563c; }
+.curriculum .learning-checkbox-row:has(:focus-visible), .curriculum .learning-choice:has(:focus-visible) { outline: 3px solid #176344; outline-offset: 3px; }
+.curriculum .read-confirmation, .curriculum .practice-confirmation { min-height: 76px; padding: 14px 0; margin: .4rem 0 1.5rem; color: #365444; font-size: 15px; line-height: 1.8; }
+.curriculum .learning-read-record { margin-top: 2.25rem; }
+.curriculum .learning-explanation { margin: 1.5rem 0; padding: 24px; border-left: 4px solid #3f7255; border-radius: 8px; background: #f1f7f2; }
+.curriculum .learning-explanation h3 { margin: 0 0 .8rem; }
+.curriculum details { padding: 0; margin: 1.5rem 0; background: #fff; border-color: #aabbb0; overflow: hidden; }
+.curriculum summary { display: list-item; padding: 16px 20px; cursor: pointer; font-weight: 650; color: #284535; line-height: 1.6; }
+.curriculum details[open] { border-color: #326d4e; background: #f7faf8; }
+.curriculum details[open] summary { border-bottom: 1px solid #d6e2d9; }
+.curriculum details > .lesson-prose, .curriculum details > p, .curriculum details > pre { margin: 1.25rem 20px; }
+.curriculum .disclosure-context { display: none; }
+.curriculum details[open] .disclosure-context { display: block; margin: 1.1rem 20px .75rem; color: #436350; font-size: 14px; }
+.curriculum .knowledge-check { margin: 2.75rem 0 1.75rem; padding: 26px; border: 1px solid #b6c9bb; border-radius: 12px; background: #fafcf9; }
+.curriculum .knowledge-check h2 { margin: 0 0 1.25rem; font-size: 22px; }
+.curriculum .knowledge-check fieldset { border: 0; padding: 0; margin: 0 0 1.25rem; min-width: 0; }
+.curriculum .knowledge-check legend { width: 100%; margin-bottom: 1rem; font-size: 17px; line-height: 1.85; color: #263e31; font-weight: 600; }
+.curriculum .knowledge-check .learning-choice { margin: .75rem 0; }
+.curriculum .check-feedback { min-height: 180px; margin-top: 1.5rem; padding: 18px; border-radius: 8px; border: 1px solid transparent; font-size: 16px; line-height: 1.8; }
+.curriculum .check-feedback p { margin: .6rem 0 0; font-size: 16px; }
+.curriculum .check-feedback.correct { background: #eaf4ed; border-color: #6d9a79; color: #234e32; }
+.curriculum .check-feedback.retry { background: #fff5e7; border-color: #b08a53; color: #634417; }
+.curriculum .just-recorded { animation: record-confirmation 220ms ease-out both; }
+@keyframes record-confirmation { from { opacity: .5; transform: translateY(3px); } to { opacity: 1; transform: translateY(0); } }
+@media (max-width: 1000px) {
+  .curriculum .learning-grid { grid-template-columns: minmax(0, 1fr); gap: 20px; }
+  .curriculum .learning-coach { position: static; min-height: 0; padding: 16px 20px; border: 1px solid #dbe3e9; border-radius: 10px; }
+  .curriculum .learning-help-toggle { display: block; min-height: 44px; }
+  .curriculum .learning-coach-content { display: none; max-width: none; }
+  .curriculum .learning-coach.open .learning-coach-content { display: block; }
+}
+@media (max-width: 650px) {
+  .learning-root .learning-main p, .learning-root .learning-main li, .learning-root .learning-main dd { font-size: 16px; line-height: 1.95; }
+  .curriculum .learning-main { padding-top: 24px; }
+  .curriculum .learning-box, .curriculum .knowledge-check { padding: 22px 18px; }
+  .curriculum .learning-checkbox-row, .curriculum .learning-choice { padding: 16px 14px; font-size: 16px; }
+  .curriculum .check-feedback { min-height: 240px; padding: 15px; }
+  .curriculum pre { padding: 18px; }
+  .curriculum .learning-next { gap: 16px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .learning-root *, .learning-root *::before, .learning-root *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+}
+
+.curriculum .lesson-steps { list-style: none; padding-left: 0; display: grid; gap: 1rem; max-width: 72ch; }
+.curriculum .lesson-steps li { padding: 16px 18px; background: #f7f9fb; border-left: 3px solid #b9cabc; border-radius: 6px; margin: 0; }

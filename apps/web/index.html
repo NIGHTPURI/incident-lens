@@ -3,7 +3,20 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#111a29" />
+    <meta name="theme-color" content="#ffffff" />
+    <script>
+      // Resolve before the app/CSS paints; storage denial still follows the OS.
+      (() => {
+        let preference = "system";
+        try { preference = localStorage.getItem("incidentlens.theme.v1") || "system"; } catch {}
+        const theme = preference === "light" || preference === "dark" ? preference :
+          (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+        document.documentElement.dataset.theme = theme;
+        document.documentElement.style.colorScheme = theme;
+        document.querySelector('meta[name="theme-color"]').content = theme === "dark" ? "#11161f" : "#ffffff";
+      })();
+    </script>
+    <style>html[data-theme="dark"] { background: #11161f; color: #d6dfec; } html[data-theme="light"] { background: #fff; color: #333d4b; }</style>
     <meta
       name="description"
       content="분산 백엔드 시스템을 위한 증거 기반 장애 분석 플랫폼."

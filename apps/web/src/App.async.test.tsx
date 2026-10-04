@@ -265,7 +265,7 @@ describe("transient operation feedback scope", () => {
     await act(async () => fireEvent.change(screen.getByLabelText("Incident session"), { target: { value: "session-b" } }));
     expect(screen.queryByText(success)).not.toBeInTheDocument();
   });
-  it("keeps the global active fault warning through lesson and tab navigation", async () => {
+  it("keeps the global active fault warning through lesson, tab and OS navigation", async () => {
     vi.mocked(api.overview).mockResolvedValue({ ...overview,
       services: [{ name: "redis", status: "UP" }],
       activeFault: { sessionId: "session-a", scenario: "DOWNSTREAM_LATENCY", enabled: true, parameter: 100, expiresAt: "2026-10-04T00:00:00Z" } });
@@ -273,6 +273,8 @@ describe("transient operation feedback scope", () => {
     const warning = document.querySelector(".fault-banner");
     expect(warning).toBeInTheDocument();
     await click("Next lesson"); await act(async () => fireEvent.click(screen.getByRole("tab", { name: "Flow" })));
+    expect(document.querySelector(".fault-banner")).toHaveTextContent(warning!.textContent!);
+    await act(async () => fireEvent.change(screen.getByLabelText("Learning OS / shell"), { target: { value: "windows" } }));
     expect(document.querySelector(".fault-banner")).toHaveTextContent(warning!.textContent!);
   });
   it("does not let late session creation hijack a new learning context", async () => {

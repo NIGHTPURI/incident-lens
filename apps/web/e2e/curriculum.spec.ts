@@ -7,6 +7,7 @@ test("bilingual foundation tabs persist evidence without claiming mastery", asyn
     if (route.request().method() !== "GET") writes.push(route.request().url());
     await route.abort("connectionrefused");
   });
+  await page.addInitScript(() => localStorage.setItem("incidentlens.learning.platform.v1", "linux"));
   await page.goto("/");
   await expect(page.getByRole("heading", { name: "백엔드 학습 목록" })).toBeVisible();
   await page.getByRole("button", { name: "첫 학습 시작" }).click();
@@ -45,6 +46,7 @@ test("all fifteen stages expose bilingual lessons, scope, examples and independe
     if (route.request().method() !== "GET") writes.push(route.request().url());
     await route.abort("connectionrefused");
   });
+  await page.addInitScript(() => localStorage.setItem("incidentlens.learning.platform.v1", "linux"));
   await page.goto("/");
   for (const locale of ["ko", "en"] as const) {
     await page.locator(".language-select").selectOption(locale);

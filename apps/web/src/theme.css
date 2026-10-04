@@ -1,0 +1,208 @@
+/* VibeCoach lesson interior, observed 2026-10-04:
+   white #fff; heading #1a1f29; body #333d4b; muted #6b7684;
+   accent #3182f6; hover #2574c7; borders #e5e8eb; selected #e8f3ff.
+   Small blue text/white button text uses the darker observed hover for contrast.
+   These are IncidentLens tokens; the reference site is not modified. */
+:root {
+  --il-background: #fff;
+  --il-surface: #fff;
+  --il-surface-muted: #f2f4f6;
+  --il-heading: #1a1f29;
+  --il-text: #333d4b;
+  --il-muted: #6b7684;
+  --il-border: #e5e8eb;
+  --il-control-border: #8592a3;
+  --il-accent: #3182f6;
+  --il-accent-strong: #2574c7;
+  --il-accent-hover: #1d62af;
+  --il-accent-text: #1d62af;
+  --il-muted-surface: #5f6b7b;
+  --il-accent-soft: #e8f3ff;
+  --il-focus: #2574c7;
+  --il-code-background: #1f1f1f;
+  --il-code-text: #e5e7eb;
+  --il-positive: #216847;
+  --il-positive-surface: #eef9f3;
+  --il-positive-border: #6d9a79;
+  --il-warning: #85501c;
+  --il-warning-surface: #fff5e9;
+  --il-warning-border: #ba854e;
+  --il-negative: #9d332c;
+  --il-negative-surface: #fff3f2;
+  --il-negative-border: #c78b85;
+  color: var(--il-text);
+  background: var(--il-background);
+}
+body, .app-shell, .learning-mode { background: var(--il-background); color: var(--il-text); }
+h1, h2, h3, .learning-header, .page-heading, .panel-header { color: var(--il-heading); }
+p, .muted, .last-updated, .topbar, .sidebar-note p, .sidebar-footer,
+.scenario-number, .scenario-card > span:last-child, .page-footer { color: var(--il-muted); }
+.sidebar, .topbar, .learning-topbar { background: var(--il-surface); color: var(--il-heading); border-color: var(--il-border); }
+.sidebar { border-right: 1px solid var(--il-border); }
+.brand, .learning-topbar .learning-brand { color: var(--il-heading); }
+.brand-light, .learning-brand span, .learning-kicker { color: var(--il-accent-text); }
+.brand-mark { background: var(--il-accent-soft); border-color: var(--il-border); color: var(--il-accent-text); }
+.brand small, .nav-label, .sidebar-note strong, .sidebar-footer span { color: var(--il-muted); }
+.sidebar-note { border-color: var(--il-border); }
+.nav-item, .learning-topbar button { color: var(--il-text); }
+.nav-item:hover, .learning-topbar nav button:hover { background: var(--il-surface-muted); color: var(--il-heading); }
+.nav-item.selected { background: var(--il-accent-soft); color: var(--il-accent-text); box-shadow: inset 3px 0 var(--il-accent); }
+.panel, .stat, .scenario-card, .evidence-card, .learning-box, .learning-coach,
+.learning-controls, .learning-sequence, .learning-flow-detail, .learning-measures > div { background: var(--il-surface); border-color: var(--il-border); }
+.panel-header, .panel-footer, .service, .timeline li, .learning-coach hr,
+.learning-section, .learning-topic, .command-panel, .experiment-meta { border-color: var(--il-border); }
+.panel.workflow, .command-panel, .learning-flow, .learning-box, .curriculum .learning-box,
+.curriculum .lesson-steps li { background: var(--il-surface-muted); border-color: var(--il-border); }
+.curriculum .lesson-steps li { border-left-color: var(--il-control-border); }
+.local-tag, .phase-tag, .workflow li > span { background: var(--il-accent-soft); color: var(--il-accent-text); border-color: var(--il-border); }
+.text-button, .citation, .learning-topic a, .learning-help-toggle, .curriculum a { color: var(--il-accent-text); }
+.button.primary, .learn-primary, .curriculum .learn-primary { background: var(--il-accent-strong); border-color: var(--il-accent-text); color: #fff; }
+.button.primary:hover, .learn-primary:not(:disabled):hover, .curriculum .learn-primary:not(:disabled):hover { background: var(--il-accent-hover); border-color: var(--il-accent-hover); }
+.button.secondary { background: var(--il-accent-soft); border-color: var(--il-border); color: var(--il-accent-text); }
+.button.ghost, .learn-secondary { background: var(--il-surface); border-color: var(--il-control-border); color: var(--il-text); }
+.button.secondary:hover, .button.ghost:hover, .learn-secondary:not(:disabled):hover { background: var(--il-accent-soft); border-color: var(--il-accent-text); color: var(--il-accent-text); }
+input:not([type="checkbox"]):not([type="radio"]), select, textarea,
+.language-select, .curriculum .curriculum-platform select, .curriculum textarea { background: var(--il-surface); border-color: var(--il-control-border); color: var(--il-text); }
+input[type="checkbox"], input[type="radio"], .scenario-card input,
+.learning-root input[type="checkbox"], .learning-root input[type="radio"], .curriculum progress { accent-color: var(--il-accent-text); }
+.scenario-card.chosen { border-color: var(--il-accent-text); box-shadow: 0 0 0 1px var(--il-accent-strong); background: var(--il-accent-soft); }
+.scenario-card:has(input:focus-visible), :focus-visible,
+.sidebar :focus-visible, .curriculum :focus-visible { outline-color: var(--il-focus); }
+.skip-link { background: var(--il-accent-strong); color: #fff; }
+.learning-root .learning-main p, .learning-root .learning-main li, .learning-root .learning-main dd,
+.curriculum .knowledge-check legend, .curriculum label[for="practice-evidence"], .curriculum label[for="curriculum-prediction"],
+.curriculum .learning-box strong { color: var(--il-text); }
+.curriculum .learning-coach p, .curriculum #learning-platform-description, .curriculum .disclosure-context,
+.curriculum .read-confirmation, .curriculum .practice-confirmation, .curriculum .curriculum-reading-progress { color: var(--il-muted); }
+.curriculum .curriculum-roadmap button { background: var(--il-surface); color: var(--il-heading); border-color: var(--il-border); }
+.curriculum .curriculum-roadmap button[aria-current="step"] { border-color: var(--il-accent-text); background: var(--il-accent-soft); }
+.curriculum .curriculum-tabs button { background: var(--il-surface); color: var(--il-text); border-color: var(--il-control-border); }
+.curriculum .curriculum-tabs button[aria-selected="true"] { background: var(--il-accent-strong); border-color: var(--il-accent-text); color: #fff; }
+.curriculum .curriculum-tabs button:not([aria-selected="true"]):hover { background: var(--il-accent-soft); border-color: var(--il-accent-text); }
+.curriculum .curriculum-flow [aria-pressed="true"], .learning-segment [aria-pressed="true"],
+.learning-scenarios [aria-pressed="true"], .learning-flow-item > button.selected { border-color: var(--il-accent-text); background: var(--il-accent-soft); color: var(--il-accent-text); }
+.learning-flow-item > button:first-child, .learning-branches button, .learning-segment button, .learning-scenarios button { color: var(--il-text); border-color: var(--il-control-border); }
+.learning-edge { color: var(--il-accent-text); }
+.curriculum .learning-checkbox-row, .curriculum .learning-choice { background: var(--il-surface); border-color: var(--il-control-border); color: var(--il-text); }
+.curriculum .learning-checkbox-row:has(:checked), .curriculum .learning-choice:has(:checked) { border-color: var(--il-accent-text); background: var(--il-accent-soft); }
+.curriculum .learning-checkbox-row:hover, .curriculum .learning-choice:hover { border-color: var(--il-accent-text); }
+.curriculum .learning-checkbox-row:has(:focus-visible), .curriculum .learning-choice:has(:focus-visible) { outline-color: var(--il-focus); }
+.curriculum .learning-explanation { background: var(--il-accent-soft); border-left-color: var(--il-accent-text); }
+.curriculum details, .curriculum .knowledge-check { background: var(--il-surface); border-color: var(--il-border); }
+.curriculum summary { color: var(--il-heading); }
+.curriculum details[open] { background: var(--il-surface-muted); border-color: var(--il-control-border); }
+.curriculum details[open] summary { border-color: var(--il-border); }
+.curriculum pre, .learning-command { background: var(--il-code-background); color: var(--il-code-text); }
+.command-panel pre { color: var(--il-text); }
+.timeline-point:not(.orange) { background: var(--il-accent); border-color: var(--il-accent-soft); }
+.evidence-card.selected { background: var(--il-accent-soft); outline-color: var(--il-accent-text); }
+/* Functional status semantics remain distinct from blue selection/action colors. */
+.message.success, .curriculum .check-feedback.correct { background: var(--il-positive-surface); color: var(--il-positive); border-color: var(--il-positive-border); }
+.curriculum .check-feedback.correct p { color: var(--il-positive); }
+.message.error { background: var(--il-negative-surface); color: var(--il-negative); border-color: var(--il-negative-border); }
+.fault-banner, .button.warning, .curriculum .check-feedback.retry { background: var(--il-warning-surface); color: var(--il-warning); border-color: var(--il-warning-border); }
+.fault-banner div > span, .curriculum .check-feedback.retry p { color: var(--il-warning); }
+.fault-banner > span:first-child { border-color: var(--il-warning-border); }
+
+.panel.workflow p, .command-panel p, .command-panel > div, .panel-footer,
+.scenario-card.chosen .scenario-number, .scenario-card.chosen > span:last-child,
+.curriculum details[open] .disclosure-context,
+.evidence-card.selected p, .evidence-card.selected dd { color: var(--il-muted-surface); }
+
+.lab-guide { background: var(--il-surface-muted); border-color: var(--il-border); }
+.lab-guide li strong, .scenario-card strong { color: var(--il-heading); }
+.lab-guide li p { color: var(--il-muted-surface); }
+.observed-panel { border-top-color: var(--il-accent); }
+
+/* The selected theme changes tokens, leaving lesson content/progress untouched. */
+:root { color-scheme: light; }
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --il-background: #11161f;
+  --il-surface: #1a2230;
+  --il-surface-muted: #202b3b;
+  --il-heading: #f0f4fa;
+  --il-text: #d6dfec;
+  --il-muted: #a9b6c9;
+  --il-muted-surface: #b3c1d4;
+  --il-border: #3b4b63;
+  --il-control-border: #788da8;
+  --il-accent: #80b8ff;
+  --il-accent-text: #8fc2ff;
+  --il-accent-soft: #233b59;
+  --il-focus: #a4ceff;
+  --il-code-background: #0b1018;
+  --il-code-text: #e5ecf5;
+  --il-positive: #92e3b5;
+  --il-positive-surface: #16362a;
+  --il-positive-border: #59a880;
+  --il-warning: #ffcf91;
+  --il-warning-surface: #3a2b18;
+  --il-warning-border: #c39a62;
+  --il-negative: #ffb1ac;
+  --il-negative-surface: #3c2328;
+  --il-negative-border: #c18586;
+}
+
+.theme-control { display: flex; align-items: center; gap: 8px; color: var(--il-text); font-size: 13px; margin: 0; }
+.theme-select { width: auto; min-height: 44px; margin: 0; max-width: 140px; }
+.learning-topbar nav, .topbar-right { flex-wrap: wrap; }
+.learning-topbar nav { align-items: center; }
+.topbar-right { justify-content: flex-end; }
+
+/* Shared tokens also cover populated evidence/comparison/reference views. */
+.tag, .status, .service-symbol, .empty-symbol, .count, .experiment-guidance,
+.learning-coach-answer, .learning-roadmap button, .learning-list button,
+.learning-branches button, .learning-flow-item > button:first-child {
+  background: var(--il-surface-muted); color: var(--il-text); border-color: var(--il-border);
+}
+.learning-roadmap button:hover, .learning-list button:hover, .evidence-card:target,
+tbody tr:hover, .citation { background: var(--il-accent-soft); border-color: var(--il-accent-text); }
+.evidence-card:target { outline-color: var(--il-accent-text); }
+.learning-list [aria-current] { color: var(--il-accent-text); border-color: var(--il-accent-text); }
+.learning-section h2, .learning-results h4, .panel-footer strong, td strong,
+.overview-state strong, .evidence-title strong { color: var(--il-heading); }
+label, .small, .empty, .empty p, .empty h3, .breadcrumb, .eyebrow, .stat .eyebrow,
+.overview-state, .stat-help, .service > div > span, .session-select > span,
+td, td small, th, .comparison-table th span, .comparison-table td:first-child,
+.evidence-card dt, .evidence-card dd, .timeline li strong, .timeline time,
+.timeline li p, .report-summary, .report-citations > strong, .report-grid li,
+.uncertainties > p, .command-panel strong, .page-footer > span, .phase-help,
+.learning-coach ul, .learning-lesson-nav, .learning-flow-detail dt, .learning-topic dt,
+.learning-flow-detail dd, .learning-topic dd, .learning-results ul,
+.learning-evidence small, .learning-measures span, .learning-applications li {
+  color: var(--il-muted);
+}
+input::placeholder, textarea::placeholder { color: var(--il-muted); }
+.learning-predict label, .learning-reflection, .learning-controls label, .learning-box label,
+.learning-topic summary { color: var(--il-text); }
+th { background: var(--il-surface-muted); }
+th, td, .uncertainties, .confidence, .learning-roadmap, .learning-topic,
+.learning-evidence li, .stat { border-color: var(--il-border); }
+.status.good { color: var(--il-positive); background: var(--il-positive-surface); border-color: var(--il-positive-border); }
+.status.problem { color: var(--il-negative); background: var(--il-negative-surface); border-color: var(--il-negative-border); }
+.comparison-table td.delta-better { color: var(--il-positive); }
+.comparison-table td.delta-worse, .learning-warning, .analysis-note { color: var(--il-warning); }
+.warning-text { color: var(--il-warning) !important; }
+.hypothesis { background: var(--il-warning-surface); border-color: var(--il-warning-border); }
+.hypothesis h3, .confidence strong { color: var(--il-warning); }
+.hypothesis .eyebrow, .confidence span { color: var(--il-muted-surface); }
+.rca-panel { border-top-color: var(--il-warning-border); }
+.timeline-point.orange { background: var(--il-warning); border-color: var(--il-warning-surface); }
+.command-panel pre { background: var(--il-code-background); color: var(--il-code-text); }
+/* Native popovers/dialogs use the same surfaces if added to an existing view. */
+dialog, [popover], select option { background: var(--il-surface); color: var(--il-text); border-color: var(--il-control-border); }
+dialog::backdrop { background: rgb(0 0 0 / 60%); }
+::selection { background: var(--il-accent-soft); color: var(--il-heading); }
+@media (max-width: 700px) {
+  .learning-topbar { padding: 12px 16px; gap: 12px; }
+  .learning-topbar nav { gap: 8px; }
+  .topbar { align-items: flex-start; }
+  .theme-control { flex-shrink: 0; }
+}
+
+.scenario-card { color: var(--il-text); }
+
+.stat-detail, .unavailable, .telemetry-scope { color: var(--il-muted); }
+
+.stat strong.unavailable { color: var(--il-muted); }
