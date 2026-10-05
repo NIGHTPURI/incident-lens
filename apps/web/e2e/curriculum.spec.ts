@@ -52,8 +52,8 @@ test("all fifteen stages expose bilingual lessons, scope, examples and independe
     await page.locator(".language-select").selectOption(locale);
     if (locale === "ko") await page.getByRole("button", { name: "첫 학습 시작" }).click();
     else {
-      await page.locator(".curriculum-toolbar").getByRole("button", { name: "Lesson list", exact: true }).click();
-      await page.locator(".curriculum-roadmap button").first().click();
+      if (await page.locator(".curriculum-menu-toggle").isVisible()) await page.locator(".curriculum-menu-toggle").click();
+      await page.locator(".curriculum-lesson-link").first().click();
     }
     for (const [index, chapter] of chapters.entries()) {
       await expect(page.getByRole("heading", { level: 1 })).toHaveText(chapter.title[locale]);

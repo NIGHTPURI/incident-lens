@@ -1,0 +1,24 @@
+{
+  "name": "incidentlens-javascript-advanced-practice",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22.13"
+  },
+  "scripts": {
+    "start": "node api.mjs",
+    "worker": "node worker.mjs",
+    "test": "node --test",
+    "build": "tsc && node -e \"require('fs').copyFileSync('../schema.sql', 'dist/schema.sql')\"",
+    "start:ts": "node dist/server.mjs",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "express": "5.1.0"
+  },
+  "devDependencies": {
+    "@types/express": "5.0.3",
+    "@types/node": "22.18.0",
+    "typescript": "5.9.3"
+  }
+}

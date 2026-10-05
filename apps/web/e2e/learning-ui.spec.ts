@@ -23,7 +23,7 @@ test("large reading controls, meaningful checks and honest records preserve loca
   await page.keyboard.press("Space");
   await page.getByRole("button", { name: "답 확인", exact: true }).click();
   await expect(page.locator(".check-feedback")).toContainText("맞았습니다");
-  await expect(page.locator(".curriculum-reading-progress")).toContainText("0 / 15");
+  await expect(page.locator(".curriculum-sidebar-progress")).toContainText("0 / 15");
   await page.getByRole("tab", { name: "혼자 풀기" }).click();
   const hint = page.getByText("힌트", { exact: true }); await hint.focus(); await page.keyboard.press("Enter");
   await expect(page.locator("details.learning-disclosure").first()).toHaveAttribute("open", "");

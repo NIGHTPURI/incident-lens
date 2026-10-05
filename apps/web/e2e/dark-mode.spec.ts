@@ -49,7 +49,7 @@ test("system changes and explicit themes preserve OS, language and progress acro
   await page.getByRole("combobox", { name: "Theme", exact: true }).selectOption("light");
   await page.emulateMedia({ colorScheme: "dark" }); await expect(page.locator("html")).toHaveAttribute("data-theme", "light");
   await page.reload(); await expect(page.locator("html")).toHaveAttribute("data-theme", "light");
-  await page.getByRole("button", { name: "Free experiment", exact: true }).click();
+  await page.getByRole("button", { name: "Free experiment lab", exact: true }).click();
   await page.getByRole("combobox", { name: "Theme", exact: true }).selectOption("system");
   await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
   await page.emulateMedia({ colorScheme: "light" }); await expect(page.locator("html")).toHaveAttribute("data-theme", "light");
@@ -71,7 +71,7 @@ test("both themes keep learning, populated lab and semantic feedback readable wi
     await page.getByRole("tab", { name: "혼자 풀기" }).click(); await page.getByText("힌트", { exact: true }).click();
     await readable(page.locator("details.learning-disclosure summary").first());
     await page.getByRole("tab", { name: "최소 예제", exact: true }).click(); await readable(page.locator(".curriculum pre").first());
-    await page.getByRole("button", { name: "자유 실험", exact: true }).click();
+    await page.getByRole("button", { name: "자유실험실", exact: true }).click();
     await expect(page.locator(".fault-banner")).toBeVisible(); await readable(page.locator(".fault-banner"));
     await readable(page.locator(".scenario-card.chosen"));
     const primary = page.locator(".button.primary").first(); await readable(primary); await primary.hover(); await readable(primary);
@@ -81,7 +81,7 @@ test("both themes keep learning, populated lab and semantic feedback readable wi
     await page.getByRole("button", { name: "실험 비교", exact: true }).click();
     await readable(page.locator(".delta-better").first()); await readable(page.locator(".command-panel pre"));
     expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
-    await page.getByRole("button", { name: "백엔드 실험실", exact: true }).click();
+    await page.getByRole("button", { name: "백엔드 학습실", exact: true }).click();
     await expect(page.getByRole("combobox", { name: "테마", exact: true })).toHaveValue(theme);
   }
   expect(writes).toEqual([]);
@@ -94,7 +94,7 @@ test("storage denial still follows the OS before mount and permits transient cho
     Storage.prototype.setItem = () => { throw new DOMException("Denied", "SecurityError"); };
   });
   await page.goto("/"); await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
-  await page.getByRole("button", { name: "자유 실험", exact: true }).click(); await readable(page.locator(".message.error"));
+  await page.getByRole("button", { name: "자유실험실", exact: true }).click(); await readable(page.locator(".message.error"));
   await expect(page.locator(".message.error")).toHaveCSS("color", "rgb(255, 177, 172)");
   await page.getByRole("combobox", { name: "테마", exact: true }).selectOption("light");
   await expect(page.locator("html")).toHaveAttribute("data-theme", "light"); await readable(page.locator(".message.error"));

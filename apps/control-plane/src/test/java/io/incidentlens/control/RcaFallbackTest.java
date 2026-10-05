@@ -17,7 +17,7 @@ class RcaFallbackTest {
         var meters = new SimpleMeterRegistry();
         when(llm.configured()).thenReturn(true);
         when(llm.analyze(anyList())).thenThrow(new IllegalStateException("Invalid provider output"));
-        when(evidence.list("session")).thenReturn(List.of(EvidenceAndRcaTest.metric("req", "REQUEST_COUNT", 40.0), EvidenceAndRcaTest.metric("lag", "KAFKA_LAG", 100.0)));
+        when(evidence.listForRca("session")).thenReturn(List.of(EvidenceAndRcaTest.metric("req", "REQUEST_COUNT", 40.0), EvidenceAndRcaTest.metric("lag", "KAFKA_LAG", 100.0)));
         var service = new RcaService(new RuleBasedRcaProvider(), llm, evidence, jdbc,
                 new JsonCodec(JsonMapper.builder().addModule(new JavaTimeModule()).build()), meters);
         var report = service.generate("session");

@@ -222,7 +222,7 @@ describe("transient operation feedback scope", () => {
     localStorage.setItem("incidentlens.learning.lesson", "diagnose");
     vi.mocked(api.overview).mockResolvedValue({ ...overview, services: ["demo-api", "demo-worker", "redis"].map(name => ({ name, status: "UP" })) });
     const pending = deferred<[]>(); vi.spyOn(api, "collect").mockReturnValue(pending.promise);
-    await mount(); await click("Learn");
+    await mount(); await click("Backend Learning");
     await click("Collect AFTER evidence");
     expect(api.collect).toHaveBeenCalledTimes(1);
     await click("Previous lesson");
@@ -281,7 +281,7 @@ describe("transient operation feedback scope", () => {
     const pending = deferred<ReturnType<typeof detail>["session"]>();
     vi.spyOn(api, "createSession").mockReturnValue(pending.promise);
     await mount();
-    await click("Incident lab");
+    await click("Free experiment lab");
     const create = screen.getByRole("button", { name: /Create session/i });
     await act(async () => fireEvent.click(create));
     await learning();

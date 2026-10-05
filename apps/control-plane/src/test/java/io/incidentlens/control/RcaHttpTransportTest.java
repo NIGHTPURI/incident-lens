@@ -145,7 +145,7 @@ class RcaHttpTransportTest {
             var jdbc = new JdbcTemplate(database); jdbc.execute("SET MODE MySQL");
             jdbc.update("INSERT INTO incident_session VALUES(?,?,?,'CREATED',CURRENT_TIMESTAMP,CURRENT_TIMESTAMP)",
                 "session", "HTTP fallback", "DOWNSTREAM_LATENCY");
-            var collector = mock(EvidenceCollector.class); when(collector.list("session")).thenReturn(evidence);
+            var collector = mock(EvidenceCollector.class); when(collector.listForRca("session")).thenReturn(evidence);
             var meters = new SimpleMeterRegistry();
             var rca = new RcaService(new RuleBasedRcaProvider(), provider(Duration.ofSeconds(5)), collector, jdbc, json, meters);
             reply = exchange -> send(exchange, envelope().getBytes(StandardCharsets.UTF_8), false);

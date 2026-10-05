@@ -127,7 +127,7 @@ class RcaProviderBoundaryTest {
     }
 
     private Fixture service() {
-        var collector = mock(EvidenceCollector.class); when(collector.list("session")).thenReturn(evidence);
+        var collector = mock(EvidenceCollector.class); when(collector.listForRca("session")).thenReturn(evidence);
         var jdbc = mock(JdbcTemplate.class); var meters = new SimpleMeterRegistry();
         return new Fixture(new RcaService(new RuleBasedRcaProvider(), provider, collector, jdbc, json, meters), jdbc, meters);
     }

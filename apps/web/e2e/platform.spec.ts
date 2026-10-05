@@ -54,8 +54,8 @@ test("all fifteen chapters expose their actual Windows and Linux variants in bot
     for (const locale of ["ko", "en"] as const) {
       await page.locator(".language-select").selectOption(locale);
       if (platform !== "windows" || locale !== "ko") {
-        await page.locator(".curriculum-toolbar button").first().click();
-        await page.locator(".curriculum-roadmap button").first().click();
+        if (await page.locator(".curriculum-menu-toggle").isVisible()) await page.locator(".curriculum-menu-toggle").click();
+        await page.locator(".curriculum-lesson-link").first().click();
       }
       for (const [index, original] of chapters.entries()) {
         const chapter = chapterForPlatform(original, platform);
