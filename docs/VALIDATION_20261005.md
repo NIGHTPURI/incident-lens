@@ -1,5 +1,7 @@
 # IncidentLens verification — 2026-10-05
 
+**Follow-up, 2026-10-06 KST:** the preserved primary backend was recovered and actual Chromium verified learning/free-lab session isolation, live Kafka order processing and saved RCA. See [local backend recovery](LOCAL_BACKEND_RECOVERY_20261006.md) for results, preservation and the remaining Prometheus port restriction. The offline observations below describe the earlier run.
+
 ## Scope and preservation
 
 Work continued in `/home/mireu/Dev/incident-lens-career-20261002`, on `feat/learning-os-selector`; no new clone/worktree. Initial HEAD was `7aa36b5`, with nine tracked modifications and 49 untracked files. After an actual fetch, origin/main was `2874671` (PR #3 already merged); the branch had one additional local learning commit. No AGENTS.md was found in this checkout or the applicable parent locations. Existing source/document/CI instructions and manifests were read.
