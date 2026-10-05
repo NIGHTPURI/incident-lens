@@ -93,3 +93,11 @@ Bash 실행기에는 `curl`, `jq`, Docker가 필요합니다. 서비스 상태�
 ## 프로젝트 구성
 
 `apps/demo-api`는 상품·주문·outbox, `apps/demo-worker`는 이벤트 소비, `apps/control-plane`은 세션·장애·증거·비교·RCA를 담당합니다. `apps/web`은 학습 화면과 기존 대시보드입니다. `loadtest/`에 k6 부하, `scripts/`에 로컬 실행기, `infra/`에 컨테이너 설정, `docs/`에 설계·검증 기록이 있습니다. [웹 개발 안내](apps/web/README.md)와 [운영 문서](docs/OPERATIONS.md)도 참고하세요.
+
+## 백엔드 학습실 완료 범위
+
+Java·Python·JavaScript/TypeScript·C# 과정을 왼쪽 단계 목록(모바일 열기/닫기)에서 학습합니다. 언어 기초→HTTP/API→DB/트랜잭션→인증/권한→테스트→운영→캐시→동시성/중복→비동기→장애/복구를 실제 예제와 독립 과제로 연결합니다. [언어 예제](examples/language-paths/README.md), [학습 결과 지도](docs/BACKEND_LANGUAGE_PARITY.md), [실행 검증 기록](docs/VALIDATION_20261005.md)을 확인하세요. TypeScript는 고정 의존성으로 컴파일한 서버를 실제 실행합니다. SQLite·로컬 캐시·polling은 Redis/Kafka 검증으로 표시하지 않습니다.
+
+언어별 진도·읽기·자기 확인과 학습/자유실험실 세션 선택을 분리하고 한영·OS·테마·새로고침·뒤로 가기를 유지합니다. 화면 이동은 장애 설정/해제나 RCA 재생성을 실행하지 않으며, 실제 활성 장애 경고는 계속 표시합니다. RCA는 SQL에서 BEFORE를 먼저 선택한 뒤 최신 500건을 제한합니다. 일반 증거에는 AFTER를 유지하고 저장된 보고서의 인용은 같은 세션에서 복원합니다.
+
+확인 순서: 저장소에서 `cd apps/web`, `npm ci`, `npm run dev -- --host 127.0.0.1 --port 5173` → `http://127.0.0.1:5173` → 한영/OS/언어 선택 → 첫 수업 → 실습 기록 → 관련 기술 안내 → 준비됐을 때 자유실험실을 직접 선택합니다. 개발 서버의 API 프록시 기본값은 `http://127.0.0.1:8080`입니다. 실험실 연결이 없어도 수업은 읽을 수 있습니다.

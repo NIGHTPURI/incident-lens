@@ -93,3 +93,11 @@ Study/Community list caching and Todo notification queues are **hypothhetical ca
 ## Project map
 
 `apps/demo-api` contains catalog, orders and outbox; `apps/demo-worker` consumes events; `apps/control-plane` owns sessions, faults, evidence, comparisons and RCA; `apps/web` is the learning UI and expert dashboard. `loadtest/` holds k6 workloads, `scripts/` local runners, `infra/` container configuration, and `docs/` design and verification records. See [web development notes](apps/web/README.md) and [operations](docs/OPERATIONS.md) if present.
+
+## Backend Learning completion
+
+The left curriculum (mobile drawer) covers Java, Python, JavaScript/TypeScript and C#. Each path connects language basics, HTTP/API, durable transactions, identity/access, tests, operations, caching, duplicate handling, async work and recovery. Runnable intro/advanced projects and fixed dependencies are in [language paths](examples/language-paths/README.md); compiled TypeScript runs from `advanced/javascript/server.mts`. [Outcome map](docs/BACKEND_LANGUAGE_PARITY.md) and [actual validation](docs/VALIDATION_20261005.md) distinguish authored content, execution and remaining limits.
+
+Learning progress, language/OS/theme and self-review persist independently. Learning and free-lab session selections have separate storage keys; route history works through back/refresh. Navigation does not enable/disable faults or regenerate reports. Actual active faults retain their global warning. RCA selects BEFORE rows before limiting to 500, while general evidence still displays AFTER; report citations are restored within their session.
+
+Local preview: `cd apps/web && npm ci && npm run dev -- --host 127.0.0.1 --port 5173`, then open `http://127.0.0.1:5173`. Choose UI language, OS and programming language; start the first lesson, record practice evidence, visit the technology guide, then explicitly enter the free lab when ready. Its backend proxy defaults to `http://127.0.0.1:8080`; reading lessons works while the lab is offline. Existing local Docker data need not be changed to read or test lessons.

@@ -378,6 +378,8 @@ test("Korean default and English switching localize every populated view and per
   expect(
     await page.evaluate(() => localStorage.getItem("incidentlens.locale")),
   ).toBe("en");
+  // Navigation now persists the current route in the URL; choose overview explicitly.
+  await page.getByRole("button", { name: "Overview", exact: true }).click();
   await page.reload();
   await expect(
     page.getByRole("heading", { name: "Understand what changed." }),

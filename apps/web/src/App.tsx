@@ -63,6 +63,8 @@ type Page = "learn" | "overview" | "lab" | "evidence" | "comparison";
 type LearningView = "home" | "lesson";
 const learningViewKey = "incidentlens.learning.view";
 const learningSessionKey = "incidentlens.learning.session";
+const labSessionKey = "incidentlens.lab.session";
+const sessionKey = (page: Page) => page === "learn" ? learningSessionKey : labSessionKey;
 function readLearningView(): LearningView {
   try {
     const saved = localStorage.getItem(learningViewKey);
@@ -260,10 +262,29 @@ export default function App() {
     setNotice("");
     setError(null);
   }
-  function setPage(next: Page) {
+  function navigate(next: Page, push: boolean) {
     invalidateFeedback();
+    if ((page === "learn") !== (next === "learn")) {
+      let remembered = "";
+      try { remembered = localStorage.getItem(sessionKey(next)) ?? ""; } catch { /* Storage is optional. */ }
+      setSelectedId(remembered);
+    }
     setPageState(next);
+    if (push) {
+      const url = new URL(window.location.href);
+      url.searchParams.set("view", next);
+      window.history.pushState(null, "", url);
+    }
   }
+  function setPage(next: Page) { navigate(next, true); }
+  useEffect(() => {
+    const back = () => {
+      const requested = new URLSearchParams(window.location.search).get("view");
+      navigate(pages.some(item => item.id === requested) ? requested as Page : "learn", false);
+    };
+    window.addEventListener("popstate", back);
+    return () => window.removeEventListener("popstate", back);
+  }, [page]);
   function setSelectedId(next: string) {
     if (selectedIdRef.current !== next) invalidateFeedback();
     selectedIdRef.current = next;
@@ -323,14 +344,14 @@ export default function App() {
   useEffect(() => {
     if (!selectedId && sessions.length) {
       let remembered = "";
-      try { remembered = localStorage.getItem(learningSessionKey) ?? ""; } catch { /* Storage is optional. */ }
+      try { remembered = localStorage.getItem(sessionKey(page)) ?? ""; } catch { /* Storage is optional. */ }
       setSelectedId(sessions.find((session) => session.id === remembered)?.id ?? sessions[0].id);
     }
-  }, [sessions, selectedId]);
+  }, [sessions, selectedId, page]);
   useEffect(() => {
     if (!selectedId) return;
-    try { localStorage.setItem(learningSessionKey, selectedId); } catch { /* Storage is optional. */ }
-  }, [selectedId]);
+    try { localStorage.setItem(sessionKey(page), selectedId); } catch { /* Storage is optional. */ }
+  }, [selectedId, page]);
   useEffect(() => {
     if (!selectedId) return;
     setDetail(null);

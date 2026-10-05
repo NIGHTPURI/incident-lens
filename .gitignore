@@ -62,3 +62,12 @@ dumps/
 *~
 .DS_Store
 Thumbs.db
+
+# Language practice outputs
+__pycache__/
+.venv/
+bin/
+obj/
+*.db
+*.db-shm
+*.db-wal

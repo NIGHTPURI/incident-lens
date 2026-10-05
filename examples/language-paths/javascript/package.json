@@ -1,0 +1,7 @@
+{
+  "name": "incidentlens-javascript-practice",
+  "private": true,
+  "type": "module",
+  "engines": { "node": ">=22" },
+  "scripts": { "start": "node app.mjs", "test": "node --test" }
+}

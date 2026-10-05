@@ -46,6 +46,46 @@ jobs:
       - run: npm run build
       - run: npx playwright install --with-deps chromium
       - run: npm run test:browser
+  languages:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        track: [python, javascript, csharp]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.12'}
+      - uses: actions/setup-node@v4
+        if: matrix.track == 'javascript'
+        with: {node-version: '22.23.2'}
+      - uses: actions/setup-dotnet@v4
+        if: matrix.track == 'csharp'
+        with: {dotnet-version: '8.0.x'}
+      - name: Python intro, HTTP/store and actual recovery
+        if: matrix.track == 'python'
+        run: |
+          python -m unittest discover -s examples/language-paths/python -v
+          python examples/language-paths/verify_intro.py python
+          python -m pip install -r examples/language-paths/advanced/python/requirements.lock
+          (cd examples/language-paths/advanced/python && python -m unittest -v)
+          python examples/language-paths/advanced/verify_recovery.py python
+      - name: JavaScript and compiled TypeScript HTTP/recovery
+        if: matrix.track == 'javascript'
+        run: |
+          (cd examples/language-paths/javascript && npm ci && npm test)
+          python examples/language-paths/verify_intro.py javascript
+          (cd examples/language-paths/advanced/javascript && npm ci && npm run typecheck && npm run build && npm test)
+          python examples/language-paths/advanced/verify_recovery.py javascript
+          python examples/language-paths/advanced/verify_recovery.py typescript
+      - name: C# store, real HTTP and process recovery
+        if: matrix.track == 'csharp'
+        run: |
+          dotnet build examples/language-paths/csharp/CatalogPractice.csproj
+          dotnet restore examples/language-paths/advanced/csharp/tests/CatalogAdvanced.Tests.csproj --locked-mode
+          dotnet test examples/language-paths/advanced/csharp/tests/CatalogAdvanced.Tests.csproj --no-restore
+      - name: Shared SQLite migration and rollback
+        run: python -m unittest discover -s examples/language-paths/advanced -p test_migrate.py -v
   compose:
     runs-on: ubuntu-latest
     steps:

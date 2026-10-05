@@ -26,9 +26,9 @@ test("programming language, OS, UI locale and theme persist independently withou
   await page.locator(".language-select").selectOption("en");
   await page.locator(".theme-select").selectOption("dark");
   await expect(page.locator(".programming-guide h1")).toHaveText("Python");
-  await expect(page.locator(".language-course-chapter")).toHaveCount(5);
+  await expect(page.locator(".curriculum-guide-tree .curriculum-lesson-link")).toHaveCount(15);
   await expect(page.locator("#track-setup").locator("..")).toContainText("python.exe -m venv .venv");
-  await expect(page.locator(".curriculum-sidebar-progress")).toContainText("no completion record");
+  await expect(page.locator(".curriculum-sidebar-progress")).toContainText("Reading record");
   await page.reload();
   await expect(page.locator("#learning-code-language")).toHaveValue("python");
   await expect(page.locator("#learning-platform")).toHaveValue("windows");
@@ -43,17 +43,19 @@ test("programming language, OS, UI locale and theme persist independently withou
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
 });
 
-test("all fourteen guides and focused language courses expose real headings, source links and honest scope", async ({ page }) => {
+test("all fourteen guides and fifteen-stage language paths expose real headings, source links and honest scope", async ({ page }) => {
   const writes = await offline(page);
   await page.goto("/");
   await page.locator(".language-select").selectOption("en");
-  for (const language of ["python", "javascript", "go", "csharp"] as const) {
+  for (const language of ["python", "javascript", "csharp"] as const) {
     await page.locator("#learning-code-language").selectOption(language);
-    await expect(page.locator(".language-course-chapter")).toHaveCount(5);
-    for (const id of ["api", "db", "auth", "tests", "deployment"]) {
-      await expect(page.locator(`#track-${id}`)).toHaveCount(1);
+    await expect(page.locator(".curriculum-guide-tree .curriculum-lesson-link")).toHaveCount(15);
+    for (const position of [3, 4, 6, 7, 9, 13, 14]) {
+      await openContents(page);
+      await page.locator(".curriculum-guide-tree .curriculum-lesson-link").nth(position).click();
+      await expect(page.locator("#track-stage")).toBeVisible();
     }
-    await expect(page.locator(".programming-guide")).toContainText("not run or verified projects");
+    await expect(page.locator(".language-depth-course")).toContainText("examples/language-paths/advanced/");
   }
   await openTech(page, "Prometheus");
   await expect(page.locator(".curriculum-tech-tree .curriculum-lesson-link")).toHaveCount(14);

@@ -9,6 +9,8 @@ import KnowledgeCheck from "./KnowledgeCheck";
 import LessonText from "./LessonText";
 import ProgrammingGuide, { CODE_LANGUAGE_KEY, codeLanguages, guideSections, readCodeLanguage, type CodeLanguage } from "./programming-tracks";
 import { TechnologyGuide, technologyGuides, technologyGroups, technologySections } from "./technology-guides";
+import { languageStages, type LanguageStage } from "./language-depth-data";
+import { readPathRecord } from "./language-depth-course";
 
 type Props = { view: "home" | "lesson"; onViewChange: (view: "home" | "lesson") => void; onContextChange: () => void; onReference: () => void };
 const tabs = [
@@ -17,6 +19,22 @@ const tabs = [
   ["practice", "혼자 풀기", "Independent practice"],
 ] as const;
 type Tab = typeof tabs[number][0];
+function savedLanguageStage(language: CodeLanguage): LanguageStage {
+  if (language === "java") return "tools";
+  try { const id = localStorage.getItem(`incidentlens.learning.stage.${language}.v1`); return languageStages.find(item => item[0] === id)?.[0] ?? "tools"; }
+  catch { return "tools"; }
+}
+function savedReadCount(language: CodeLanguage): number {
+  if (language === "java") return 0;
+  try { return readPathRecord(localStorage, language).read.length; } catch { return 0; }
+}
+const nonJavaModules = [
+  { id: "start", ko: "시작과 요청", en: "Getting started & requests", lessons: ["tools", "basics", "http"] },
+  { id: "data", ko: "API와 데이터", en: "APIs & data", lessons: ["api", "persistence", "transactions"] },
+  { id: "quality", ko: "안전한 개발", en: "Reliable development", lessons: ["security", "testing", "collaboration", "operations"] },
+  { id: "systems", ko: "운영과 분산 시스템", en: "Operations & distributed systems", lessons: ["observability", "performance", "concurrency", "messaging"] },
+  { id: "project", ko: "독립 프로젝트", en: "Independent project", lessons: ["capstone"] },
+] as const;
 const modules = [
   { id: "start", ko: "시작과 요청", en: "Getting started & requests", lessons: ["tools", "java", "http"] },
   { id: "data", ko: "API와 데이터", en: "APIs & data", lessons: ["spring", "persistence", "transactions"] },
@@ -33,6 +51,8 @@ export default function Curriculum(props: Props) {
   const [codeLanguage, setCodeLanguage] = useState<CodeLanguage>(() => { try { return readCodeLanguage(localStorage); } catch { return "java"; } });
   const [codeLanguageSaved, setCodeLanguageSaved] = useState(true);
   const [guideSection, setGuideSection] = useState<(typeof guideSections)[number]["id"]>("orient");
+  const [languageStage, setLanguageStage] = useState<LanguageStage>(() => savedLanguageStage(codeLanguage));
+  const [pathReadCount, setPathReadCount] = useState(() => savedReadCount(codeLanguage));
   const [learningArea, setLearningArea] = useState<"path" | "technology">("path");
   const [technologyId, setTechnologyId] = useState("redis");
   const [technologySection, setTechnologySection] = useState<(typeof technologySections)[number]["id"]>("need");
@@ -52,14 +72,15 @@ export default function Curriculum(props: Props) {
   const sidebar = useRef<HTMLElement>(null);
   const currentLesson = useRef<HTMLButtonElement>(null);
   const currentGuide = useRef<HTMLButtonElement>(null);
+  const currentLanguageStage = useRef<HTMLButtonElement>(null);
   const currentTechnology = useRef<HTMLButtonElement>(null);
   const stage = roadmap.find(item => item.id === progress.stage)!;
   const originalChapter = chapters.find(item => item.id === stage.id);
   const chapter = originalChapter && chapterForPlatform(originalChapter, platform);
   const preparation = platformPreparation(platform, stage.id);
   useEffect(() => {
-    (learningArea === "technology" ? currentTechnology : codeLanguage === "java" ? currentLesson : currentGuide).current?.scrollIntoView?.({ block: "nearest" });
-  }, [progress.stage, list, codeLanguage, guideSection, learningArea, technologyId]);
+    (learningArea === "technology" ? currentTechnology : codeLanguage === "java" ? currentLesson : currentLanguageStage).current?.scrollIntoView?.({ block: "nearest" });
+  }, [progress.stage, list, codeLanguage, guideSection, languageStage, learningArea, technologyId]);
   useEffect(() => {
     if (!list) return;
     const media = window.matchMedia?.("(max-width: 820px)");
@@ -89,16 +110,21 @@ export default function Curriculum(props: Props) {
     });
   }
   function chooseCodeLanguage(next: CodeLanguage) {
-    props.onContextChange(); setCodeLanguage(next); setGuideSection("orient"); setLearningArea("path"); setList(false);
+    props.onContextChange(); setCodeLanguage(next); setGuideSection("orient"); setLanguageStage(savedLanguageStage(next)); setPathReadCount(savedReadCount(next)); setLearningArea("path"); setList(false);
     try { localStorage.setItem(CODE_LANGUAGE_KEY, next); setCodeLanguageSaved(true); }
     catch { setCodeLanguageSaved(false); }
   }
   function goToGuideSection(id: (typeof guideSections)[number]["id"]) {
-    props.onContextChange(); setGuideSection(id); setList(false);
+    props.onContextChange(); setGuideSection(id); setLanguageStage("tools"); setList(false);
     requestAnimationFrame(() => {
       const heading = document.getElementById(`track-${id}`);
       heading?.focus(); heading?.scrollIntoView?.({ block: "start" });
     });
+  }
+  function chooseLanguageStage(next: LanguageStage) {
+    props.onContextChange(); setLanguageStage(next); setList(false);
+    if (codeLanguage !== "java") { try { localStorage.setItem(`incidentlens.learning.stage.${codeLanguage}.v1`, next); } catch { /* Navigation still works when storage is denied. */ } }
+    requestAnimationFrame(() => { const heading = document.getElementById("track-stage"); heading?.focus(); heading?.scrollIntoView?.({ block: "start" }); });
   }
   function openTechnology(id: string) {
     props.onContextChange(); setTechnologyId(id); setTechnologySection("need"); setLearningArea("technology"); setList(false); window.scrollTo({ top: 0 });
@@ -180,9 +206,18 @@ export default function Curriculum(props: Props) {
         })}
       </div>
     </section>)}
-  </nav> : <nav className="curriculum-tree curriculum-guide-tree" aria-label={t("언어 시작 안내 목차", "Language starter guide contents")}>
-    <span className="curriculum-guide-title">{codeLanguages.find(item => item.id === codeLanguage)!.name} · {t("언어별 학습", "Language path")}</span>
-    {guideSections.map(section => <button key={section.id} ref={guideSection === section.id ? currentGuide : undefined} className="curriculum-topic-link" aria-current={guideSection === section.id ? "location" : undefined} onClick={() => goToGuideSection(section.id)}>{t(section.ko, section.en)}</button>)}
+  </nav> : <nav className="curriculum-tree curriculum-guide-tree" aria-label={t("언어별 15단계 수업 목차", "15-stage language lesson contents")}>
+    <span className="curriculum-guide-title">{codeLanguages.find(item => item.id === codeLanguage)!.name} · 15 {t("단계", "stages")}</span>
+    <section className="curriculum-tree-group"><span className="curriculum-guide-title">{t("시작 안내", "Start guide")}</span>{guideSections.map(section => <button key={section.id} ref={guideSection === section.id ? currentGuide : undefined} className="curriculum-topic-link" onClick={() => goToGuideSection(section.id)}>{t(section.ko, section.en)}</button>)}</section>
+    {nonJavaModules.map(module => <section className="curriculum-tree-group" key={module.id}>
+      <button className="curriculum-group-toggle" aria-expanded={expandedGroups.includes(module.id)} aria-controls={`language-group-${module.id}`} onClick={() => setExpandedGroups(current => current.includes(module.id) ? current.filter(id => id !== module.id) : [...current, module.id])}>
+        <span aria-hidden="true" className="curriculum-chevron">{expandedGroups.includes(module.id) ? "▾" : "▸"}</span><span>{t(module.ko, module.en)}</span>
+      </button>
+      <div id={`language-group-${module.id}`} hidden={!expandedGroups.includes(module.id)}>{module.lessons.map(id => {
+        const item = languageStages.find(candidate => candidate[0] === id)!;
+        return <button key={id} ref={languageStage === id ? currentLanguageStage : undefined} className="curriculum-lesson-link" aria-current={languageStage === id ? "step" : undefined} onClick={() => chooseLanguageStage(id)}>{item[locale === "ko" ? 1 : 2]}</button>;
+      })}</div>
+    </section>)}
   </nav>;
   return <div className="learning-root curriculum curriculum-shell">
     {list && <div className="curriculum-backdrop" onClick={closeMenu} aria-hidden="true" />}
@@ -192,12 +227,12 @@ export default function Curriculum(props: Props) {
         <button ref={closeButton} className="curriculum-menu-close" onClick={closeMenu} aria-label={t("학습 목록 닫기", "Close lesson list")}>×</button>
       </div>
       <div className="curriculum-area-switch" role="group" aria-label={t("학습 목차 종류", "Learning contents type")}><button aria-pressed={learningArea === "path"} onClick={() => setLearningArea("path")}>{t("언어별 학습", "Language paths")}</button><button aria-pressed={learningArea === "technology"} onClick={() => setLearningArea("technology")}>{t("기술 사전", "Technology guides")}</button></div>
-      {learningArea === "technology" ? <div className="curriculum-sidebar-progress"><span>{t("읽기 안내 · 완료 기록 없음", "Reading guide · no completion record")}</span></div> : codeLanguage === "java" ? <div className="curriculum-sidebar-progress"><span>{t("읽기 기록 · 자기 표시", "Reading record · self-marked")} {progress.read.length} / {roadmap.length}</span><progress value={progress.read.length} max={roadmap.length} aria-label={t("읽기 기록 · 숙련 점수 아님", "Reading record · not a mastery score")} /></div> : <div className="curriculum-sidebar-progress"><span>{t("언어별 학습 · 완료 기록 없음", "Language path · no completion record")}</span></div>}
+      {learningArea === "technology" ? <div className="curriculum-sidebar-progress"><span>{t("읽기 안내 · 완료 기록 없음", "Reading guide · no completion record")}</span></div> : codeLanguage === "java" ? <div className="curriculum-sidebar-progress"><span>{t("읽기 기록 · 자기 표시", "Reading record · self-marked")} {progress.read.length} / {roadmap.length}</span><progress value={progress.read.length} max={roadmap.length} aria-label={t("읽기 기록 · 숙련 점수 아님", "Reading record · not a mastery score")} /></div> : <div className="curriculum-sidebar-progress"><span>{t("읽기 기록 · 자기 표시", "Reading record · self-marked")} {pathReadCount} / {languageStages.length}</span><progress value={pathReadCount} max={languageStages.length} aria-label={t("읽기 기록 · 숙련 점수 아님", "Reading record · not a mastery score")} /></div>}
       {contents}
-      <p className="curriculum-sidebar-note">{learningArea === "technology" ? t("실험실의 실제 구성과 설명용 예시를 구분하세요.", "Distinguish actual lab configuration from illustrative examples.") : codeLanguage === "java" ? t("읽기·실습 표시는 자기 기록이며 숙련 인증이 아닙니다.", "Reading and practice marks are self-records, not mastery certification.") : t("이 언어는 API부터 배포까지 설명하지만 실행·완료 기록은 없습니다. Java 수업 진도와 별개입니다.", "This language explains API through deployment without a run or completion record. It is separate from Java course progress.")}</p>
+      <p className="curriculum-sidebar-note">{learningArea === "technology" ? t("실험실의 실제 구성과 설명용 예시를 구분하세요.", "Distinguish actual lab configuration from illustrative examples.") : codeLanguage === "java" ? t("읽기·실습 표시는 자기 기록이며 숙련 인증이 아닙니다.", "Reading and practice marks are self-records, not mastery certification.") : t("각 단계의 읽기와 자기 확인은 이 언어에만 저장하며 숙련 인증이 아닙니다. Java 진도와 별개입니다.", "Read marks and self-review are saved only for this language and are not certification. Java progress stays separate.")}</p>
     </aside>
     <div className="curriculum-content">
-    <div className="curriculum-mobile-current"><button ref={menuButton} className="learn-secondary curriculum-menu-toggle" aria-expanded={list} aria-controls="learning-sidebar" onClick={() => setList(true)}>{t("☰ 수업 목록", "☰ Lesson list")}</button><span>{learningArea === "technology" ? technologyGuides.find(item => item.id === technologyId)!.name : codeLanguage === "java" ? stage.title[locale] : `${codeLanguages.find(item => item.id === codeLanguage)!.name} · ${t("언어별 학습", "Language path")}`}</span></div>
+    <div className="curriculum-mobile-current"><button ref={menuButton} className="learn-secondary curriculum-menu-toggle" aria-expanded={list} aria-controls="learning-sidebar" onClick={() => setList(true)}>{t("☰ 수업 목록", "☰ Lesson list")}</button><span>{learningArea === "technology" ? technologyGuides.find(item => item.id === technologyId)!.name : codeLanguage === "java" ? stage.title[locale] : `${codeLanguages.find(item => item.id === codeLanguage)!.name} · ${languageStages.find(item => item[0] === languageStage)![locale === "ko" ? 1 : 2]}`}</span></div>
     {learningArea === "path" && <>
     <div className="curriculum-toolbar learning-lesson-nav">
       <button className="learn-secondary" onClick={() => { props.onContextChange(); props.onReference(); }}>{codeLanguage === "java" ? t("기존 실험 수업·저장 기록", "Existing experiment lessons and records") : t("기존 Java 실험 수업·저장 기록", "Existing Java experiment lessons and records")}</button>
@@ -218,7 +253,7 @@ export default function Curriculum(props: Props) {
     {!platformSaved && <p role="status">{t("OS 선택을 브라우저에 저장하지 못했습니다. 현재 선택은 유지됩니다.", "The OS choice could not be saved in this browser. Your current choice remains active.")}</p>}
     {!saved && <p role="status">{t("브라우저 저장에 실패했습니다. 현재 입력은 유지되지만 새로고침 전에 복사하세요.", "Browser storage failed. Current input remains here; copy it before reloading.")}</p>}
     </>}
-    {learningArea === "technology" ? <TechnologyGuide id={technologyId} locale={locale} onStage={openRelatedStage} /> : codeLanguage !== "java" ? <ProgrammingGuide language={codeLanguage} locale={locale} platform={platform} /> : props.view === "home" ? <section>
+    {learningArea === "technology" ? <TechnologyGuide id={technologyId} locale={locale} onStage={openRelatedStage} /> : codeLanguage !== "java" ? <><div className="curriculum-technology-links">{technologyGuides.filter(item => item.stage === (languageStage === "api" ? "spring" : languageStage === "basics" ? "java" : languageStage)).map(item => <button className="learn-secondary" key={item.id} onClick={() => openTechnology(item.id)}>{item.name} ↗</button>)}</div><ProgrammingGuide language={codeLanguage} locale={locale} platform={platform} stage={languageStage} onStage={chooseLanguageStage} onReadCount={setPathReadCount} /></> : props.view === "home" ? <section>
       <h1>{t("백엔드 학습 목록", "Backend curriculum")}</h1>
       <div className="learning-box curriculum-java-guide"><strong>{t("Java로 시작", "Starting with Java")}</strong><p>{t("Java는 JVM에서 실행하는 언어입니다. 기존 Java 21을 확인하고 파일·변수·HTTP를 배운 뒤 4단계에서 Spring Boot API를 만납니다. 이 저장소의 자유실험실도 Java/Spring 기반이며 다른 언어 트랙의 실행 결과로 표시하지 않습니다.", "Java runs on the JVM. Check for Java 21, learn files, variables and HTTP, then reach a Spring Boot API in stage 4. The free lab also uses Java/Spring; it is not presented as an execution result for another language.")}</p></div>
       <p>{t("15단계 수업과 독립 과제를 제공합니다. 실제 실행 예제와 설명용 모형의 범위를 각 수업에서 확인하세요. 읽기 완료는 독립 숙련이나 취업 준비 완료가 아닙니다.", "All 15 stages provide lessons and independent work. Each lesson states which examples execute and which model behavior. Reading completion is not independent mastery or job readiness.")}</p>
