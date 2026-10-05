@@ -6,6 +6,7 @@ const local = Object.fromEntries(readFileSync('.env', 'utf8').split(/\r?\n/)
   .map(line => { const index = line.indexOf('='); return [line.slice(0, index).trim(), line.slice(index + 1).trim().replace(/^(['"])(.*)\1$/, '$2')]; }));
 const setting = (name, fallback) => process.env[name] ?? local[name] ?? fallback;
 const grafana = `http://127.0.0.1:${setting('GRAFANA_PORT', '3001')}`;
+const prometheus = `http://127.0.0.1:${setting('PROMETHEUS_PORT', '9090')}`;
 const headers = { Authorization: `Basic ${Buffer.from(`admin:${setting('GRAFANA_ADMIN_PASSWORD', 'incidentlens-local')}`).toString('base64')}` };
 const output = process.env.TELEMETRY_PROOF_DIR ?? 'artifacts/observability';
 mkdirSync(output, { recursive: true });
@@ -15,11 +16,11 @@ async function get(url, authenticated = true) {
   return response.json();
 }
 function save(name, data) { writeFileSync(`${output}/${name}.json`, `${JSON.stringify(data, null, 2)}\n`); }
-const targets = await get('http://127.0.0.1:9090/api/v1/targets', false);
+const targets = await get(`${prometheus}/api/v1/targets`, false);
 const live = targets.data.activeTargets;
 if (live.length < 3 || live.some(target => target.health !== 'up')) throw new Error('All three application Prometheus targets must be healthy.');
 save('prometheus-targets', targets);
-const workload = await get(`http://127.0.0.1:9090/api/v1/query?${new URLSearchParams({ query: 'sum(incidentlens_workload_requests_total{service="demo-api"})' })}`, false);
+const workload = await get(`${prometheus}/api/v1/query?${new URLSearchParams({ query: 'sum(incidentlens_workload_requests_total{service="demo-api"})' })}`, false);
 const measuredRequests = Number(workload.data.result[0]?.value[1]);
 if (!(measuredRequests > 0)) throw new Error('Prometheus has no positive business request counter; run an instrumented workload first.');
 save('business-metric', workload);

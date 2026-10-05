@@ -14,6 +14,8 @@ If `.env` already exists, preserve it. `dev-up` copies the example only when mis
 
 Windows can reserve ports even without a listening process. If Docker reports that port 3000 or 3001 is forbidden, inspect `netsh interface ipv4 show excludedportrange protocol=tcp`, then choose unreserved `WEB_PORT` and `GRAFANA_PORT` values in `.env`. This workspace uses 13000 and 13001 because Windows reserved 2620–3419. The startup and comparison scripts print the actual binding. Do not terminate unrelated Windows processes to reclaim a port.
 
+`PROMETHEUS_PORT` also controls its loopback host binding (default `9090`), including `scripts/verify-observability.mjs`; Grafana's internal datasource remains `http://prometheus:9090`. This workspace's later deployment uses `13090` without changing Windows reservations. See [preserved main deployment](MAIN_LOCAL_DEPLOYMENT_20261006.md) for actual verification and rollback. Its archived original containers require the documented guarded tool; generic Compose `up/down` can select those archived service labels.
+
 Enable the full telemetry stack:
 
 ```powershell

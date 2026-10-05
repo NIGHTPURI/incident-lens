@@ -1,5 +1,7 @@
 # Local backend recovery and live verification — 2026-10-06 KST
 
+**Later follow-up:** [preserved main deployment](MAIN_LOCAL_DEPLOYMENT_20261006.md) upgrades the required app images, verifies the deployed RCA boundary and restores Prometheus on `13090` with Grafana. The image/Prometheus limits below describe the earlier recovery.
+
 This follows the [2026-10-05 validation](VALIDATION_20261005.md). Its unreachable `:8080` observation is historical. Recovery required no source change, container recreation, image upgrade, volume removal, DB reset, host installation, security setting change or paid LLM call.
 
 ## Recovery and preservation
