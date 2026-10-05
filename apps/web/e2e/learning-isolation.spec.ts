@@ -1,5 +1,46 @@
 import { test, expect } from '@playwright/test';
 
+test('learning report and comparison links keep their session through reload and history', async ({ page }) => {
+  const sessions = ['learn-session', 'lab-session'].map(id => ({ id, name: id, scenario: 'DOWNSTREAM_LATENCY', status: 'CREATED', createdAt: '2026-10-06T00:00:00Z', updatedAt: '2026-10-06T00:00:00Z' }));
+  const writes: string[] = [];
+  await page.addInitScript(() => {
+    localStorage.setItem('incidentlens.locale', 'en');
+    if (!localStorage.getItem('incidentlens.learning.session')) localStorage.setItem('incidentlens.learning.session', 'learn-session');
+    if (!localStorage.getItem('incidentlens.lab.session')) localStorage.setItem('incidentlens.lab.session', 'lab-session');
+    localStorage.setItem('incidentlens.learning.mode', 'reference');
+    localStorage.setItem('incidentlens.learning.view', 'lesson');
+    localStorage.setItem('incidentlens.learning.lesson', 'diagnose');
+  });
+  await page.route('**/api/**', async route => {
+    const path = new URL(route.request().url()).pathname;
+    if (route.request().method() !== 'GET') writes.push(path);
+    if (path === '/api/overview') return route.fulfill({json: { services: ['demo-api', 'demo-worker', 'redis'].map(name => ({name, status:'UP'})), metrics: {}, activeFault: null }});
+    if (path === '/api/sessions') return route.fulfill({json: sessions});
+    const session = sessions.find(s => path === `/api/sessions/${s.id}`);
+    return route.fulfill({json: {session, evidence: [], activations: [], experiments: [], report: null}});
+  });
+  await page.goto('/');
+  await expect(page.locator('.learning-controls select')).toHaveValue('learn-session');
+  await page.getByRole('button', {name: 'Open detailed evidence and report', exact: true}).click();
+  await expect(page).toHaveURL(/view=evidence&context=learning/);
+  await expect(page.getByLabel('Incident session', {exact: true})).toHaveValue('learn-session');
+  await page.reload();
+  await expect(page.getByLabel('Incident session', {exact: true})).toHaveValue('learn-session');
+  await page.goBack();
+  await expect(page.locator('.learning-controls select')).toHaveValue('learn-session');
+  await page.getByRole('button', {name: 'Open full comparison', exact: true}).click();
+  await expect(page).toHaveURL(/view=comparison&context=learning/);
+  await expect(page.getByLabel('Incident session', {exact: true})).toHaveValue('learn-session');
+  await page.reload();
+  await expect(page.getByLabel('Incident session', {exact: true})).toHaveValue('learn-session');
+  await page.locator('.sidebar .nav-item').filter({hasText: 'Free experiment lab'}).click();
+  await expect(page.getByLabel('Incident session', {exact: true})).toHaveValue('lab-session');
+  await page.goBack();
+  await expect(page.getByLabel('Incident session', {exact: true})).toHaveValue('learn-session');
+  expect(await page.evaluate(() => localStorage.getItem('incidentlens.lab.session'))).toBe('lab-session');
+  expect(writes).toEqual([]);
+});
+
 test('legacy Go recovers and language records survive history independently', async ({ page }) => {
   const writes: string[] = [];
   await page.route('**/api/**', async route => { if (route.request().method() !== 'GET') writes.push(route.request().url()); await route.abort('connectionrefused'); });
