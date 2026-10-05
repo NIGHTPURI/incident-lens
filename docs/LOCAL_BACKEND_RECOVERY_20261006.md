@@ -58,6 +58,25 @@ Final totals: **12 sessions, 718 evidence rows, 10 reports and 1,751 orders/fulf
 
 This five-catalog-request/one-order smoke experiment is **not a k6 comparison or performance benchmark**. Full build, isolated MySQL integration and fixture browser results remain in the preceding record; runtime recovery did not rerun those local suites. Backups, write lists, preservation checks, logs and screenshots are in ignored `.local/verification/20261006/`; none are committed.
 
+## Learning result links fixed
+
+A further real-browser inspection exposed a UI defect: **Open detailed evidence and report** and **Open full comparison** restored the separate free-lab selection instead of the learning session. The pre-fix browser reproduced this using the two real sessions above.
+
+`App.tsx` now tracks session ownership independently of the visible page. Explicit learning result links use `?view=evidence&context=learning` or `?view=comparison&context=learning`; normal free-lab navigation restores the free-lab selection. URL context restores the correct scope on reload and browser history, and never invokes a mutation. Existing separate storage keys remain compatible.
+
+Post-fix commands actually executed:
+
+```bash
+cd apps/web
+npm test -- --run --maxWorkers=2
+npm run build
+CI=1 npm run test:browser -- e2e/learning-isolation.spec.ts --workers=2
+# From repository root, real backend, no API mocks:
+node .local/verification/20261006/live-detail.mjs
+```
+
+Results: **55 unit tests passed**, TypeScript/Vite build passed (existing bundle-size warning), **9 focused browser cases passed** across desktop/laptop/mobile. The additional actual-browser check displayed the real saved learning RCA, kept its session in detail/comparison after reload/history, restored the separate free-lab session, retained dark theme and issued **zero API writes**. The final PR CI rechecks the full suites; these local results are separate from CI and the preceding seven live checks.
+
 ## Observability and deployment limits
 
 Loki, Tempo and OTel collector started in their original containers. Grafana initially exited after SQLite locks and a provisioning panic. Its existing DB was backed up to `.local/verification/20261006/grafana-before/grafana.db`; the second start succeeded. `http://127.0.0.1:13001/api/health` returned HTTP 200 and `database: ok`.

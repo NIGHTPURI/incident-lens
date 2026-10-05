@@ -61,10 +61,15 @@ const scenarios: {
 
 type Page = "learn" | "overview" | "lab" | "evidence" | "comparison";
 type LearningView = "home" | "lesson";
+type SessionScope = "learning" | "lab";
 const learningViewKey = "incidentlens.learning.view";
 const learningSessionKey = "incidentlens.learning.session";
 const labSessionKey = "incidentlens.lab.session";
-const sessionKey = (page: Page) => page === "learn" ? learningSessionKey : labSessionKey;
+const sessionKey = (scope: SessionScope) => scope === "learning" ? learningSessionKey : labSessionKey;
+function readSessionScope(page: Page): SessionScope {
+  return page === "learn" || ((page === "evidence" || page === "comparison") &&
+    new URLSearchParams(window.location.search).get("context") === "learning") ? "learning" : "lab";
+}
 function readLearningView(): LearningView {
   try {
     const saved = localStorage.getItem(learningViewKey);
@@ -236,6 +241,7 @@ export default function App() {
     return pages.some((item) => item.id === requested) ? requested as Page : "learn";
   });
   const [learningView, setLearningView] = useState<LearningView>(readLearningView);
+  const [sessionScope, setSessionScope] = useState<SessionScope>(() => readSessionScope(page));
   const [overview, setOverview] = useState<Overview | null>(null);
   const [sessions, setSessions] = useState<IncidentSession[]>([]);
   const [selectedId, setSelectedIdState] = useState("");
@@ -262,17 +268,20 @@ export default function App() {
     setNotice("");
     setError(null);
   }
-  function navigate(next: Page, push: boolean) {
+  function navigate(next: Page, push: boolean, nextScope: SessionScope = next === "learn" ? "learning" : "lab") {
     invalidateFeedback();
-    if ((page === "learn") !== (next === "learn")) {
+    if (sessionScope !== nextScope) {
       let remembered = "";
-      try { remembered = localStorage.getItem(sessionKey(next)) ?? ""; } catch { /* Storage is optional. */ }
+      try { remembered = localStorage.getItem(sessionKey(nextScope)) ?? ""; } catch { /* Storage is optional. */ }
       setSelectedId(remembered);
     }
+    setSessionScope(nextScope);
     setPageState(next);
     if (push) {
       const url = new URL(window.location.href);
       url.searchParams.set("view", next);
+      if (nextScope === "learning" && next !== "learn") url.searchParams.set("context", "learning");
+      else url.searchParams.delete("context");
       window.history.pushState(null, "", url);
     }
   }
@@ -280,11 +289,12 @@ export default function App() {
   useEffect(() => {
     const back = () => {
       const requested = new URLSearchParams(window.location.search).get("view");
-      navigate(pages.some(item => item.id === requested) ? requested as Page : "learn", false);
+      const next = pages.some(item => item.id === requested) ? requested as Page : "learn";
+      navigate(next, false, readSessionScope(next));
     };
     window.addEventListener("popstate", back);
     return () => window.removeEventListener("popstate", back);
-  }, [page]);
+  }, [page, sessionScope]);
   function setSelectedId(next: string) {
     if (selectedIdRef.current !== next) invalidateFeedback();
     selectedIdRef.current = next;
@@ -344,14 +354,14 @@ export default function App() {
   useEffect(() => {
     if (!selectedId && sessions.length) {
       let remembered = "";
-      try { remembered = localStorage.getItem(sessionKey(page)) ?? ""; } catch { /* Storage is optional. */ }
+      try { remembered = localStorage.getItem(sessionKey(sessionScope)) ?? ""; } catch { /* Storage is optional. */ }
       setSelectedId(sessions.find((session) => session.id === remembered)?.id ?? sessions[0].id);
     }
-  }, [sessions, selectedId, page]);
+  }, [sessions, selectedId, sessionScope]);
   useEffect(() => {
     if (!selectedId) return;
-    try { localStorage.setItem(sessionKey(page), selectedId); } catch { /* Storage is optional. */ }
-  }, [selectedId, page]);
+    try { localStorage.setItem(sessionKey(sessionScope), selectedId); } catch { /* Storage is optional. */ }
+  }, [selectedId, sessionScope]);
   useEffect(() => {
     if (!selectedId) return;
     setDetail(null);
@@ -609,7 +619,7 @@ export default function App() {
             onCollect={(id, phase) => { void action(() => api.collect(id, phase), "notice.evidenceCollected"); }}
             onAnalyze={(id) => { void action(() => api.analyze(id), "notice.rcaGenerated"); }}
             onPrepare={(id, workload) => { void action(() => api.createExperiment(id, workload), "notice.experimentCreated"); }}
-            onNavigate={setPage}
+            onNavigate={(next) => navigate(next, true, next === "lab" ? "lab" : "learning")}
           />}
           {page !== "learn" && <div className="page-heading">
             <div>
