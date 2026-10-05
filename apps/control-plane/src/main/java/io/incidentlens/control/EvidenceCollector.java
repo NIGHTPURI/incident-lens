@@ -65,6 +65,9 @@ class EvidenceCollector {
     List<Models.Evidence> list(String sessionId) {
         return jdbc.query("SELECT * FROM evidence WHERE session_id=? ORDER BY window_end DESC,id LIMIT 500", this::map, sessionId);
     }
+    List<Models.Evidence> listForRca(String sessionId) {
+        return jdbc.query("SELECT * FROM evidence WHERE session_id=? AND phase='BEFORE' ORDER BY window_end DESC,id LIMIT 500", this::map, sessionId);
+    }
     List<Models.Evidence> includeCitations(String sessionId, List<Models.Evidence> visible, List<String> citations) {
         Map<String, Models.Evidence> combined = new LinkedHashMap<>();
         visible.forEach(e -> combined.put(e.id(), e));

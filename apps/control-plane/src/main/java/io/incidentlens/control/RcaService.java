@@ -21,7 +21,7 @@ class RcaService {
     Models.Report generate(String sessionId) {
         // Use the newest value for each service/type in BEFORE; AFTER does not rewrite the incident hypothesis.
         Map<String, Models.Evidence> latest = new LinkedHashMap<>();
-        evidence.list(sessionId).stream().filter(e -> !"AFTER".equals(e.phase())).forEach(e -> latest.putIfAbsent(e.service() + ":" + e.type(), e));
+        evidence.listForRca(sessionId).forEach(e -> latest.putIfAbsent(e.service() + ":" + e.type(), e));
         List<Models.Evidence> packageEvidence = List.copyOf(latest.values());
         Models.Report report;
         if (llm.configured()) {
