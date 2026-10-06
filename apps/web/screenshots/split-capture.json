@@ -1,0 +1,18 @@
+{
+  "capturedAt": "2026-10-06T05:40:58.886Z",
+  "dimensions": "1440x1000",
+  "theme": "light",
+  "browser": "Playwright Chromium, actual production source build",
+  "backend": "existing local demo control-plane, read-only GET proxy",
+  "fixtures": false,
+  "writes": [],
+  "errors": [],
+  "hashes": {
+    "split-en-home.png": "42fc259260c329d59c5cc1a1fcdf03afa7fcd6d00cd10962e4e7fe678f49e497",
+    "split-en-lab.png": "0479663959cdf1c06071dd07e790495634b25b46e1f5dc4cc5d50f15764aad67",
+    "split-en-technology.png": "2a9a7634180dd0b36ea3504b3170307926ed4fa05d77714783f7077d69263261",
+    "split-ko-home.png": "4987d6cb5835b6704c4c4c6fa84a2d4777b2712ae3cc0dcba894fd2c9bd0695c",
+    "split-ko-lab.png": "07bc3a69eca7ec41f1e3b6a4e61adf4864e6e9f4753927273e01f5be7a54ac85",
+    "split-ko-technology.png": "83b276bab5b889c21b4f94f262cb60cc3b96213e14a4fead9c1aee9062f42327"
+  }
+}
