@@ -2,7 +2,7 @@
 
 [한국어 기본 문서](../../README.md) · [English](../../README.en.md)
 
-React·TypeScript·Vite 기반 장애·부하 테스트 UI입니다. 홈 `/`, 자유실험실 `?view=lab`, 근거·RCA `?view=evidence`, 전후 비교 `?view=comparison`, 기술 사전 `?view=technology`, PC 준비안 `?view=settings`를 제공합니다. 로고는 도구 홈으로 돌아가며 직접 URL·새로고침·history·embed를 지원합니다. 일반 학습 과정은 이 앱에 포함하지 않습니다. 이전 `?view=learn`은 비공개 저장소 분리 안내입니다.
+React·TypeScript·Vite 기반 장애·부하 테스트 UI입니다. 잠금 파일의 도구 요구사항은 Node.js 22.12 이상의 22.x 또는 24 이상입니다. 홈 `/`, 자유실험실 `?view=lab`, 근거·RCA `?view=evidence`, 전후 비교 `?view=comparison`, 기술 사전 `?view=technology`, PC 준비안 `?view=settings`를 제공합니다. 로고는 도구 홈으로 돌아가며 직접 URL·새로고침·history·embed를 지원합니다. 일반 학습 과정은 이 앱에 포함하지 않습니다. 이전 `?view=learn`은 비공개 저장소 분리 안내입니다.
 
 ```bash
 npm ci

@@ -66,7 +66,7 @@ Default web: **http://127.0.0.1:3000**; API documentation: **http://127.0.0.1:80
 
 | Mode | Capabilities and limits |
 |---|---|
-| UI only | Node.js 22+ and a web development server. Read home/interface/guides; no API connection, faults, evidence, RCA or comparison |
+| UI only | Node.js 22.x starting at 22.12, or 24+, and a web development server. Read home/interface/guides; no API connection, faults, evidence, RCA or comparison |
 | Core lab | Seven services: demo faults, in-process telemetry, rule RCA and terminal k6 comparison |
 | With observability | Core plus five tools for metrics, logs and traces; extra resources/preparation |
 

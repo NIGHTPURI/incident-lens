@@ -4,7 +4,7 @@
 
 ## 보존과 분리 순서
 
-시작 시 `feat/equal-language-ui`의 로컬·원격 SHA는 `2fb23d8226259d0e5902b9e1c70c038f1d455842`로 일치했고 미커밋 변경이나 진행 중 push는 없었습니다. 새 `feat/split-backend-learning` 브랜치는 해당 최신 파일에서 시작했습니다. 소스 tar·전체 refs Git bundle·해시 manifest를 ignored `artifacts/product-split-20261006T051059Z/`에 저장했습니다. `.env`·DB·개인 기록·실행 로그·캐시를 새 커밋에 포함하지 않습니다.
+시작 시 `feat/equal-language-ui`의 로컬·원격 SHA는 `2fb23d8226259d0e5902b9e1c70c038f1d455842`로 일치했고 미커밋 변경이나 진행 중 push는 없었습니다. 새 `feat/split-backend-learning` 브랜치는 해당 최신 파일에서 시작했습니다. 원격 main에는 분리 시작 전 이전 UI의 PR #7 merge(`d4d5e4a`)가 이미 있었고 그 파일 트리는 `2fb23d8`과 동일합니다. 이번 분리 브랜치는 main에 병합하지 않았습니다. 소스 tar·전체 refs Git bundle·해시 manifest를 ignored `artifacts/product-split-20261006T051059Z/`에 저장했습니다. `.env`·DB·개인 기록·실행 로그·캐시를 새 커밋에 포함하지 않습니다.
 
 기존 GitHub 인증의 계정 NIGHTPURI를 확인했습니다. 존재하지 않던 `NIGHTPURI/backend-learning`을 처음부터 PRIVATE로 생성하고 다시 visibility를 확인한 뒤 독립 소스 스냅샷을 main에 업로드했습니다. 원격 SHA `4038e5d47e54a19803231489a3b6bf3e611d61fe`를 별도 체크아웃해 원래 경로나 백엔드 없이 build·단위 검사 34개를 통과시킨 **뒤에만** 공개 저장소의 일반 학습 소스를 제거했습니다. 기존 공개 Git 기록은 재작성하지 않았습니다.
 
