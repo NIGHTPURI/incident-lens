@@ -15,7 +15,7 @@ test('landing order, routes, active fault return and PC drafts never execute com
   await page.locator('.primary-navigation button').last().click();
   await expect(page.locator('.pc-settings')).toBeVisible();
   await expect(page.locator('.pc-settings')).toContainText('브라우저');
-  await page.locator('input[value="learning"]').check(); await expect(page.locator('.pc-settings')).toContainText('--mode learning');
+  await page.locator('input[value="frontend"]').check(); await expect(page.locator('.pc-settings')).toContainText('--mode ui');
   await page.locator('input[value="observability"]').check();
   await page.locator('#settings-vus').fill('3'); await page.locator('#settings-duration').fill('8');
   await page.getByRole('spinbutton',{name:'CONTROL_PLANE_PORT 호스트 포트',exact:true}).fill('18080');

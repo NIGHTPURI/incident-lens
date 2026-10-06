@@ -33,20 +33,17 @@ test("legacy system migrates once, buttons toggle immediately and all preference
   const writes = await mockApi(page);
   await page.emulateMedia({ colorScheme: "dark" });
   await page.addInitScript(() => { if (!localStorage.getItem("theme-seeded")) { localStorage.setItem("theme-seeded", "1"); localStorage.setItem("incidentlens.theme.v1", "system"); } });
-  await page.goto("/?view=learn");
+  await page.goto("/?view=settings");
   await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
   expect(await page.evaluate(() => localStorage.getItem("incidentlens.theme.v1"))).toBe("dark");
   await page.emulateMedia({ colorScheme: "light" }); await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
   const toggle = page.getByRole("button", { name: "라이트 모드로 전환" }); await toggle.focus(); await page.keyboard.press("Enter");
   await expect(page.locator("html")).toHaveAttribute("data-theme", "light");
   await page.getByRole("button", { name: "다크 모드로 전환" }).click();
-  await page.getByRole("button", { name: "학습하기", exact: true }).click();
-  await page.getByRole("checkbox", { name: /읽기 완료로 기록/ }).check();
-  await page.locator("#learning-platform").selectOption("windows"); await page.locator(".language-select").selectOption("en");
+  await page.locator("#settings-platform").selectOption("windows"); await page.locator(".language-select").selectOption("en");
   await page.reload(); await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
   await expect(page.getByRole("button", { name: "Switch to light mode" })).toBeVisible();
-  await expect(page.locator("#learning-platform")).toHaveValue("windows"); await expect(page.locator(".language-select")).toHaveValue("en");
-  await expect(page.getByRole("checkbox", { name: /Mark as read/ })).toBeChecked();
+  await expect(page.locator("#settings-platform")).toHaveValue("windows"); await expect(page.locator(".language-select")).toHaveValue("en");
   await page.getByRole("button", { name: "Switch to light mode" }).click();
   await page.emulateMedia({ colorScheme: "dark" }); await page.reload(); await expect(page.locator("html")).toHaveAttribute("data-theme", "light");
   await page.locator(".primary-navigation button").first().click(); await expect(page.locator("html")).toHaveAttribute("data-theme", "light");
@@ -55,21 +52,12 @@ test("legacy system migrates once, buttons toggle immediately and all preference
   expect(writes).toEqual([]); expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
 });
 
-test("both themes keep learning, populated lab and semantic feedback readable without mutations", async ({ page }) => {
-  const writes = await mockApi(page); await page.emulateMedia({ reducedMotion: "reduce" }); await page.goto("/?view=learn");
-  await page.getByRole("button", { name: "학습하기" }).click();
+test("both themes keep guides, populated lab and semantic feedback readable without mutations", async ({ page }) => {
+  const writes = await mockApi(page); await page.emulateMedia({ reducedMotion: "reduce" }); await page.goto("/?view=technology");
   for (const theme of ["light", "dark"]) {
     if (await page.locator("html").getAttribute("data-theme") !== theme) await page.locator(".theme-toggle").click();
-    await page.getByRole("tab", { name: "자기 확인", exact: true }).click();
-    await page.getByRole("radio", { name: "파일이 삭제됩니다" }).check(); await page.getByRole("button", { name: "답 확인", exact: true }).click();
-    await readable(page.locator(".check-feedback.retry"));
-    await page.getByRole("radio", { name: "파일은 그대로 남습니다" }).check(); await page.getByRole("button", { name: "답 확인", exact: true }).click();
-    await readable(page.locator(".check-feedback.correct"));
-    await readable(page.getByRole("tab", { name: "자기 확인", exact: true }));
-    await page.getByRole("tab", { name: "실습" }).click(); await page.getByText("힌트", { exact: true }).click();
-    await readable(page.locator("details.learning-disclosure summary").first());
-    await page.getByRole("tab", { name: "예제", exact: true }).click(); await readable(page.locator(".curriculum pre").first());
-    await page.getByRole("button", { name: "자유실험실", exact: true }).click();
+    await readable(page.locator(".technology-guide p").first());await readable(page.locator(".technology-guide pre").first());
+    await page.locator(".primary-navigation").getByRole("button", { name: "자유실험실", exact: true }).click();
     await expect(page.locator(".fault-banner")).toBeVisible(); await readable(page.locator(".fault-banner"));
     await readable(page.locator(".scenario-card.chosen"));
     const primary = page.locator(".button.primary").first(); await readable(primary); await primary.hover(); await readable(primary);
@@ -79,9 +67,8 @@ test("both themes keep learning, populated lab and semantic feedback readable wi
     await page.getByRole("button", { name: "실험 비교", exact: true }).click();
     await readable(page.locator(".delta-better").first()); await readable(page.locator(".command-panel pre"));
     expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
-    await page.getByRole("button", { name: "백엔드 학습", exact: true }).click();
+    await page.locator(".primary-navigation button").nth(1).click();
     await expect(page.locator("html")).toHaveAttribute("data-theme", theme);
-    await page.getByRole("button", { name: "이어서 학습", exact: true }).click();
   }
   expect(writes).toEqual([]);
 });
@@ -93,7 +80,7 @@ test("storage denial still follows the OS before mount and permits transient cho
     Storage.prototype.setItem = () => { throw new DOMException("Denied", "SecurityError"); };
   });
   await page.goto("/"); await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
-  await page.getByRole("button", { name: "자유실험실", exact: true }).click(); await readable(page.locator(".message.error"));
+  await page.locator(".primary-navigation").getByRole("button", { name: "자유실험실", exact: true }).click(); await readable(page.locator(".message.error"));
   await expect(page.locator(".message.error")).toHaveCSS("color", "rgb(255, 177, 172)");
   await page.getByRole("button", { name: "라이트 모드로 전환" }).click();
   await expect(page.locator("html")).toHaveAttribute("data-theme", "light"); await readable(page.locator(".message.error"));

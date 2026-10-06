@@ -158,7 +158,7 @@ test("Korean default and English switching localize every populated view and per
     "English",
   ]);
   await expect(page.locator("html")).toHaveAttribute("lang", "ko");
-  await expect(page).toHaveTitle("IncidentLens · 백엔드 학습실");
+  await expect(page).toHaveTitle("IncidentLens · 장애·부하 테스트");
   await expect(
     page.getByRole("heading", {
       name: "장애 전후에 무엇이 달라졌는지 확인하세요.",
@@ -374,7 +374,7 @@ test("Korean default and English switching localize every populated view and per
 
   await expect(page.getByLabel("Select language")).toHaveValue("en");
   await expect(page.locator("html")).toHaveAttribute("lang", "en");
-  await expect(page).toHaveTitle("IncidentLens · Backend Learning");
+  await expect(page).toHaveTitle("IncidentLens · Fault and Load Testing");
   expect(
     await page.evaluate(() => localStorage.getItem("incidentlens.locale")),
   ).toBe("en");

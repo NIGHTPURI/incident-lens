@@ -94,7 +94,7 @@ test("keyboard navigation has visible focus and service health remains readable 
     if (kind === "language") break;
   }
   expect([...reached].filter((item) => item.startsWith("nav:"))).toHaveLength(
-    8,
+    7,
   );
   expect(reached.has("language")).toBe(true);
   await page.keyboard.press("ArrowDown");

@@ -6,8 +6,7 @@ import { useI18n } from "./i18n/I18nProvider";
 import PcSettings from "./PcSettings";
 import ExecutionDetails from "./ExecutionDetails";
 import Landing from "./Landing";
-import { readCodeLanguage, type CodeLanguage } from "./learning/programming-tracks";
-import LearningLab from "./learning/LearningLab";
+import LabGuides from "./LabGuides";
 import ThemeSelector, { useThemePreference } from "./theme";
 import type { TranslationKey } from "./i18n/translations";
 import type {
@@ -64,24 +63,15 @@ const scenarios: {
 ];
 
 type Page = "settings" | "landing" | "technology" | "learn" | "overview" | "lab" | "evidence" | "comparison";
-type LearningView = "home" | "lesson";
+type CodeLanguage = "java" | "python" | "javascript" | "csharp";
+function readCodeLanguage(storage: Pick<Storage,"getItem">): CodeLanguage { const saved=storage.getItem("incidentlens.learning.code-language.v1"); return ["java","python","javascript","csharp"].includes(saved ?? "") ? saved as CodeLanguage : "java"; }
 type SessionScope = "learning" | "lab";
-const learningViewKey = "incidentlens.learning.view";
 const learningSessionKey = "incidentlens.learning.session";
 const labSessionKey = "incidentlens.lab.session";
 const sessionKey = (scope: SessionScope, language: CodeLanguage = "java") => scope === "learning" ? (language === "java" ? learningSessionKey : `${learningSessionKey}.${language}.v1`) : labSessionKey;
 function readSessionScope(page: Page): SessionScope {
-  return page === "learn" || page === "technology" || ((page === "evidence" || page === "comparison") &&
+  return ((page === "evidence" || page === "comparison") &&
     new URLSearchParams(window.location.search).get("context") === "learning") ? "learning" : "lab";
-}
-function readLearningView(): LearningView {
-  try {
-    const saved = localStorage.getItem(learningViewKey);
-    if (saved === "home" || saved === "lesson") return saved;
-    return localStorage.getItem("incidentlens.learning.started") === "true" ? "lesson" : "home";
-  } catch {
-    return "home";
-  }
 }
 const pages: { id: Page; label: TranslationKey; symbol: string }[] = [
   { id: "settings", label: "shell.home", symbol: "⚙" },
@@ -245,10 +235,9 @@ export default function App() {
   } = usePresentation();
   const [page, setPageState] = useState<Page>(() => {
     const requested = new URLSearchParams(window.location.search).get("view");
-    return pages.some((item) => item.id === requested) ? requested as Page : new URLSearchParams(window.location.search).get("embed") === "1" ? "learn" : "landing";
+    return pages.some((item) => item.id === requested) ? requested as Page : new URLSearchParams(window.location.search).get("embed") === "1" ? "lab" : "landing";
   });
-  const [learningCodeLanguage, setLearningCodeLanguage] = useState<CodeLanguage>(() => { try { return readCodeLanguage(localStorage); } catch { return "java"; } });
-  const [learningView, setLearningView] = useState<LearningView>(readLearningView);
+  const [learningCodeLanguage] = useState<CodeLanguage>(() => { try { return readCodeLanguage(localStorage); } catch { return "java"; } });
   const [sessionScope, setSessionScope] = useState<SessionScope>(() => readSessionScope(page));
   const [overview, setOverview] = useState<Overview | null>(null);
   const [sessions, setSessions] = useState<IncidentSession[]>([]);
@@ -276,7 +265,7 @@ export default function App() {
     setNotice("");
     setError(null);
   }
-  function navigate(next: Page, push: boolean, nextScope: SessionScope = (next === "learn" || next === "technology") ? "learning" : "lab") {
+  function navigate(next: Page, push: boolean, nextScope: SessionScope = "lab") {
     invalidateFeedback();
     if (sessionScope !== nextScope) {
       let remembered = "";
@@ -297,7 +286,7 @@ export default function App() {
   useEffect(() => {
     const back = () => {
       const requested = new URLSearchParams(window.location.search).get("view");
-      const next = pages.some(item => item.id === requested) ? requested as Page : new URLSearchParams(window.location.search).get("embed") === "1" ? "learn" : "landing";
+      const next = pages.some(item => item.id === requested) ? requested as Page : new URLSearchParams(window.location.search).get("embed") === "1" ? "lab" : "landing";
       navigate(next, false, readSessionScope(next));
     };
     window.addEventListener("popstate", back);
@@ -308,19 +297,6 @@ export default function App() {
     selectedIdRef.current = next;
     setSelectedIdState(next);
   }
-  useEffect(() => {
-    const change = (event: Event) => {
-      const language = (event as CustomEvent<CodeLanguage>).detail;
-      setLearningCodeLanguage(language);
-      if (sessionScope === "learning") {
-        let id = "";
-        try { id = localStorage.getItem(sessionKey("learning", language)) ?? ""; } catch { /* Optional storage. */ }
-        setSelectedId(id);
-      }
-    };
-    window.addEventListener("incidentlens-language-change", change);
-    return () => window.removeEventListener("incidentlens-language-change", change);
-  }, [sessionScope]);
   useEffect(() => () => { feedbackRevision.current++; operationRevision.current++; }, []);
   const overviewRevision = useRef(0);
   const detailRevision = useRef(0);
@@ -443,20 +419,6 @@ export default function App() {
   }
 
   const active = overview?.activeFault?.enabled ? overview.activeFault : null;
-  function changeLearningView(view: LearningView) {
-    invalidateFeedback();
-    setLearningView(view);
-    if (view === "lesson" && page === "technology") setPage("learn");
-    try { localStorage.setItem(learningViewKey, view); } catch { /* Storage is optional. */ }
-  }
-  function goLearningHome() {
-    window.dispatchEvent(new Event("incidentlens-learning-home"));
-    try { localStorage.setItem("incidentlens.learning.mode", "curriculum"); } catch { /* Optional storage. */ }
-    changeLearningView("home");
-    setPage("learn");
-    document.documentElement.scrollTop = 0;
-    document.body.scrollTop = 0;
-  }
   const faultStatusKnown =
     !overviewError &&
     overview?.services.some(
@@ -488,8 +450,8 @@ export default function App() {
   );
   const currentPage = pages.find((item) => item.id === page)!;
 
-  const learningPage = page === "learn" || page === "technology";
-  const standalone = learningPage || page === "landing" || page === "settings";
+  const utilityPage = page === "learn" || page === "technology";
+  const standalone = utilityPage || page === "landing" || page === "settings";
   const pageName = (id: Page) => id === "settings" ? (locale === "ko" ? "PC 실행 설정" : "PC setup") : id === "technology" ? (locale === "ko" ? "기술 사전" : "Technology guides") : id === "landing" ? (locale === "ko" ? "시작" : "Home") : t(pages.find(p => p.id === id)!.label);
   const embedded = new URLSearchParams(window.location.search).get("embed") === "1";
   return (
@@ -515,7 +477,7 @@ export default function App() {
         </a>
         <span className="nav-label">{t("shell.workspace").toUpperCase()}</span>
         <nav aria-label={t("shell.navigation")}>
-          {[...pages].sort((a, b) => (a.id === "lab" ? -1 : b.id === "lab" ? 1 : 0)).map((item) => (
+          {pages.filter(item => item.id !== "learn").sort((a, b) => (a.id === "lab" ? -1 : b.id === "lab" ? 1 : 0)).map((item) => (
             <button
               key={item.id}
               className={`nav-item ${page === item.id ? "selected" : ""}`}
@@ -549,7 +511,6 @@ export default function App() {
           <button className="learning-brand" aria-label={locale === "ko" ? "IncidentLens 통합 홈" : "IncidentLens home"} onClick={() => setPage("landing")}><span className="brand-mark" aria-hidden="true">iL</span>IncidentLens</button>
           <nav className="primary-navigation" aria-label={t("shell.navigation")}>
             <button aria-current={page === "lab" ? "page" : undefined} onClick={() => setPage("lab")}>{locale === "ko" ? "자유실험실" : "Free lab"}</button>
-            <button aria-current={page === "learn" ? "page" : undefined} onClick={goLearningHome}>{locale === "ko" ? "백엔드 학습" : "Backend Learning"}</button>
             <button aria-current={page === "technology" ? "page" : undefined} onClick={() => setPage("technology")}>{locale === "ko" ? "기술 사전" : "Technology guides"}</button>
             <button aria-current={page === "settings" ? "page" : undefined} onClick={() => setPage("settings")}>{locale === "ko" ? "PC 실행 설정" : "PC setup"}</button>
           </nav>
@@ -601,28 +562,9 @@ export default function App() {
             </div>
           )}
           {page === "settings" && <PcSettings />}
-          {page === "landing" && <Landing onSettings={() => setPage("settings")} onNavigate={next => { if (next === "learn") goLearningHome(); else setPage(next); }} />}
-          {learningPage && <LearningLab
-            area={page === "technology" ? "technology" : "path"}
-            onAreaChange={area => setPage(area === "technology" ? "technology" : "learn")}
-            onLanding={() => setPage("landing")}
-            view={learningView}
-            onViewChange={changeLearningView}
-            onContextChange={invalidateFeedback}
-            overview={overviewError ? null : overview}
-            connectionChecked={!loading}
-            sessions={sessions}
-            detail={detail}
-            selectedId={selectedId}
-            selectSession={setSelectedId}
-            busy={busy}
-            onCreateSession={(name, scenario) => { void createSession(name, scenario); }}
-            onFault={(id, enabled, parameter) => { void action(() => api.setFault(id, enabled, parameter), enabled ? "notice.faultEnabled" : "notice.faultDisabledRecovery"); }}
-            onCollect={(id, phase) => { void action(() => api.collect(id, phase), "notice.evidenceCollected"); }}
-            onAnalyze={(id) => { void action(() => api.analyze(id), "notice.rcaGenerated"); }}
-            onPrepare={(id, workload) => { void action(() => api.createExperiment(id, workload), "notice.experimentCreated"); }}
-            onNavigate={(next) => navigate(next, true, next === "lab" ? "lab" : "learning")}
-          />}
+          {page === "landing" && <Landing onSettings={() => setPage("settings")} onNavigate={setPage} />}
+          {page === "technology" && <LabGuides onLab={() => setPage("lab")} />}
+          {page === "learn" && <section className="unified-landing"><h1>{locale === "ko" ? "일반 백엔드 학습이 분리되었습니다" : "General backend learning has moved"}</h1><p>{locale === "ko" ? "Java·Python·JavaScript/TypeScript·C# 과정은 별도 비공개 backend-learning 저장소로 옮겼습니다. 초대된 계정만 접근할 수 있으며 공개 학습 서비스가 아닙니다. 기존 브라우저 기록은 삭제하지 않습니다. 주소가 달라지면 진도가 자동으로 이전되지는 않습니다." : "The Java, Python, JavaScript/TypeScript and C# courses moved to the private backend-learning repository. Invited accounts have access; it is not a public learning service. Existing browser records remain untouched. Progress does not automatically transfer between origins."}</p><button className="learn-primary" onClick={() => setPage("landing")}>{locale === "ko" ? "장애 테스트 홈으로" : "Go to the fault testing home"}</button></section>}
           {!standalone && <div className="page-heading">
             <div>
               <span className="eyebrow">
@@ -891,7 +833,7 @@ export default function App() {
             </>
           )}
 
-          {page === "lab" && <p className="lab-runtime-note">{locale === "ko" ? "실제 장애 실험 대상: Java / Spring Boot 로컬 서비스. 언어별 연습 프로젝트는 이 서버와 별개입니다." : "Actual fault target: local Java / Spring Boot services. Language practice projects are separate from this server."}</p>}
+          {page === "lab" && <p className="lab-runtime-note">{locale === "ko" ? "실제 장애 실험 대상: IncidentLens 자체 Java / Spring Boot 데모 서비스. 사용자 프로젝트 연동은 구현되지 않았습니다." : "Actual fault target: IncidentLens’s own Java / Spring Boot demo services. User-project integration is not implemented."}</p>}
           {page === "lab" && (
             <>
               <section className="lab-guide" aria-labelledby="lab-guide-title">
