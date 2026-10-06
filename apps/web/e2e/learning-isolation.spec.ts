@@ -19,7 +19,7 @@ test('learning report and comparison links keep their session through reload and
     const session = sessions.find(s => path === `/api/sessions/${s.id}`);
     return route.fulfill({json: {session, evidence: [], activations: [], experiments: [], report: null}});
   });
-  await page.goto('/');
+  await page.goto('/?view=learn');
   await expect(page.locator('.learning-controls select')).toHaveValue('learn-session');
   await page.getByRole('button', {name: 'Open detailed evidence and report', exact: true}).click();
   await expect(page).toHaveURL(/view=evidence&context=learning/);
@@ -41,31 +41,41 @@ test('learning report and comparison links keep their session through reload and
   expect(writes).toEqual([]);
 });
 
-test('legacy Go recovers and language records survive history independently', async ({ page }) => {
+test('four language records, last positions and legacy migration stay independent across history and reload', async ({ page }) => {
   const writes: string[] = [];
-  await page.route('**/api/**', async route => { if (route.request().method() !== 'GET') writes.push(route.request().url()); await route.abort('connectionrefused'); });
-  await page.goto('/');
-  await page.evaluate(() => localStorage.setItem('incidentlens.learning.code-language.v1', 'go'));
-  await page.reload();
-  await expect(page.locator('#learning-code-language')).toHaveValue('java');
-  expect(await page.evaluate(() => localStorage.getItem('incidentlens.learning.code-language.v1'))).toBe('java');
-  await expect(page.locator('#learning-code-language option')).toHaveCount(4);
+  await page.route('**/api/**', async route => { if (route.request().method() !== 'GET') writes.push(route.request().url()); await route.abort(); });
+  await page.addInitScript(() => { if (!localStorage.getItem('migration-seeded')) {
+    localStorage.setItem('migration-seeded', '1'); localStorage.setItem('incidentlens.learning.code-language.v1', 'go');
+    localStorage.setItem('incidentlens.curriculum.v1', JSON.stringify({version:1, stage:'spring', read:['java'], notes:{spring:'legacy java'}, evidence:{java:'old java'}, reviewed:{java:'old java'}}));
+    localStorage.setItem('incidentlens.learning.path.python.v1', JSON.stringify({read:['http'],evidence:{http:'old Python'},reviewed:{http:'old Python'}}));
+    localStorage.setItem('incidentlens.learning.stage.python.v1','http');
+  }});
+  await page.goto('/?view=learn'); await expect(page.locator('#learning-code-language')).toHaveValue('java');
   await page.locator('.language-select').selectOption('en');
-  await page.locator('#learning-code-language').selectOption('python');
-  await page.locator('.language-depth-course input[type=checkbox]').check();
-  await page.locator('#language-practice-evidence').fill('Python HTTP run record');
-  await page.getByRole('button', { name: 'Save self-review record' }).click();
-  await page.locator('#learning-code-language').selectOption('csharp');
-  await expect(page.locator('#language-practice-evidence')).toHaveValue('');
-  await page.locator('.learning-topbar button').filter({ hasText: 'Free experiment' }).click();
-  await expect(page).toHaveURL(/view=lab/);
-  await page.goBack();
-  await expect(page.locator('#learning-code-language')).toHaveValue('csharp');
-  await page.locator('#learning-code-language').selectOption('python');
-  await expect(page.locator('#language-practice-evidence')).toHaveValue('Python HTTP run record');
-  await expect(page.locator('.language-depth-course input[type=checkbox]')).toBeChecked();
-  await page.reload();
-  await expect(page.locator('#language-practice-evidence')).toHaveValue('Python HTTP run record');
+  await page.getByRole('button', {name:'Continue learning',exact:true}).click();
+  await expect(page.locator('.track-lesson h1')).toHaveText('04 · API boundaries and structure');
+  await page.getByRole('tab',{name:'Flow & notes',exact:true}).click(); await expect(page.getByLabel('My prediction · notes')).toHaveValue('legacy java');
+  const old = await page.evaluate(() => localStorage.getItem('incidentlens.curriculum.v1'));
+  for (const language of ['java','python','javascript','csharp']) {
+    if (language === 'java') await page.locator('.learning-home-link').click(); else await page.locator('#learning-code-language').selectOption(language);
+    await expect(page.locator('.track-introduction')).toBeVisible(); await expect(page.locator('.track-lesson')).toHaveCount(0);
+    await page.getByRole('button', {name:'Continue learning',exact:true}).click();
+    if(language==='python') { await expect(page.locator('.track-lesson h1')).toHaveText('03 · HTTP requests and responses'); await page.getByRole('tab',{name:'Self-review',exact:true}).click(); await expect(page.getByLabel('My execution and verification record')).toHaveValue('old Python'); }
+    await page.getByRole('tab',{name:'Concept',exact:true}).click(); await page.getByRole('checkbox',{name:/Mark as read/}).check();
+    await page.getByRole('tab',{name:'Flow & notes',exact:true}).click(); await page.getByLabel('My prediction · notes').fill(language+' note');
+    await page.getByRole('tab',{name:'Self-review',exact:true}).click(); await page.getByLabel('My execution and verification record').fill(language+' result');
+    await page.getByRole('radio').first().check(); await page.getByRole('button',{name:'Check answer',exact:true}).click();
+    await page.getByRole('checkbox',{name:/I compared the criteria/}).check(); await page.getByRole('button',{name:'Save self-review record',exact:true}).click();
+  }
+  for (const language of ['python','java','csharp','javascript']) {
+    await page.locator('#learning-code-language').selectOption(language); await expect(page.locator('.track-introduction')).toBeVisible();
+    await page.getByRole('button',{name:'Continue learning',exact:true}).click(); await page.reload();
+    await page.getByRole('tab',{name:'Flow & notes',exact:true}).click(); await expect(page.getByLabel('My prediction · notes')).toHaveValue(language+' note');
+    await page.getByRole('tab',{name:'Self-review',exact:true}).click(); await expect(page.getByLabel('My execution and verification record')).toHaveValue(language+' result');
+    await expect(page.getByRole('radio').first()).toBeChecked(); await expect(page.getByRole('checkbox',{name:/I compared the criteria/})).toBeChecked();
+    await page.getByRole('tab',{name:'Concept',exact:true}).click(); await expect(page.getByRole('checkbox',{name:/Mark as read/})).toBeChecked();
+  }
+  expect(await page.evaluate(()=>localStorage.getItem('incidentlens.curriculum.v1'))).toBe(old);
   expect(writes).toEqual([]);
 });
 

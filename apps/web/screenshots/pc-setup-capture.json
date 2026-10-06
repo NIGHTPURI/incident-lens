@@ -1,0 +1,21 @@
+{
+  "capturedAt": "2026-10-06T04:45:14.142Z",
+  "dimensions": "1440x1000",
+  "theme": "light",
+  "codeLanguage": "java",
+  "platform": "windows",
+  "backend": "Actual local saved test session. No new benchmark data inserted for these captures.",
+  "sourceBase": "730bd1da268b2801b7ad4e4505ae0647a59e5c8f",
+  "sourceState": "Final approved UI before commit; captured from a loopback read-only preview",
+  "browser": "Windows Google Chrome, actual rendered pages",
+  "navigationWrites": 0,
+  "browserExceptions": 0,
+  "files": {
+    "pc-setup-ko-landing.png": "accede1d69f34a95f5ee1b1b984d000dc0b00065ef810f7738af58bf930ed1ce",
+    "pc-setup-ko-learning.png": "89288f5fa4117ededf8146672bad890e1dfedf921606885add048dd3b8715565",
+    "pc-setup-ko-lab.png": "cafac5d2bcee07b01baa40000facd88e71f28d643d0bd964c3c15bb8bb94b960",
+    "pc-setup-en-landing.png": "32f9811030108814ecc5eb8497a20bd1dc6369e8041d18645493feb8ad2e044d",
+    "pc-setup-en-learning.png": "e4ccdebd98f3978b768edd3fc37fb77200e14f3d2c17f7750c8e417ccfd8068d",
+    "pc-setup-en-lab.png": "78a805e4bedbfea7924c76f098bfb7323ab4f1dbb9bf96755b3ca6207220a5c9"
+  }
+}

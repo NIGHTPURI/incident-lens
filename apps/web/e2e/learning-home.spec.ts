@@ -8,7 +8,7 @@ test("logo opens a persistent home without clearing the last lesson or predictio
   });
 
   await page.addInitScript(() => localStorage.setItem("incidentlens.learning.mode", "reference"));
-  await page.goto("/");
+  await page.goto("/?view=learn");
   await page.getByRole("button", { name: "첫 학습 시작" }).click();
   await page.locator(".learning-lesson-nav button").click();
   await page.getByRole("button", { name: "06 · 장애 분석과 회복" }).click();
@@ -18,11 +18,13 @@ test("logo opens a persistent home without clearing the last lesson or predictio
 
   await page.locator(".learning-brand").focus();
   await page.keyboard.press("Enter");
-  await expect(page.getByRole("heading", { name: "요청 한 번이 지나가는 길을 따라가 보세요." })).toBeVisible();
-  await expect(page.getByRole("button", { name: "이어서 학습" })).toBeVisible();
+  await expect(page.locator(".unified-landing")).toBeVisible();
+  await expect(page.getByRole("button", { name: "학습 언어 선택하기" })).toBeVisible();
   await page.reload();
-  await expect(page.getByRole("heading", { name: "요청 한 번이 지나가는 길을 따라가 보세요." })).toBeVisible();
+  await expect(page.locator(".unified-landing")).toBeVisible();
   await page.getByLabel("언어 선택").selectOption("en");
+  await page.getByRole("button", { name: "Choose a learning language" }).click();
+  await page.getByRole("button", { name: "Existing shared concept/experiment lessons and saved records ↗" }).click();
   await page.getByRole("button", { name: "Continue learning" }).click();
   await expect(page.getByRole("heading", { name: "06 · Diagnose and recover", level: 1 })).toBeVisible();
   await expect(page.getByLabel("My prediction")).toHaveValue("응답 지연과 근거를 확인한다");
@@ -30,7 +32,7 @@ test("logo opens a persistent home without clearing the last lesson or predictio
   await expect(page.getByRole("button", { name: "Cache bypass", exact: true })).toHaveAttribute("aria-pressed", "true");
 
   await page.locator(".learning-brand").click();
-  await expect(page.getByRole("heading", { name: "Follow the path of a single request." })).toBeVisible();
+  await expect(page.locator(".unified-landing")).toBeVisible();
   expect(writes).toEqual([]);
 });
 
@@ -59,19 +61,21 @@ test("home retains an active fault and saved results, with disable only on expli
   });
 
   await page.addInitScript(() => localStorage.setItem("incidentlens.learning.mode", "reference"));
-  await page.goto("/");
+  await page.goto("/?view=learn");
   await page.getByRole("button", { name: "06 · 장애 분석과 회복" }).click();
   await page.getByLabel("실험 세션").selectOption(session.id);
   await expect(page.getByText("Saved report for home test")).toBeVisible();
   await expect(page.locator(".learning-measures")).toContainText("500 ms");
   await page.locator(".learning-brand").click();
-  await expect(page.getByRole("heading", { name: "요청 한 번이 지나가는 길을 따라가 보세요." })).toBeVisible();
+  await expect(page.locator(".unified-landing")).toBeVisible();
   await expect(page.locator(".fault-banner").getByRole("button", { name: "장애 비활성화" })).toBeVisible();
   expect(writes).toEqual([]);
 
   await page.reload();
-  await expect(page.getByRole("heading", { name: "요청 한 번이 지나가는 길을 따라가 보세요." })).toBeVisible();
+  await expect(page.locator(".unified-landing")).toBeVisible();
   await expect(page.locator(".fault-banner").getByRole("button", { name: "장애 비활성화" })).toBeVisible();
+  await page.getByRole("button", { name: "학습 언어 선택하기" }).click();
+  await page.getByRole("button", { name: "기존 공통 개념·실험 수업과 저장 기록 ↗" }).click();
   await page.getByRole("button", { name: "이어서 학습" }).click();
   await expect(page.getByText("Saved report for home test")).toBeVisible();
   await expect(page.locator(".learning-measures")).toContainText("500 ms");

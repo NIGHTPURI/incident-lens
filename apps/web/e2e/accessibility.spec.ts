@@ -79,7 +79,7 @@ test("keyboard navigation has visible focus and service health remains readable 
 
   // Walk the actual tab order through the dark sidebar and the language control.
   const reached = new Set<string>();
-  for (let index = 0; index < 14; index += 1) {
+  for (let index = 0; index < 30; index += 1) {
     await page.keyboard.press("Tab");
     const active = page.locator(":focus");
     await expectVisibleFocus(active);
@@ -94,7 +94,7 @@ test("keyboard navigation has visible focus and service health remains readable 
     if (kind === "language") break;
   }
   expect([...reached].filter((item) => item.startsWith("nav:"))).toHaveLength(
-    5,
+    8,
   );
   expect(reached.has("language")).toBe(true);
   await page.keyboard.press("ArrowDown");
@@ -117,7 +117,7 @@ test("keyboard navigation has visible focus and service health remains readable 
       "true",
     );
   }
-  for (let index = 0; index < 10; index += 1) {
+  for (let index = 0; index < 30; index += 1) {
     await page.keyboard.press("Shift+Tab");
     if (await skip.evaluate((element) => element === document.activeElement))
       break;
@@ -126,7 +126,7 @@ test("keyboard navigation has visible focus and service health remains readable 
   await skip.press("Enter");
   await expect(page.locator("#main-content")).toBeFocused();
   const evidenceNavigation = page
-    .locator("nav")
+    .locator(".sidebar nav")
     .getByRole("button", { name: "Evidence & RCA", exact: true });
   await evidenceNavigation.focus();
   await evidenceNavigation.press("Enter");

@@ -63,7 +63,7 @@ class RcaReportFlowTest {
             var rca = new RcaService(new RuleBasedRcaProvider(), provider, evidence, jdbc, json, meters);
             var incidents = new IncidentService(sessions, mock(ExperimentRepository.class), mock(LabLockRepository.class),
                 mock(FaultCoordinator.class), evidence, rca, jdbc, telemetry, json);
-            var mvc = MockMvcBuilders.standaloneSetup(new IncidentController(incidents)).setControllerAdvice(new ApiErrors())
+            var mvc = MockMvcBuilders.standaloneSetup(new IncidentController(incidents, new RuntimeConfiguration(new org.springframework.mock.env.MockEnvironment()))).setControllerAdvice(new ApiErrors())
                 .setMessageConverters(new MappingJackson2HttpMessageConverter(json.mapper)).build();
 
             mvc.perform(post("/api/sessions/{id}/rca", session.id)).andExpect(status().isOk())

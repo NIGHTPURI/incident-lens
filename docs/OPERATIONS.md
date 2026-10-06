@@ -1,5 +1,11 @@
 # Running and troubleshooting IncidentLens
 
+## Current PC setup
+
+See [PC setup](PC_SETUP.md) for learning-only/core/observability modes and resource checks. `${...}` below denotes `.env` host-port values (defaults 8080/8081/8082/3000/9090/3001), not literal URL text. `dev-up` and `dev-status` print actual Docker bindings. Vite reads the same `CONTROL_PLANE_PORT`. Internal service ports remain fixed. Browser choices never apply `.env`; changed bindings need Compose recreation, not only `restart`.
+
+New comparison runners verify local context/bindings/runtime identity and matched demo/k6 targets before writes. Remote experiments and changing only `CONTROL_URL` are unsupported. Persisted configuration and time windows distinguish runs; old results remain explicitly unrecorded. Configuration hashes do not establish equivalent PC hardware or traffic. Fixed memory caps are current settings, not verified minimum specifications.
+
 ## Windows quick start
 
 Install Docker Desktop with Linux containers/WSL2 integration and Git. The containerized demo does not require host Java or Node. Run from the repository root in PowerShell:
@@ -38,11 +44,11 @@ The default core mode omits five observability containers; in-process telemetry 
 | URL | Purpose |
 | --- | --- |
 | http://localhost:3000 | React dashboard |
-| http://localhost:8080/swagger-ui/index.html | Control API documentation |
-| http://localhost:8081/swagger-ui/index.html | Workload API documentation |
-| http://localhost:8080/actuator/health | Control service health |
-| http://localhost:8081/actuator/health | Demo API health |
-| http://localhost:8082/actuator/health | Worker health |
+| `http://127.0.0.1:${CONTROL_PLANE_PORT}/swagger-ui/index.html` | Control API documentation |
+| `http://127.0.0.1:${DEMO_API_PORT}/swagger-ui/index.html` | Workload API documentation |
+| `http://127.0.0.1:${CONTROL_PLANE_PORT}/actuator/health` | Control service health |
+| `http://127.0.0.1:${DEMO_API_PORT}/actuator/health` | Demo API health |
+| `http://127.0.0.1:${DEMO_WORKER_PORT}/actuator/health` | Worker health |
 | http://localhost:3001 | Grafana (`admin`, password from `.env`) |
 | http://localhost:9090 | Prometheus query UI |
 
@@ -57,7 +63,7 @@ All host ports bind to `127.0.0.1`. MySQL, Redis, Kafka and OTLP receivers are o
 ./scripts/demo-compare.ps1 -Scenario CACHE_DEGRADATION
 ```
 
-The latency parameter is milliseconds; database/cache modes switch algorithms and do not use it. Latency greater than the downstream budget can produce timeouts. VUs and durations are identical within each comparison; default 5 VUs for 20 seconds, permitted experiment range 1–50 VUs and 5–300 seconds. The recovery pause defaults to five seconds. For Kafka, check whether lag has drained before treating AFTER as a steady-state result; a larger pause does not itself prove recovery. Inspect the actual recorded lag.
+The latency parameter is milliseconds; database/cache modes switch algorithms and do not use it. Latency greater than the downstream budget can produce timeouts. VUs and durations are identical within each comparison; default 2 VUs for 10 seconds, permitted experiment range 1–50 VUs and 5–300 seconds. The recovery pause defaults to five seconds. For Kafka, check whether lag has drained before treating AFTER as a steady-state result; a larger pause does not itself prove recovery. Inspect the actual recorded lag.
 
 Each phase runs the same mixed catalog/order workload, and counters exclude control requests. Run completion automatically collects phase-specific evidence. RCA is generated from BEFORE evidence, prior to disabling the fault. One fresh experiment is allowed per session and one run owns the shared lab at a time. Avoid competing standalone load or other operators during a comparison.
 

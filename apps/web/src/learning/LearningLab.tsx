@@ -1,4 +1,6 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { readCodeLanguage } from "./programming-tracks";
+import ExecutionDetails from "../ExecutionDetails";
 import Curriculum from "./Curriculum";
 import type { Overview, IncidentSession, Scenario, SessionDetail, Workload } from "../types";
 import { useI18n } from "../i18n/I18nProvider";
@@ -119,10 +121,10 @@ const flows = {
   ],
 };
 
-function stored(key: string, fallback: string): string {
+function rawStored(key: string, fallback: string): string {
   try { return localStorage.getItem(key) ?? fallback; } catch { return fallback; }
 }
-function save(key: string, value: string) {
+function rawSave(key: string, value: string) {
   try { localStorage.setItem(key, value); } catch { /* Browser storage can be disabled. */ }
 }
 function reportLanguage(value: string): "ko" | "en" | "und" {
@@ -133,6 +135,9 @@ function reportLanguage(value: string): "ko" | "en" | "und" {
 }
 
 export type LearningLabProps = {
+  area?: "path" | "technology";
+  onAreaChange?: (area: "path" | "technology") => void;
+  onLanding?: () => void;
   view: "home" | "lesson";
   onContextChange: () => void;
   onViewChange: (view: "home" | "lesson") => void;
@@ -153,7 +158,21 @@ export type LearningLabProps = {
 
 export default function LearningLab(props: LearningLabProps) {
   const { locale } = useI18n();
+  const [language, setLanguage] = useState(() => { try { return readCodeLanguage(localStorage); } catch { return "java"; } });
+  const recordKey = (key: string) => language === "java" || key === "incidentlens.learning.mode" ? key : `${key}.${language}.v1`;
+  const stored = (key: string, fallback: string) => rawStored(recordKey(key), fallback);
+  const save = (key: string, value: string) => rawSave(recordKey(key), value);
+  useEffect(() => {
+    const change = () => { try { setLanguage(readCodeLanguage(localStorage)); } catch { /* Keep current language. */ } };
+    window.addEventListener("incidentlens-language-change", change);
+    return () => window.removeEventListener("incidentlens-language-change", change);
+  }, []);
   const [reference, setReference] = useState(() => stored("incidentlens.learning.mode", "curriculum") === "reference");
+  useEffect(() => {
+    const home = () => setReference(false);
+    window.addEventListener("incidentlens-learning-home", home);
+    return () => window.removeEventListener("incidentlens-learning-home", home);
+  }, []);
   function switchMode(next: boolean) {
     props.onContextChange();
     setReference(next);
@@ -175,12 +194,22 @@ export default function LearningLab(props: LearningLabProps) {
   const [scenarioPrediction, setScenarioPrediction] = useState(() => stored(`incidentlens.learning.scenario.${scenarioId}`, ""));
   const [scenarioRevealed, setScenarioRevealed] = useState(false);
   const [reflection, setReflection] = useState(() => stored("incidentlens.learning.reflection", ""));
+  useEffect(() => {
+    const index = Math.max(0, lessons.findIndex(lesson => lesson.id === stored("incidentlens.learning.lesson", "request")));
+    setLessonIndex(index);
+    setPrediction(stored(`incidentlens.learning.prediction.${lessons[index].id}`, ""));
+    const scenario = stored("incidentlens.learning.scenario", "DOWNSTREAM_LATENCY");
+    const selected = scenarios.find(item => item.id === scenario)?.id ?? "DOWNSTREAM_LATENCY";
+    setScenarioId(selected);
+    setScenarioPrediction(stored(`incidentlens.learning.scenario.${selected}`, ""));
+    setReflection(stored("incidentlens.learning.reflection", ""));
+  }, [language]);
   const [revealed, setRevealed] = useState(false);
   const [helpOpen, setHelpOpen] = useState(false);
   const [listOpen, setListOpen] = useState(false);
   const [parameter, setParameter] = useState(() => scenarios.find((candidate) => candidate.id === scenarioId)!.parameter);
   const [vus, setVus] = useState(2);
-  const [duration, setDuration] = useState(20);
+  const [duration, setDuration] = useState(10);
   const lesson = lessons[lessonIndex];
   const scenario = scenarios.find((candidate) => candidate.id === scenarioId)!;
   const matchingSessions = props.sessions.filter((session) => session.scenario === scenarioId);
@@ -228,7 +257,7 @@ export default function LearningLab(props: LearningLabProps) {
   const originalLanguage = detail?.report ? reportLanguage(`${detail.report.summary} ${detail.report.suspectedRootCause}`) : "und";
   const observed = detail?.report ? detail.evidence.filter((evidence) => detail.report!.evidenceIds.includes(evidence.id)) : detail?.evidence.slice(-4) ?? [];
 
-  if (!reference) return <Curriculum view={props.view} onViewChange={props.onViewChange} onContextChange={props.onContextChange} onReference={() => switchMode(true)} />;
+  if (!reference || props.area === "technology") return <Curriculum area={props.area} onAreaChange={props.onAreaChange} onLanding={props.onLanding} view={props.view} onViewChange={props.onViewChange} onContextChange={props.onContextChange} onReference={() => switchMode(true)} />;
   return (
     <div className="learning-root">
       <button className="learn-secondary" onClick={() => switchMode(false)}>{locale === "ko" ? "15단계 기초 과정" : "15-stage foundations"}</button>
@@ -281,7 +310,7 @@ export default function LearningLab(props: LearningLabProps) {
                 <div className="learning-control-actions"><button className="learn-secondary" disabled={!connected || !detail || !active || active.sessionId !== detail.session.id || props.busy} onClick={() => props.onCollect(detail!.session.id, "BEFORE")}>{t("before")}</button><button className="learn-secondary" disabled={!connected || !detail || !!active || props.busy} onClick={() => props.onCollect(detail!.session.id, "AFTER")}>{t("after")}</button><button className="learn-secondary" disabled={!connected || !detail || !detail.evidence.length || props.busy} onClick={() => props.onAnalyze(detail!.session.id)}>{t("rca")}</button></div>
               </div>
               <div className="learning-box"><strong>{t("command")}</strong><p>{t("commandHelp")}</p><label>{t("users")}<input type="number" min="1" max="50" value={vus} onChange={(event) => setVus(Number(event.target.value))} /></label><label>{t("duration")}<input type="number" min="5" max="300" value={duration} onChange={(event) => setDuration(Number(event.target.value))} /></label><button className="learn-secondary" disabled={!connected || !detail || !!relevantExperiment || props.busy || vus < 1 || vus > 50 || duration < 5 || duration > 300} onClick={() => props.onPrepare(detail!.session.id, { vus, durationSeconds: duration })}>{t("prepare")}</button><pre className="learning-command"><code>{command}</code></pre></div>
-              <div className="learning-results"><h3>{t("measured")}</h3><p>{t("conditions")}</p>{relevantExperiment?.before && relevantExperiment.after ? <div className="learning-measures"><div><strong>BEFORE</strong><span>p95: {measured(relevantExperiment.before.p95Ms, "ms")}</span><span>{t("kafkaLag")}: {measured(relevantExperiment.before.kafkaLag, t("eventsUnit"))}</span></div><div><strong>AFTER</strong><span>p95: {measured(relevantExperiment.after.p95Ms, "ms")}</span><span>{t("kafkaLag")}: {measured(relevantExperiment.after.kafkaLag, t("eventsUnit"))}</span></div></div> : <p>{t("missing")}</p>}
+              <div className="learning-results">{relevantExperiment && <ExecutionDetails experiment={relevantExperiment} />}<h3>{t("measured")}</h3><p>{t("conditions")}</p>{relevantExperiment?.before && relevantExperiment.after ? <div className="learning-measures"><div><strong>BEFORE</strong><span>p95: {measured(relevantExperiment.before.p95Ms, "ms")}</span><span>{t("kafkaLag")}: {measured(relevantExperiment.before.kafkaLag, t("eventsUnit"))}</span></div><div><strong>AFTER</strong><span>p95: {measured(relevantExperiment.after.p95Ms, "ms")}</span><span>{t("kafkaLag")}: {measured(relevantExperiment.after.kafkaLag, t("eventsUnit"))}</span></div></div> : <p>{t("missing")}</p>}
                 <p>{t("rcaHelp")}</p><h4>{t("observations")}</h4>{observed.length ? <ul className="learning-evidence">{observed.map((evidence) => <li key={evidence.id}><strong>{evidence.type} · {evidence.phase ?? t("unknownPhase")}</strong><span>{measured(evidence.value, evidence.unit)}</span><small lang={reportLanguage(evidence.explanation)}>{evidence.explanation}</small></li>)}</ul> : <p>{t("missing")}</p>}
                 {detail?.report && <div className="learning-box"><strong>{t("raw")}</strong><small>{t("originalLanguage")}: {originalLanguage === "ko" ? t("koreanLanguage") : originalLanguage === "en" ? t("englishLanguage") : t("unknownLanguage")} · {detail.report.provider}</small><p lang={originalLanguage}>{detail.report.summary}</p><h4>{t("hypothesis")}</h4><p lang={originalLanguage}>{detail.report.suspectedRootCause}</p><h4>{t("impact")}</h4><p lang={reportLanguage(detail.report.impact)}>{detail.report.impact}</p><h4>{t("citations")}</h4><p>{detail.report.evidenceIds.join(", ") || t("missing")}</p><h4>{t("further")}</h4>{detail.report.uncertainties.length ? <ul>{detail.report.uncertainties.map((uncertainty, index) => <li key={index} lang={reportLanguage(uncertainty)}>{uncertainty}</li>)}</ul> : <p>{t("noFurther")}</p>}</div>}
                 <div className="learning-control-actions"><button className="learn-secondary" onClick={() => props.onNavigate("evidence")}>{t("details")}</button><button className="learn-secondary" onClick={() => props.onNavigate("comparison")}>{t("fullComparison")}</button></div>

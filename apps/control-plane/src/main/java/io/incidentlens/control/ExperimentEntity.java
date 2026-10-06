@@ -16,6 +16,11 @@ class ExperimentEntity {
     @Column(columnDefinition = "longtext") String afterJson;
     Instant createdAt;
     Instant runStartedAt;
+    @Column(columnDefinition = "longtext") String configurationJson;
+    Instant beforeStartedAt;
+    Instant beforeEndedAt;
+    Instant afterStartedAt;
+    Instant afterEndedAt;
     protected ExperimentEntity() {}
     ExperimentEntity(String sessionId, Models.Workload workload) {
         id = UUID.randomUUID().toString(); this.sessionId = sessionId;

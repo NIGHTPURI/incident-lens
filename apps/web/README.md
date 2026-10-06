@@ -1,13 +1,13 @@
 # IncidentLens web client
 
-React, TypeScript and Vite provide the six-lesson backend learning lab and the existing incident dashboard. The learning page opens at `/`; `?view=lab` opens the expert fault controls, and `?embed=1` hides the local navigation for a host site's menu. The new lesson code is in `src/learning/`: bilingual content and code references in `content.ts`, interactions in `LearningLab.tsx`, and layout tokens in `src/styles.css`.
+React, TypeScript and Vite provide four equivalent 15-stage language tracks, shared technology guides, PC execution guidance and the existing incident dashboard. Unified landing opens at `/`; `?view=learn` opens the language introduction/current lesson, `?view=technology` the dictionary, and `?view=settings` the browser-only PC setup plan; `?view=lab` opens the expert fault controls, and `?embed=1` hides the local navigation for a host site's menu. The new lesson code is in `src/learning/`: bilingual content and code references in `content.ts`, interactions in `LearningLab.tsx`, and layout tokens in `src/styles.css`.
 
 ```bash
 npm ci
 npm run dev
 ```
 
-The development server runs at **http://localhost:5173** and proxies `/api` to `http://localhost:8080`. To use another **local** control-plane port, set `INCIDENTLENS_API_TARGET=http://127.0.0.1:18080` when starting Vite. The production Nginx container proxies `/api` to `control-plane:8080`.
+The development server runs at **http://localhost:5173** and proxies `/api` to the local `CONTROL_PLANE_PORT` from repository `.env` (default 8080). To use another **local** control-plane port, set `INCIDENTLENS_API_TARGET=http://127.0.0.1:18080` when starting Vite. The production Nginx container proxies `/api` to `control-plane:8080`.
 
 Lessons are readable without backend services. The screen checks local service connectivity before enabling experiment controls. It never starts a fault or k6 on navigation, reload, or language change. Creating a session, changing a fault, collecting evidence, generating RCA and preparing a comparison use the existing `api.ts` methods. The displayed Bash command starts k6 **in a terminal**; the existing PowerShell command remains available on the comparison page. The runner owns BEFORE (fault active), AFTER (fault disabled), recovery and cleanup. Missing measurements remain unavailable rather than zero.
 
@@ -42,3 +42,9 @@ The older completed-incident capture remains available with `node scripts/captur
 Raw evidence explanations, generated RCA text, server diagnostics, user session names and source code retain their original language. The lesson labels a report's original language as a script-based estimate; UI switching does not translate stored reports. Technical identifiers and machine phase values remain stable. **BEFORE means active fault; AFTER means disabled fault.** A completed comparison must be read with workload, units, cache state and missing-data limits in mind.
 
 The dashboard protects against late overview/detail responses with revision and selected-session checks. Action buttons disable during a pending operation; the underlying API uses bounded requests and reports errors. The optional LLM's 65,536-byte HTTP receive limit, cancellation and rule fallback live in the backend and are tested there.
+
+## Learning-only mode and current captures
+
+Use `npm run dev -- --host 127.0.0.1 --port 5173 --mode learning` to block experiment API connections while leaving existing Docker services running. PC setup choices never change .env or Docker. Changed host ports require recreation; container ports remain fixed. Remote proxy targets are rejected.
+
+[README.md](../../README.md) is the Korean default; [README.en.md](../../README.en.md) is English. Their fresh `pc-setup-{ko,en}-{landing,learning,lab}.png` screenshots have matched 1440×1000/light/Windows/Java settings. `screenshots/pc-setup-capture.json` records capture time and hashes. Captures show UI and the current local saved test session, not a new benchmark or invented measurements. Old capture files remain dated artifacts.

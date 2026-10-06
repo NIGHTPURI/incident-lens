@@ -4,11 +4,12 @@ cd "$(dirname "$0")/.."
 for tool in curl jq docker; do command -v "$tool" >/dev/null || { echo "Required tool missing: $tool" >&2; exit 1; }; done
 scenario="${SCENARIO:-DOWNSTREAM_LATENCY}"
 parameter="${PARAMETER:-400}"
-vus="${VUS:-5}"
-duration="${DURATION_SECONDS:-20}"
+vus="${VUS:-2}"
+duration="${DURATION_SECONDS:-10}"
 recovery="${RECOVERY_SECONDS:-5}"
 idle_timeout="${IDLE_TIMEOUT_SECONDS:-300}"
-control_url="${CONTROL_URL:-http://localhost:8080}"
+configuration="$(bash scripts/local-target.sh)"
+control_url="$(jq -r .controlTarget <<< "$configuration")"
 session_id=''
 experiment_id=''
 fault_active=false
@@ -33,6 +34,8 @@ control() {
 }
 cleanup() {
   if [[ ( "$fault_active" == true || "$run_active" == true ) && -n "$session_id" ]]; then
+    verified="$(bash scripts/local-target.sh)" || { echo 'Cleanup target could not be verified; manually check this session in its original local lab.' >&2; return; }
+    [[ "$(jq -r .labInstanceId <<< "$verified")" == "$(jq -r .labInstanceId <<< "$configuration")" ]] || { echo 'Cleanup instance changed; manually check the original session.' >&2; return; }
     control PUT "/api/sessions/$session_id/fault" '{"enabled":false,"parameter":0}' >/dev/null || echo "Could not disable fault; manually disable session $session_id in the UI" >&2
   fi
 }
@@ -66,6 +69,8 @@ while ((SECONDS < deadline)); do
   sleep 2
 done
 ((idle_observations == 3)) || { echo "The lab did not drain within $idle_timeout seconds. No new fault/run was started. Inspect backlog or increase IDLE_TIMEOUT_SECONDS." >&2; exit 1; }
+verified="$(bash scripts/local-target.sh)"
+[[ "$verified" == "$configuration" ]] || { echo 'Local configuration changed during preflight; no new fault was started.' >&2; exit 1; }
 if [[ -z "$session_id" ]]; then
   session_id="$(control POST /api/sessions "$(jq -nc --arg scenario "$scenario" '{name: ($scenario + " comparison"), scenario: $scenario}')" | jq -er '.id')"
   experiment_id="$(control POST "/api/sessions/$session_id/experiments" "$(jq -nc --argjson vus "$vus" --argjson duration "$duration" '{vus: $vus, durationSeconds: $duration}')" | jq -er '.id')"
@@ -74,7 +79,9 @@ fi
 run_phase() {
   local phase="$1" summary="artifacts/$experiment_id-$1.json"
   run_active=true
-  control POST "/api/experiments/$experiment_id/runs" "{\"phase\":\"$phase\"}" >/dev/null
+  verified="$(bash scripts/local-target.sh)"
+  [[ "$verified" == "$configuration" ]] || { echo 'Lab configuration changed during the comparison; refusing mismatched load.' >&2; exit 1; }
+  control POST "/api/experiments/$experiment_id/runs" "$(jq -nc --arg phase "$phase" --argjson configuration "$configuration" '{phase:$phase,configuration:$configuration}')" >/dev/null
   docker compose run --rm -e "SESSION_ID=$session_id" -e "RUN_ID=$experiment_id" -e "PHASE=$phase" -e "VUS=$vus" -e "DURATION_SECONDS=$duration" -e "SUMMARY_PATH=/results/$experiment_id-$phase.json" k6 run /scripts/baseline.js
   jq -e '.requestCount > 0' "$summary" >/dev/null
   curl --fail-with-body --silent --show-error --max-time 60 -X POST "$control_url/api/experiments/$experiment_id/runs/$phase/complete" -H 'Content-Type: application/json' --data-binary "@$summary" >/dev/null

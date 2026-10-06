@@ -1,97 +1,52 @@
 import { expect, test, type Page } from "@playwright/test";
-
-async function offline(page: Page) {
-  const writes: string[] = [];
-  await page.route("**/api/**", async route => {
-    if (route.request().method() !== "GET") writes.push(route.request().url());
-    await route.abort("connectionrefused");
-  });
-  return writes;
-}
-async function openContents(page: Page) {
+import { languageStages } from "../src/learning/language-depth-data";
+async function contents(page: Page) {
   if (await page.locator(".curriculum-menu-toggle").isVisible()) await page.locator(".curriculum-menu-toggle").click();
 }
-async function openTech(page: Page, name: string) {
-  await openContents(page);
-  await page.locator(".curriculum-area-switch button").nth(1).click();
-  await page.locator(".curriculum-tech-tree .curriculum-lesson-link").filter({ hasText: name }).click();
-}
-
-test("programming language, OS, UI locale and theme persist independently without changing Java progress", async ({ page }) => {
-  const writes = await offline(page);
-  await page.goto("/");
-  const initialProgress = await page.evaluate(() => localStorage.getItem("incidentlens.curriculum.v1"));
-  await page.locator("#learning-code-language").selectOption("python");
-  await page.locator("#learning-platform").selectOption("windows");
+test("all four languages use introductions, common contents and authored lessons without navigation writes", async ({ page }) => {
+  test.setTimeout(180_000);
+  const writes: string[] = [];
+  await page.route("**/api/**", async route => { if (route.request().method() !== "GET") writes.push(route.request().url()); await route.abort(); });
+  await page.goto("/?view=learn");
   await page.locator(".language-select").selectOption("en");
-  await page.locator(".theme-select").selectOption("dark");
-  await expect(page.locator(".programming-guide h1")).toHaveText("Python");
-  await expect(page.locator(".curriculum-guide-tree .curriculum-lesson-link")).toHaveCount(15);
-  await expect(page.locator("#track-setup").locator("..")).toContainText("python.exe -m venv .venv");
-  await expect(page.locator(".curriculum-sidebar-progress")).toContainText("Reading record");
-  await page.reload();
-  await expect(page.locator("#learning-code-language")).toHaveValue("python");
-  await expect(page.locator("#learning-platform")).toHaveValue("windows");
-  await expect(page.locator(".language-select")).toHaveValue("en");
-  await expect(page.locator(".theme-select")).toHaveValue("dark");
-  await page.locator("#learning-platform").selectOption("linux");
-  await expect(page.locator("#track-setup").locator("..")).toContainText("python3 -m venv .venv");
-  await page.locator("#learning-code-language").selectOption("java");
-  await expect(page.locator(".curriculum-lesson-link")).toHaveCount(15);
-  expect(await page.evaluate(() => localStorage.getItem("incidentlens.curriculum.v1"))).toBe(initialProgress);
-  expect(writes).toEqual([]);
-  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
-});
-
-test("all fourteen guides and fifteen-stage language paths expose real headings, source links and honest scope", async ({ page }) => {
-  const writes = await offline(page);
-  await page.goto("/");
-  await page.locator(".language-select").selectOption("en");
-  for (const language of ["python", "javascript", "csharp"] as const) {
+  let titles: string[] | undefined;
+  for (const language of ["java", "python", "javascript", "csharp"]) {
     await page.locator("#learning-code-language").selectOption(language);
-    await expect(page.locator(".curriculum-guide-tree .curriculum-lesson-link")).toHaveCount(15);
-    for (const position of [3, 4, 6, 7, 9, 13, 14]) {
-      await openContents(page);
-      await page.locator(".curriculum-guide-tree .curriculum-lesson-link").nth(position).click();
-      await expect(page.locator("#track-stage")).toBeVisible();
+    await expect(page.locator(".track-introduction")).toBeVisible();
+    await expect(page.locator(".track-lesson")).toHaveCount(0);
+    await contents(page);
+    const current = await page.locator(".curriculum-lesson-title").allTextContents();
+    expect(current).toHaveLength(15); if (titles) expect(current).toEqual(titles); titles = current;
+    await page.locator(".curriculum-lesson-title").first().click();
+    for (const [index, stage] of languageStages.entries()) {
+      await expect(page.locator(".track-lesson h1")).toHaveText(stage[2]);
+      await expect(page.locator(".curriculum-tabs button")).toHaveCount(6);
+      await page.getByRole("tab", { name: "Examples", exact: true }).click();
+      await expect(page.locator("#curriculum-panel pre").first()).not.toBeEmpty();
+      await page.getByRole("tab", { name: "Practice", exact: true }).click();
+      await expect(page.getByRole("heading", { name: "Guided practice", exact: true })).toBeVisible();
+      await expect(page.getByRole("heading", { name: "Observable criteria", exact: true })).toBeVisible();
+      await page.getByRole("tab", { name: "Troubleshooting", exact: true }).click();
+      await expect(page.locator("#curriculum-panel .lesson-prose").first()).not.toBeEmpty();
+      if (index < 14) await page.getByRole("button", { name: "Next lesson", exact: true }).click();
     }
-    await expect(page.locator(".language-depth-course")).toContainText("examples/language-paths/advanced/");
+    await expect(page.getByRole("button", { name: "Next lesson", exact: true })).toBeDisabled();
+    await contents(page);
+    await page.locator(".curriculum-area-switch button").nth(1).click();
+    await contents(page);
+    await expect(page.locator(".curriculum-tech-tree .curriculum-lesson-link")).toHaveCount(14);
+    await page.locator(".curriculum-tech-tree button").filter({ hasText: "Redis" }).click();
+    await expect(page.locator(".technology-guide")).toContainText("MySQL");
+    await page.locator(".technology-guide button").filter({ hasText: "Open related" }).click();
+    await expect(page.locator("#learning-code-language")).toHaveValue(language);
+    await expect(page.locator(".track-lesson h1")).toHaveText(languageStages[11][2]);
+    if (await page.locator(".curriculum-menu-toggle").isVisible()) {
+      await contents(page); await expect(page.locator(".curriculum-menu-close")).toBeFocused();
+      await page.keyboard.press("Shift+Tab"); await expect(page.locator(".curriculum-brand")).toBeFocused();
+      await page.keyboard.press("Shift+Tab");
+      await expect(page.locator(".curriculum-sidebar button").last()).toBeFocused();
+      await page.keyboard.press("Escape"); await expect(page.locator(".curriculum-menu-toggle")).toBeFocused();
+    }
   }
-  await openTech(page, "Prometheus");
-  await expect(page.locator(".curriculum-tech-tree .curriculum-lesson-link")).toHaveCount(14);
-  await expect(page.locator(".technology-guide")).toContainText("stores numeric time series");
-  await expect(page.locator(".technology-guide")).toContainText("Optional profile");
-  await openTech(page, "Grafana");
-  await expect(page.locator(".technology-guide")).toContainText("does not collect or store");
-  await openTech(page, "Apache Kafka");
-  await expect(page.locator(".technology-guide")).toContainText("exactly-once");
-  for (const id of ["need", "flow", "example", "lab", "failure", "practice"]) {
-    await expect(page.locator(`#tech-${id}`)).toHaveCount(1);
-  }
-  await expect(page.locator(".technology-guide a[href^='https://']")).toHaveCount(1);
-  expect(writes).toEqual([]);
-  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
-});
-
-test("stage and technology links return to the same Java lesson, and mobile contents have a keyboard exit", async ({ page }) => {
-  const writes = await offline(page);
-  await page.goto("/");
-  await page.locator(".language-select").selectOption("en");
-  await openContents(page);
-  await page.locator(".curriculum-lesson-link").filter({ hasText: "12 · Performance and Redis" }).click();
-  await expect(page.locator(".learning-main h1")).toHaveText("12 · Performance and Redis");
-  await page.locator(".curriculum-technology-links button").filter({ hasText: "Redis" }).click();
-  await expect(page.locator(".technology-guide h1")).toHaveText("Redis");
-  await page.locator(".technology-guide button").filter({ hasText: "Open related Java lesson" }).click();
-  await expect(page.locator(".learning-main h1")).toHaveText("12 · Performance and Redis");
-  await expect(page.locator("#learning-code-language")).toHaveValue("java");
-  if (await page.locator(".curriculum-menu-toggle").isVisible()) {
-    await page.locator(".curriculum-menu-toggle").click();
-    await expect(page.locator(".curriculum-sidebar")).toHaveAttribute("role", "dialog");
-    await expect(page.locator(".curriculum-menu-close")).toBeFocused();
-    await page.keyboard.press("Escape");
-    await expect(page.locator(".curriculum-sidebar")).not.toHaveAttribute("role", "dialog");
-    await expect(page.locator(".curriculum-menu-toggle")).toBeFocused();
-  }
-  expect(writes).toEqual([]);
+  expect(writes).toEqual([]); expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
 });

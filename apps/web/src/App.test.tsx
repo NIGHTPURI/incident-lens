@@ -99,7 +99,7 @@ describe("incident dashboard", () => {
       }),
     ).toBeInTheDocument();
     expect(screen.getAllByText("확인 불가")).toHaveLength(5);
-    fireEvent.click(screen.getByRole("button", { name: "자유실험실" }));
+    fireEvent.click(screen.getAllByRole("button", { name: "자유실험실" })[0]);
     fireEvent.change(screen.getByLabelText("세션 이름"), {
       target: { value: "내 실험 이름" },
     });

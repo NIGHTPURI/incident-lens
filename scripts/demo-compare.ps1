@@ -1,21 +1,23 @@
 param(
     [ValidateSet('DOWNSTREAM_LATENCY','DATABASE_DEGRADATION','KAFKA_SLOWDOWN','CACHE_DEGRADATION')][string]$Scenario = 'DOWNSTREAM_LATENCY',
     [ValidateRange(0,2000)][int]$Parameter = 400,
-    [ValidateRange(1,50)][int]$Vus = 5,
-    [ValidateRange(5,300)][int]$DurationSeconds = 20,
+    [ValidateRange(1,50)][int]$Vus = 2,
+    [ValidateRange(5,300)][int]$DurationSeconds = 10,
     [ValidateRange(0,120)][int]$RecoverySeconds = 5,
     [ValidateRange(5,900)][int]$IdleTimeoutSeconds = 300,
     [string]$SessionId,
     [string]$ExperimentId,
-    [string]$ControlUrl = 'http://localhost:8080'
+    [string]$ControlUrl = $env:CONTROL_URL
 )
 . "$PSScriptRoot/common.ps1"
-$script:ControlUrl = $ControlUrl.TrimEnd('/')
+$script:ControlUrl = $null
 if ([bool]$SessionId -ne [bool]$ExperimentId) { throw 'Supply both SessionId and ExperimentId, or neither.' }
 $faultMayBeActive = $false
 $runMayBeActive = $false
 Push-Location $script:ProjectRoot
 try {
+    $configuration = Get-LocalExecution $ControlUrl
+    $script:ControlUrl = $configuration.controlTarget
     if ($SessionId) {
         $experiment = Invoke-Control GET "/api/experiments/$ExperimentId"
         if ($experiment.sessionId -ne $SessionId) { throw 'Experiment does not belong to the specified session.' }
@@ -24,6 +26,8 @@ try {
         $DurationSeconds = $experiment.workload.durationSeconds
     }
     Wait-LabIdle -TimeoutSeconds $IdleTimeoutSeconds
+    $verified = Get-LocalExecution $ControlUrl
+    if (($verified | ConvertTo-Json -Depth 10 -Compress) -ne ($configuration | ConvertTo-Json -Depth 10 -Compress)) { throw 'Local configuration changed during preflight; no new fault was started.' }
     if (!$SessionId) {
         $session = Invoke-Control POST '/api/sessions' @{ name = "$Scenario $(Get-Date -Format s)"; scenario = $Scenario }
         $SessionId = $session.id
@@ -33,7 +37,7 @@ try {
     $faultMayBeActive = $true
     Invoke-Control PUT "/api/sessions/$SessionId/fault" @{ enabled = $true; parameter = $Parameter } | Out-Null
     $runMayBeActive = $true
-    Invoke-Control POST "/api/experiments/$ExperimentId/runs" @{ phase = 'BEFORE' } | Out-Null
+    Invoke-Control POST "/api/experiments/$ExperimentId/runs" @{ phase = 'BEFORE'; configuration = $configuration } | Out-Null
     $before = Invoke-Workload $SessionId $ExperimentId 'BEFORE' $Vus $DurationSeconds
     Invoke-Control POST "/api/experiments/$ExperimentId/runs/BEFORE/complete" $before | Out-Null
     $runMayBeActive = $false
@@ -43,7 +47,9 @@ try {
     # Recovery is a declared part of the protocol, not a claim that Kafka has drained.
     if ($RecoverySeconds -gt 0) { Start-Sleep -Seconds $RecoverySeconds }
     $runMayBeActive = $true
-    Invoke-Control POST "/api/experiments/$ExperimentId/runs" @{ phase = 'AFTER' } | Out-Null
+    $verified = Get-LocalExecution $ControlUrl
+    if (($verified | ConvertTo-Json -Depth 10 -Compress) -ne ($configuration | ConvertTo-Json -Depth 10 -Compress)) { throw 'Lab configuration changed during comparison; refusing mismatched load.' }
+    Invoke-Control POST "/api/experiments/$ExperimentId/runs" @{ phase = 'AFTER'; configuration = $configuration } | Out-Null
     $after = Invoke-Workload $SessionId $ExperimentId 'AFTER' $Vus $DurationSeconds
     Invoke-Control POST "/api/experiments/$ExperimentId/runs/AFTER/complete" $after | Out-Null
     $runMayBeActive = $false
@@ -52,7 +58,10 @@ try {
     Invoke-Control GET "/api/experiments/$ExperimentId" | ConvertTo-Json -Depth 20
 } finally {
     if (($faultMayBeActive -or $runMayBeActive) -and $SessionId) {
-        try { Invoke-Control PUT "/api/sessions/$SessionId/fault" @{ enabled = $false; parameter = 0 } | Out-Null }
+        try {
+            $cleanupTarget = Get-LocalExecution $ControlUrl
+            if ($cleanupTarget.labInstanceId -ne $configuration.labInstanceId) { throw 'Original cleanup instance changed; check the original session manually.' }
+            Invoke-Control PUT "/api/sessions/$SessionId/fault" @{ enabled = $false; parameter = 0 } | Out-Null }
         catch { Write-Warning "Could not disable fault: retry PUT /api/sessions/$SessionId/fault with enabled=false." }
     }
     Pop-Location
