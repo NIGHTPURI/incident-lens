@@ -1,0 +1,22 @@
+{
+  "capturedAt": "2026-10-06T07:50:25.862Z",
+  "dimensions": "1440x1000",
+  "theme": "light",
+  "locales": [
+    "ko",
+    "en"
+  ],
+  "browser": "Playwright Chromium, actual current production source build",
+  "backend": "isolated local control-plane at 19380; GET/HEAD-only proxy",
+  "fixtures": false,
+  "writes": [],
+  "errors": [],
+  "hashes": {
+    "navigation-en-lab.png": "6f96d1eb7350921e3d9e0fe17a48cd84bc6f7f6ebb354c0f5cceaba466f99be9",
+    "navigation-en-sessions.png": "17f4aeb09577e85666b6356b1887ef944ff0247c7d4bb14ebe8a46a42184d3a0",
+    "navigation-en-technology.png": "2b8af37971c67bd825db38458f1be84c8acdcd8272eacf567f8d0f18e60fa842",
+    "navigation-ko-lab.png": "365e0b377130b3a3dadf375837ae4923f6631f01f926ed94a11b24e6912ecc70",
+    "navigation-ko-sessions.png": "cc190b187eab2e53bca1ff88bd69328ccc37bf53870f20f8b1867d1e0c17b6ec",
+    "navigation-ko-technology.png": "81b9239f586a5b083758341ffe58d377d9d1cd1d124088029b5944ee2ef73bf0"
+  }
+}

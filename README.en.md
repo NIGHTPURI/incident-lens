@@ -6,11 +6,19 @@ A local tool for **backend fault reproduction, load testing, observability, befo
 
 Targets are currently **the Java / Spring Boot demo services in this repository**. Arbitrary user-project discovery, connection and automatic analysis are not implemented. User-project integration is a future plan, outside this split. Remote fault experiments are unsupported.
 
-![English fault testing home](apps/web/screenshots/split-en-home.png)
-![English free lab](apps/web/screenshots/split-en-lab.png)
-![English experiment technology guides](apps/web/screenshots/split-en-technology.png)
+![English experiment session list](apps/web/screenshots/navigation-en-sessions.png)
+![English fault setup](apps/web/screenshots/navigation-en-lab.png)
+![English experiment technology guides](apps/web/screenshots/navigation-en-technology.png)
 
 These are new English browser captures from this source. The Korean document uses separate Korean captures. All are 1440×1000, light theme. Screens illustrate the interface, not performance or production results. Saved sessions shown are actual local verification records; no example measurements were inserted.
+
+## Experiment views and navigation
+
+Opening `/` or `?view=sessions` shows saved **experiment sessions**. The logo returns to this view. There is no separate home, landing or start page. Legacy `?view=home`, `?view=landing`, `?view=start`, `/home`, `/landing` and `/start` open the session list.
+
+The shared left menu lists Experiment sessions → Fault setup → Load & comparison → Observability → Evidence & RCA → Technology guides → PC setup. Every tool tab retains the same list and current location; mobile uses a collapsible drawer. The selected session remains available across tabs and reloads. Existing `?view=lab`, `?view=comparison`, `?view=overview`, `?view=evidence`, `?view=technology` and `?view=settings` links, history and direct embed entry remain supported.
+
+Navigation never applies/disables faults, starts load, generates reports or clears records. Active-fault warnings remain across tabs. Unsubmitted fault/load inputs survive tab changes, but are not persisted across reloads. Actual experiments require explicit buttons and terminal commands.
 
 ## Fault injection versus load testing
 
@@ -27,7 +35,7 @@ The tool does not destroy network infrastructure or actual database/Kafka proces
 
 ## Run → measure → recover → inspect the report
 
-1. Check local service health. Create a session for a chosen scenario in the free lab or select an existing session.
+1. Check local service health. Select a saved record in the initial experiment session list, or create a session for a chosen scenario in Fault setup.
 2. Explicitly set the fault and send requests. Collect evidence for the chosen BEFORE/AFTER window. Use the terminal runner below for an automatic comparison.
 3. The runner verifies a matched local target and idle telemetry, applies the fault, runs BEFORE load and saves evidence/rule-based RCA. It disables the fault and repeats the same load in AFTER. BEFORE means the **fault-active interval**, not a healthy baseline.
 4. Inspect saved evidence/RCA and comparisons. Reload to fetch the same session again. Failed runs are not presented as completed benchmarks.
@@ -66,7 +74,7 @@ Default web: **http://127.0.0.1:3000**; API documentation: **http://127.0.0.1:80
 
 | Mode | Capabilities and limits |
 |---|---|
-| UI only | Node.js 22.x starting at 22.12, or 24+, and a web development server. Read home/interface/guides; no API connection, faults, evidence, RCA or comparison |
+| UI only | Node.js 22.x starting at 22.12, or 24+, and a web development server. Read the session list/interface/guides; no API connection, faults, evidence, RCA or comparison |
 | Core lab | Seven services: demo faults, in-process telemetry, rule RCA and terminal k6 comparison |
 | With observability | Core plus five tools for metrics, logs and traces; extra resources/preparation |
 
@@ -107,7 +115,7 @@ Legacy `?view=learn` displays a migration notice without deleting browser record
 
 ## Verification and code
 
-After the split, the web build, 41 unit tests and 48 browser tests passed; backend checks passed 85 unit and 19 integration tests. An isolated live fault/load/RCA/recovery run also succeeded. [Split verification](docs/SPLIT_VALIDATION.md) records these new checks. Previous integrated-project test counts are not relabelled as current results. Browser API fixtures are not performance measurements. Full observability startup and low-spec testing are separate from this core-stack verification.
+The original split results remain in [split verification](docs/SPLIT_VALIDATION.md). For this navigation change, 44 web unit tests, 57 browser tests, 85 backend unit tests and 19 integration tests passed. A live cache fault/load run verified saved evidence/RCA, recovery and reload. The original MySQL connection failures, datasource fix, reruns and new screenshots are recorded separately in [navigation verification](docs/NAVIGATION_VALIDATION.md). Previous integrated-project test counts are not relabelled as current results. Browser API fixtures are not performance measurements. Full observability startup and low-spec testing are separate from this core-stack verification.
 
 Frontend: in `apps/web`, run `npm ci`, `npm test`, `npm run build`, `npm run test:browser`. Java 21 backend: `./gradlew build integrationTest --no-daemon` from root (integration requires Docker). [Architecture](ARCHITECTURE.md) · [API](docs/API.md) · [Operations](docs/OPERATIONS.md) · [Security](docs/SECURITY.md) · [Web development](apps/web/README.md).
 
