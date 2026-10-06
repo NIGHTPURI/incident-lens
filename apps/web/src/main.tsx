@@ -6,6 +6,7 @@ import "./styles.css";
 import "./theme.css";
 import "./lab-guides.css";
 import "./product-shell.css";
+import "./tool-layout.css";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>

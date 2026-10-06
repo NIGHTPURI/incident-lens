@@ -1,3 +1,4 @@
+import { navigate } from './navigation';
 import { expect, test, type BrowserContext, type Page } from "@playwright/test";
 
 // Browser-only fixtures exercise presentation. These values are not benchmark results.
@@ -113,11 +114,11 @@ async function expectContainedLayout(page: Page) {
         ".stat, .scenario-card, .evidence-card, .status, .tag, button",
       ),
     ]
-      .filter((element) => element.scrollWidth > element.clientWidth + 1)
+      .filter((element) => element.getClientRects().length > 0 && element.scrollWidth > element.clientWidth + 1)
       .map((element) => `${element.className}: ${element.textContent?.trim()}`);
     const scrollingContainers = [
       ...document.querySelectorAll<HTMLElement>(".sidebar nav, .table-scroll"),
-    ].filter((element) => element.scrollWidth > element.clientWidth + 1);
+    ].filter((element) => element.getClientRects().length > 0 && element.scrollWidth > element.clientWidth + 1);
     return {
       documentOverflow: document.documentElement.scrollWidth > viewport,
       clipped,
@@ -176,36 +177,25 @@ test("Korean default and English switching localize every populated view and per
       ).toHaveValue(session.id);
     }
     const korean = locale === "ko";
-    const nav = page.locator(".sidebar nav");
-    await nav
-      .getByRole("button", { name: korean ? "개요" : "Overview", exact: true })
-      .click();
+    await navigate(page, korean ? "관측" : "Observability");
     await expect(
       page.getByRole("heading", {
         name: korean ? "서비스 연결 상태" : "Service connectivity",
       }),
     ).toBeVisible();
     await expect(
-      page.getByText(korean ? "요청 수" : "Request count", { exact: true }),
+      page.locator(".stats-grid").getByText(korean ? "요청 수" : "Request count", { exact: true }),
     ).toBeVisible();
-    await expect(
-      page.getByRole("button", {
-        name: korean ? "상세 보기 →" : "Inspect →",
-        exact: true,
-      }),
-    ).toBeVisible();
+    await navigate(page, korean ? "실험 세션" : "Experiment sessions");
+    await expect(page.getByRole("button", {name: korean ? "상세 보기 →" : "Inspect →", exact: true})).toBeVisible();
+    await navigate(page, korean ? "관측" : "Observability");
     await expect(page.locator(".fault-banner")).toContainText(
       korean ? "다운스트림 지연" : "Downstream latency",
     );
     await expectContainedLayout(page);
     await captureView(page, testInfo.outputPath(`${locale}-overview.png`));
 
-    await nav
-      .getByRole("button", {
-        name: korean ? "자유실험실" : "Free experiment lab",
-        exact: true,
-      })
-      .click();
+    await navigate(page, korean ? "장애 설정" : "Fault setup");
     await expect(page.locator(".scenario-card")).toHaveCount(4);
     await expect(
       page
@@ -245,12 +235,7 @@ test("Korean default and English switching localize every populated view and per
     await expectContainedLayout(page);
     await captureView(page, testInfo.outputPath(`${locale}-lab.png`));
 
-    await nav
-      .getByRole("button", {
-        name: korean ? "증거 및 RCA" : "Evidence & RCA",
-        exact: true,
-      })
-      .click();
+    await navigate(page, korean ? "근거 · RCA" : "Evidence & RCA");
     await expect(
       page.getByText(korean ? "관측된 증거" : "OBSERVED EVIDENCE", {
         exact: true,
@@ -314,12 +299,7 @@ test("Korean default and English switching localize every populated view and per
     await expectContainedLayout(page);
     await captureView(page, testInfo.outputPath(`${locale}-evidence-rca.png`));
 
-    await nav
-      .getByRole("button", {
-        name: korean ? "실험 비교" : "Experiments",
-        exact: true,
-      })
-      .click();
+    await navigate(page, korean ? "부하 · 전후 비교" : "Load & comparison");
     await expect(
       page.getByRole("cell", {
         name: korean ? "DB 조회 p95" : "DB lookup p95",
@@ -379,7 +359,7 @@ test("Korean default and English switching localize every populated view and per
     await page.evaluate(() => localStorage.getItem("incidentlens.locale")),
   ).toBe("en");
   // Navigation now persists the current route in the URL; choose overview explicitly.
-  await page.getByRole("button", { name: "Overview", exact: true }).click();
+  await navigate(page, "Observability");
   await page.reload();
   await expect(
     page.getByRole("heading", { name: "Understand what changed." }),
@@ -419,21 +399,15 @@ test("offline errors and empty states render in Korean and switch to English wit
     "컨트롤 플레인에 연결할 수 없습니다.",
   );
   await expect(page.getByText("확인 불가", { exact: true })).toHaveCount(5);
-  await expect(
-    page.getByText("첫 장애 분석을 시작하세요", { exact: true }),
-  ).toBeVisible();
+  await navigate(page, "실험 세션");
+  await expect(page.getByRole("heading", {name:"첫 장애 분석을 시작하세요"})).toBeVisible();
+  await navigate(page, "관측");
   await expectContainedLayout(page);
-  await page
-    .locator(".sidebar nav")
-    .getByRole("button", { name: "자유실험실", exact: true })
-    .click();
+  await navigate(page, "장애 설정");
   await expect(
     page.getByText("세션을 만들어 시작하세요", { exact: true }),
   ).toBeVisible();
-  await page
-    .locator(".sidebar nav")
-    .getByRole("button", { name: "증거 및 RCA", exact: true })
-    .click();
+  await navigate(page, "근거 · RCA");
   await expect(
     page.getByRole("heading", { name: "장애 세션을 선택하세요", exact: true }),
   ).toBeVisible();
@@ -443,10 +417,7 @@ test("offline errors and empty states render in Korean and switch to English wit
   await expect(
     page.getByRole("button", { name: "RCA 생성", exact: true }),
   ).toBeDisabled();
-  await page
-    .locator(".sidebar nav")
-    .getByRole("button", { name: "실험 비교", exact: true })
-    .click();
+  await navigate(page, "부하 · 전후 비교");
   await expect(
     page.getByRole("heading", { name: "장애 세션을 선택하세요", exact: true }),
   ).toBeVisible();

@@ -1,3 +1,4 @@
+import { navigate } from './navigation';
 import { expect, test } from "@playwright/test";
 
 function contrast(a: string, b: string) {
@@ -8,7 +9,7 @@ function contrast(a: string, b: string) {
   const x=luminance(a),y=luminance(b);return (Math.max(x,y)+.05)/(Math.min(x,y)+.05);
 }
 
-test("home and free lab share reference tokens, states and accessible semantic colors", async ({ page }) => {
+test("sessions and fault setup share reference tokens, states and accessible semantic colors", async ({ page }) => {
   const writes: string[]=[];
   await page.route("**/api/**",async route=>{
     if(route.request().method()!=="GET") { writes.push(route.request().url()); await route.abort(); return; }
@@ -16,10 +17,9 @@ test("home and free lab share reference tokens, states and accessible semantic c
     await route.fulfill({json:path==="/api/overview" ? {services:[{name:"demo-api",status:"UP"}],metrics:{requestCount:null,errorCount:null,p95Ms:null,kafkaLag:null,cacheHitRate:null},activeFault:{sessionId:"palette-fixture",scenario:"DOWNSTREAM_LATENCY",enabled:true,parameter:100,expiresAt:"2099-01-01T00:00:00Z"}} : []});
   });
   await page.goto("/");
-  const primary=page.getByRole("button",{name:"자유실험실 열기"});
-  await expect(primary).toHaveCSS("background-color","rgb(37, 116, 199)");
+  await expect(page.locator(".tool-sidebar .nav-item.selected")).toHaveCSS("background-color","rgb(232, 243, 255)");
   await expect(page.locator("body")).toHaveCSS("background-color","rgb(255, 255, 255)");
-  await page.locator(".primary-navigation").getByRole("button",{name:"자유실험실",exact:true}).click();
+  await navigate(page, "장애 설정");
   await expect(page.locator(".sidebar")).toHaveCSS("background-color","rgb(255, 255, 255)");
   await expect(page.locator(".button.primary").first()).toHaveCSS("background-color","rgb(37, 116, 199)");
   await expect(page.locator(".scenario-card.chosen")).toHaveCSS("background-color","rgb(232, 243, 255)");
@@ -32,7 +32,7 @@ test("home and free lab share reference tokens, states and accessible semantic c
 
 test("errors remain red and distinct from blue actions when the backend is unavailable",async({page})=>{
   await page.route("**/api/**",route=>route.fulfill({status:500,json:{detail:"Palette fixture: backend unavailable"}}));
-  await page.goto("/?view=learn");await page.locator(".primary-navigation").getByRole("button",{name:"자유실험실",exact:true}).click();
+  await page.goto("/?view=learn");await navigate(page, "장애 설정");
   const error=page.locator(".message.error");await expect(error).toBeVisible();await expect(error).toHaveCSS("color","rgb(157, 51, 44)");
   const colors=await error.evaluate(el=>({fg:getComputedStyle(el).color,bg:getComputedStyle(el).backgroundColor}));expect(contrast(colors.fg,colors.bg)).toBeGreaterThanOrEqual(4.5);
 });

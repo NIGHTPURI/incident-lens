@@ -59,7 +59,7 @@ async function mount() {
       </I18nProvider>,
     );
   });
-  await click("Overview");
+  await click("Observability");
 }
 async function click(name: string) {
   await act(async () => {
@@ -162,7 +162,7 @@ describe("freshness and session isolation", () => {
       "Session temporarily unavailable.",
     );
     expect(
-      screen.getByText("Incident data could not be loaded"),
+      screen.getByRole("heading", { name: "Incident data could not be loaded" }),
     ).toBeInTheDocument();
     await click("Refresh dashboard");
     expect(screen.getByRole("alert")).toHaveTextContent(
@@ -182,7 +182,7 @@ describe("freshness and session isolation", () => {
     const mutation = deferred<[]>();
     vi.spyOn(api, "collect").mockReturnValue(mutation.promise);
     await click("Collect evidence");
-    await click("Overview");
+    await click("Experiment sessions");
     const inspect = screen.getAllByRole("button", { name: "Inspect →" });
     for (const button of inspect) expect(button).toBeDisabled();
     await act(async () => {
@@ -220,7 +220,7 @@ describe("transient operation feedback scope", () => {
   const success = "Evidence collected from the observation window.";
   async function collectScreen() { await mount(); await click("Evidence & RCA"); }
   async function guides() {
-    await act(async () => { fireEvent.click(document.querySelector('.primary-navigation button:nth-child(2)')!); });
+    await act(async () => { fireEvent.click(screen.getByRole("button", { name: "Technology guides" })); });
   }
   it("removes a completed notice on navigation and does not restore it on return", async () => {
     vi.spyOn(api, "collect").mockResolvedValue([]);
@@ -265,7 +265,7 @@ describe("transient operation feedback scope", () => {
     const pending = deferred<ReturnType<typeof detail>["session"]>();
     vi.spyOn(api, "createSession").mockReturnValue(pending.promise);
     await mount();
-    await click("Free experiment lab");
+    await click("Fault setup");
     const create = screen.getByRole("button", { name: /Create session/i });
     await act(async () => fireEvent.click(create));
     await guides();

@@ -1,3 +1,4 @@
+import { navigate, sessionsViaLogo } from './navigation';
 import { expect,test } from '@playwright/test';
 const legacy='incidentlens.curriculum.progress.v1';
 test('tool navigation, guides and settings preserve learning records and never mutate the server',async({page})=>{
@@ -7,25 +8,25 @@ test('tool navigation, guides and settings preserve learning records and never m
     return route.fulfill({json:new URL(r.url()).pathname==='/api/overview'?{services:[],metrics:{},activeFault:null}:[]});
   });
   await page.goto('/');await page.evaluate(key=>{localStorage.setItem(key,JSON.stringify({tools:true}));localStorage.setItem('incidentlens.learning.platform.v1','windows');localStorage.setItem('incidentlens.pc-settings.draft.v1',JSON.stringify({mode:'learning'}));},legacy);
-  await expect(page.locator('.primary-navigation button').first()).toHaveText('자유실험실');
-  await expect(page.locator('.unified-landing')).toContainText('자체 데모');
+  await expect(page.locator('.tool-sidebar .nav-item').first()).toContainText('실험 세션');
+  await expect(page.locator('.sidebar-note')).toContainText('자체 데모');
   await expect(page.getByLabel('프로그래밍 언어')).toHaveCount(0);
-  await page.locator('.primary-navigation button').nth(1).click();
+  await navigate(page, '기술 설명');
   await expect(page.locator('.lab-guides')).toBeVisible();
   await page.getByRole('button',{name:'Apache Kafka',exact:true}).click();
   await expect(page.locator('.technology-guide h1')).toHaveText('Apache Kafka');
   await page.getByRole('button',{name:'장애 실험 설정 열기',exact:true}).click();
   await expect(page).toHaveURL(/view=lab/);
-  await page.locator('.primary-navigation button').last().click();
+  await navigate(page, 'PC 실행 설정');
   await expect(page.locator('input[value="frontend"]')).toBeChecked();
   await expect(page.locator('#settings-platform')).toHaveValue('windows');
   await page.locator('#settings-platform').selectOption('linux');
   await expect(page.locator('.pc-settings')).toContainText('--mode ui');
-  await page.locator('.learning-brand').click();
+  await sessionsViaLogo(page);
   await page.locator('.theme-toggle').click();await expect(page.locator('html')).toHaveAttribute('data-theme','dark');
   await page.locator('.language-select').selectOption('en');await page.reload();
   await expect(page.locator('html')).toHaveAttribute('data-theme','dark');
-  await expect(page.locator('.unified-landing')).toContainText('own demo services');
+  await expect(page.locator('.sidebar-note')).toContainText('Our demo services only');
   expect(await page.evaluate(key=>localStorage.getItem(key),legacy)).toBe(JSON.stringify({tools:true}));
   expect(await page.evaluate(()=>localStorage.getItem('incidentlens.learning.platform.v1'))).toBe('windows');
   expect(writes).toEqual([]);expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
@@ -41,6 +42,9 @@ test('legacy experiment direct links restore their own session without merging l
  await page.route('**/api/**',route=>{const p=new URL(route.request().url()).pathname;return route.fulfill({json:p==='/api/overview'?{services:[],metrics:{},activeFault:null}:p==='/api/sessions'?sessions:{session:sessions.find(s=>p.endsWith(s.id)),evidence:[],activations:[],experiments:[],report:null}})});
  await page.addInitScript(()=>{localStorage.setItem('incidentlens.learning.code-language.v1','python');localStorage.setItem('incidentlens.learning.session.python.v1','legacy-python');localStorage.setItem('incidentlens.lab.session','lab-session');});
  await page.goto('/?view=evidence&context=learning');await expect(page.getByLabel('장애 세션')).toHaveValue('legacy-python');
- await page.locator('.primary-navigation button').first().click();await expect(page.getByLabel('장애 세션')).toHaveValue('lab-session');
- await page.goBack();await expect(page.getByLabel('장애 세션')).toHaveValue('legacy-python');await page.reload();await expect(page.getByLabel('장애 세션')).toHaveValue('legacy-python');
+ await navigate(page, '장애 설정');await expect(page.getByLabel('장애 세션')).toHaveValue('legacy-python');
+ await page.goto('/?view=lab');await expect(page.getByLabel('장애 세션')).toHaveValue('lab-session');
+ await page.goto('/?view=evidence&context=learning');await expect(page.getByLabel('장애 세션')).toHaveValue('legacy-python');
+ await page.goBack();await expect(page.getByLabel('장애 세션')).toHaveValue('lab-session');
+ await page.goForward();await expect(page.getByLabel('장애 세션')).toHaveValue('legacy-python');await page.reload();await expect(page.getByLabel('장애 세션')).toHaveValue('legacy-python');
 });
