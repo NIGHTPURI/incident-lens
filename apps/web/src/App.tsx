@@ -5,9 +5,8 @@ import * as format from "./format";
 import { useI18n } from "./i18n/I18nProvider";
 import PcSettings from "./PcSettings";
 import ExecutionDetails from "./ExecutionDetails";
-import Landing from "./Landing";
-import { readCodeLanguage, type CodeLanguage } from "./learning/programming-tracks";
-import LearningLab from "./learning/LearningLab";
+import ToolLayout from "./ToolLayout";
+import LabGuides from "./LabGuides";
 import ThemeSelector, { useThemePreference } from "./theme";
 import type { TranslationKey } from "./i18n/translations";
 import type {
@@ -63,36 +62,32 @@ const scenarios: {
   },
 ];
 
-type Page = "settings" | "landing" | "technology" | "learn" | "overview" | "lab" | "evidence" | "comparison";
-type LearningView = "home" | "lesson";
+type Page = "sessions" | "settings" | "technology" | "learn" | "overview" | "lab" | "evidence" | "comparison";
+type CodeLanguage = "java" | "python" | "javascript" | "csharp";
+function readCodeLanguage(storage: Pick<Storage,"getItem">): CodeLanguage { const saved=storage.getItem("incidentlens.learning.code-language.v1"); return ["java","python","javascript","csharp"].includes(saved ?? "") ? saved as CodeLanguage : "java"; }
 type SessionScope = "learning" | "lab";
-const learningViewKey = "incidentlens.learning.view";
 const learningSessionKey = "incidentlens.learning.session";
 const labSessionKey = "incidentlens.lab.session";
 const sessionKey = (scope: SessionScope, language: CodeLanguage = "java") => scope === "learning" ? (language === "java" ? learningSessionKey : `${learningSessionKey}.${language}.v1`) : labSessionKey;
-function readSessionScope(page: Page): SessionScope {
-  return page === "learn" || page === "technology" || ((page === "evidence" || page === "comparison") &&
-    new URLSearchParams(window.location.search).get("context") === "learning") ? "learning" : "lab";
-}
-function readLearningView(): LearningView {
-  try {
-    const saved = localStorage.getItem(learningViewKey);
-    if (saved === "home" || saved === "lesson") return saved;
-    return localStorage.getItem("incidentlens.learning.started") === "true" ? "lesson" : "home";
-  } catch {
-    return "home";
-  }
+function readSessionScope(_page: Page): SessionScope {
+  return new URLSearchParams(window.location.search).get("context") === "learning" ? "learning" : "lab";
 }
 const pages: { id: Page; label: TranslationKey; symbol: string }[] = [
-  { id: "settings", label: "shell.home", symbol: "⚙" },
-  { id: "landing", label: "shell.home", symbol: "⌂" },
-  { id: "technology", label: "nav.learn", symbol: "◇" },
-  { id: "learn", label: "nav.learn", symbol: "◈" },
-  { id: "overview", label: "nav.overview", symbol: "◫" },
+  { id: "sessions", label: "common.session", symbol: "≡" },
   { id: "lab", label: "nav.lab", symbol: "⌁" },
-  { id: "evidence", label: "nav.evidence", symbol: "≡" },
   { id: "comparison", label: "nav.comparison", symbol: "⇄" },
+  { id: "overview", label: "nav.overview", symbol: "◫" },
+  { id: "evidence", label: "nav.evidence", symbol: "◇" },
+  { id: "technology", label: "nav.learn", symbol: "▤" },
+  { id: "settings", label: "shell.home", symbol: "⚙" },
 ];
+function readPage(): Page {
+  const requested=new URLSearchParams(window.location.search).get("view");
+  if (["landing","home","start"].includes(requested??"") || ["/home","/landing","/start"].includes(window.location.pathname.replace(/\/$/,""))) return "sessions";
+  if(requested==="learn")return "learn";
+  if(pages.some(item=>item.id===requested))return requested as Page;
+  return new URLSearchParams(window.location.search).get("embed")==="1"?"lab":"sessions";
+}
 
 type Translator = ReturnType<typeof useI18n>["t"];
 type DisplayError = { cause: unknown; fallback: TranslationKey };
@@ -243,12 +238,8 @@ export default function App() {
     date,
     scenarioName,
   } = usePresentation();
-  const [page, setPageState] = useState<Page>(() => {
-    const requested = new URLSearchParams(window.location.search).get("view");
-    return pages.some((item) => item.id === requested) ? requested as Page : new URLSearchParams(window.location.search).get("embed") === "1" ? "learn" : "landing";
-  });
-  const [learningCodeLanguage, setLearningCodeLanguage] = useState<CodeLanguage>(() => { try { return readCodeLanguage(localStorage); } catch { return "java"; } });
-  const [learningView, setLearningView] = useState<LearningView>(readLearningView);
+  const [page, setPageState] = useState<Page>(readPage);
+  const [learningCodeLanguage] = useState<CodeLanguage>(() => { try { return readCodeLanguage(localStorage); } catch { return "java"; } });
   const [sessionScope, setSessionScope] = useState<SessionScope>(() => readSessionScope(page));
   const [overview, setOverview] = useState<Overview | null>(null);
   const [sessions, setSessions] = useState<IncidentSession[]>([]);
@@ -276,7 +267,7 @@ export default function App() {
     setNotice("");
     setError(null);
   }
-  function navigate(next: Page, push: boolean, nextScope: SessionScope = (next === "learn" || next === "technology") ? "learning" : "lab") {
+  function navigate(next: Page, push: boolean, nextScope: SessionScope = sessionScope) {
     invalidateFeedback();
     if (sessionScope !== nextScope) {
       let remembered = "";
@@ -288,16 +279,21 @@ export default function App() {
     if (push) {
       const url = new URL(window.location.href);
       url.searchParams.set("view", next);
-      if (nextScope === "learning" && next !== "learn") url.searchParams.set("context", "learning");
+      if (nextScope === "learning") url.searchParams.set("context", "learning");
       else url.searchParams.delete("context");
       window.history.pushState(null, "", url);
     }
   }
+  useEffect(() => {
+    const url=new URL(window.location.href);
+    if (["landing","home","start"].includes(url.searchParams.get("view")??"") || ["/home","/landing","/start"].includes(url.pathname.replace(/\/$/,""))) {
+      url.pathname="/";url.searchParams.set("view","sessions");window.history.replaceState(null,"",url);
+    }
+  }, []);
   function setPage(next: Page) { navigate(next, true); }
   useEffect(() => {
     const back = () => {
-      const requested = new URLSearchParams(window.location.search).get("view");
-      const next = pages.some(item => item.id === requested) ? requested as Page : new URLSearchParams(window.location.search).get("embed") === "1" ? "learn" : "landing";
+      const next = readPage();
       navigate(next, false, readSessionScope(next));
     };
     window.addEventListener("popstate", back);
@@ -308,23 +304,10 @@ export default function App() {
     selectedIdRef.current = next;
     setSelectedIdState(next);
   }
-  useEffect(() => {
-    const change = (event: Event) => {
-      const language = (event as CustomEvent<CodeLanguage>).detail;
-      setLearningCodeLanguage(language);
-      if (sessionScope === "learning") {
-        let id = "";
-        try { id = localStorage.getItem(sessionKey("learning", language)) ?? ""; } catch { /* Optional storage. */ }
-        setSelectedId(id);
-      }
-    };
-    window.addEventListener("incidentlens-language-change", change);
-    return () => window.removeEventListener("incidentlens-language-change", change);
-  }, [sessionScope]);
   useEffect(() => () => { feedbackRevision.current++; operationRevision.current++; }, []);
   const overviewRevision = useRef(0);
   const detailRevision = useRef(0);
-  const displayedError = error ?? ((page === "learn" || page === "technology" || page === "landing" || page === "settings") ? null : detailError ?? overviewError);
+  const displayedError = error ?? ((page === "learn" || page === "technology" || page === "settings") ? null : detailError ?? overviewError);
 
   const refresh = useCallback(async () => {
     const revision = ++overviewRevision.current;
@@ -443,20 +426,6 @@ export default function App() {
   }
 
   const active = overview?.activeFault?.enabled ? overview.activeFault : null;
-  function changeLearningView(view: LearningView) {
-    invalidateFeedback();
-    setLearningView(view);
-    if (view === "lesson" && page === "technology") setPage("learn");
-    try { localStorage.setItem(learningViewKey, view); } catch { /* Storage is optional. */ }
-  }
-  function goLearningHome() {
-    window.dispatchEvent(new Event("incidentlens-learning-home"));
-    try { localStorage.setItem("incidentlens.learning.mode", "curriculum"); } catch { /* Optional storage. */ }
-    changeLearningView("home");
-    setPage("learn");
-    document.documentElement.scrollTop = 0;
-    document.body.scrollTop = 0;
-  }
   const faultStatusKnown =
     !overviewError &&
     overview?.services.some(
@@ -486,77 +455,23 @@ export default function App() {
       </select>
     </label>
   );
-  const currentPage = pages.find((item) => item.id === page)!;
 
-  const learningPage = page === "learn" || page === "technology";
-  const standalone = learningPage || page === "landing" || page === "settings";
-  const pageName = (id: Page) => id === "settings" ? (locale === "ko" ? "PC 실행 설정" : "PC setup") : id === "technology" ? (locale === "ko" ? "기술 사전" : "Technology guides") : id === "landing" ? (locale === "ko" ? "시작" : "Home") : t(pages.find(p => p.id === id)!.label);
+  const pageName = (id: Page) => ({
+    sessions: locale === "ko" ? "실험 세션" : "Experiment sessions",
+    lab: locale === "ko" ? "장애 설정" : "Fault setup",
+    comparison: locale === "ko" ? "부하 · 전후 비교" : "Load & comparison",
+    overview: locale === "ko" ? "관측" : "Observability",
+    evidence: locale === "ko" ? "근거 · RCA" : "Evidence & RCA",
+    technology: locale === "ko" ? "기술 설명" : "Technology guides",
+    settings: locale === "ko" ? "PC 실행 설정" : "PC setup",
+    learn: locale === "ko" ? "기존 링크 안내" : "Legacy link notice",
+  })[id];
   const embedded = new URLSearchParams(window.location.search).get("embed") === "1";
   return (
-    <div className={`app-shell ${standalone ? "learning-mode" : ""} ${page === "landing" ? "landing-mode" : ""} ${embedded ? "embedded-mode" : ""}`}>
-      <a className="skip-link" href="#main-content">
-        {t("shell.skipToContent")}
-      </a>
-      <aside className="sidebar">
-        <a
-          className="brand"
-          href="#"
-          onClick={(event) => {
-            event.preventDefault();
-            setPage("landing");
-          }}
-          aria-label={t("shell.home")}
-        >
-          <span className="brand-mark">iL</span>
-          <span>
-            Incident<span className="brand-light">Lens</span>
-            <small>{t("shell.engineeringWorkspace")}</small>
-          </span>
-        </a>
-        <span className="nav-label">{t("shell.workspace").toUpperCase()}</span>
-        <nav aria-label={t("shell.navigation")}>
-          {[...pages].sort((a, b) => (a.id === "lab" ? -1 : b.id === "lab" ? 1 : 0)).map((item) => (
-            <button
-              key={item.id}
-              className={`nav-item ${page === item.id ? "selected" : ""}`}
-              aria-current={page === item.id ? "page" : undefined}
-              onClick={() => setPage(item.id)}
-            >
-              <span aria-hidden="true">{item.symbol}</span>
-              {pageName(item.id)}
-            </button>
-          ))}
-        </nav>
-        <div className="sidebar-note">
-          <span className="live-dot" />
-          <strong>{t("shell.localLab")}</strong>
-          <p>
-            {t("shell.controlledFailures")}
-            <br />
-            {t("shell.observableConsequences")}
-            <br />
-            {t("shell.evidenceFirst")}
-          </p>
-        </div>
-        <div className="sidebar-footer">
-          {t("shell.technologies")}
-          <span>{t("shell.evidenceGrounded")}</span>
-        </div>
-      </aside>
-
-      <main>
-        {!embedded && <header className="learning-topbar unified-topbar">
-          <button className="learning-brand" aria-label={locale === "ko" ? "IncidentLens 통합 홈" : "IncidentLens home"} onClick={() => setPage("landing")}><span className="brand-mark" aria-hidden="true">iL</span>IncidentLens</button>
-          <nav className="primary-navigation" aria-label={t("shell.navigation")}>
-            <button aria-current={page === "lab" ? "page" : undefined} onClick={() => setPage("lab")}>{locale === "ko" ? "자유실험실" : "Free lab"}</button>
-            <button aria-current={page === "learn" ? "page" : undefined} onClick={goLearningHome}>{locale === "ko" ? "백엔드 학습" : "Backend Learning"}</button>
-            <button aria-current={page === "technology" ? "page" : undefined} onClick={() => setPage("technology")}>{locale === "ko" ? "기술 사전" : "Technology guides"}</button>
-            <button aria-current={page === "settings" ? "page" : undefined} onClick={() => setPage("settings")}>{locale === "ko" ? "PC 실행 설정" : "PC setup"}</button>
-          </nav>
-          <div className="topbar-preferences"><ThemeSelector {...theme} /><select className="language-select" aria-label={t("language.label")} value={locale} onChange={e => setLocale(e.target.value === "en" ? "en" : "ko")}><option value="ko">한국어</option><option value="en">English</option></select></div>
-        </header>}
+    <ToolLayout page={page} items={pages.map(item=>({...item,label:pageName(item.id)}))} onNavigate={id=>setPage(id as Page)} embedded={embedded} sessionControl={selection} preferences={<><ThemeSelector {...theme}/><select className="language-select" aria-label={t("language.label")} value={locale} onChange={event=>setLocale(event.target.value==="en"?"en":"ko")}><option value="ko">한국어</option><option value="en">English</option></select></>}>
         <div className="page-content" id="main-content" tabIndex={-1}>
-          {!["landing", "learn", "technology", "settings"].includes(page) && <button className="text-button" aria-label={t("shell.refreshLabel")} onClick={() => { void refresh(); if (selectedId) void refreshDetail(selectedId); }}>{t("shell.refresh")}</button>}
+          {embedded && <div className="embedded-session-control">{selection}</div>}
+          {!["learn", "technology", "settings"].includes(page) && <button className="text-button" aria-label={t("shell.refreshLabel")} onClick={() => { void refresh(); if (selectedId) void refreshDetail(selectedId); }}>{t("shell.refresh")}</button>}
           {active && (
             <div className="fault-banner" role="status">
               <span className="warning-icon">!</span>
@@ -601,35 +516,15 @@ export default function App() {
             </div>
           )}
           {page === "settings" && <PcSettings />}
-          {page === "landing" && <Landing onSettings={() => setPage("settings")} onNavigate={next => { if (next === "learn") goLearningHome(); else setPage(next); }} />}
-          {learningPage && <LearningLab
-            area={page === "technology" ? "technology" : "path"}
-            onAreaChange={area => setPage(area === "technology" ? "technology" : "learn")}
-            onLanding={() => setPage("landing")}
-            view={learningView}
-            onViewChange={changeLearningView}
-            onContextChange={invalidateFeedback}
-            overview={overviewError ? null : overview}
-            connectionChecked={!loading}
-            sessions={sessions}
-            detail={detail}
-            selectedId={selectedId}
-            selectSession={setSelectedId}
-            busy={busy}
-            onCreateSession={(name, scenario) => { void createSession(name, scenario); }}
-            onFault={(id, enabled, parameter) => { void action(() => api.setFault(id, enabled, parameter), enabled ? "notice.faultEnabled" : "notice.faultDisabledRecovery"); }}
-            onCollect={(id, phase) => { void action(() => api.collect(id, phase), "notice.evidenceCollected"); }}
-            onAnalyze={(id) => { void action(() => api.analyze(id), "notice.rcaGenerated"); }}
-            onPrepare={(id, workload) => { void action(() => api.createExperiment(id, workload), "notice.experimentCreated"); }}
-            onNavigate={(next) => navigate(next, true, next === "lab" ? "lab" : "learning")}
-          />}
-          {!standalone && <div className="page-heading">
+          {page === "technology" && <LabGuides onLab={() => setPage("lab")} />}
+          {page === "learn" && <section className="unified-landing"><h1>{locale === "ko" ? "일반 백엔드 학습이 분리되었습니다" : "General backend learning has moved"}</h1><p>{locale === "ko" ? "Java·Python·JavaScript/TypeScript·C# 과정은 별도 비공개 backend-learning 저장소로 옮겼습니다. 초대된 계정만 접근할 수 있으며 공개 학습 서비스가 아닙니다. 기존 브라우저 기록은 삭제하지 않습니다. 주소가 달라지면 진도가 자동으로 이전되지는 않습니다." : "The Java, Python, JavaScript/TypeScript and C# courses moved to the private backend-learning repository. Invited accounts have access; it is not a public learning service. Existing browser records remain untouched. Progress does not automatically transfer between origins."}</p><button className="learn-primary" onClick={() => setPage("sessions")}>{locale === "ko" ? "실험 세션으로" : "Go to experiment sessions"}</button></section>}
+          {!["learn","technology","settings"].includes(page) && <div className="page-heading">
             <div>
               <span className="eyebrow">
-                INCIDENTLENS / {t(currentPage.label).toUpperCase()}
+                INCIDENTLENS / {pageName(page).toUpperCase()}
               </span>
               <h1>
-                {page === "overview"
+                {page === "sessions" ? pageName(page) : page === "overview"
                   ? t("overview.title")
                   : page === "lab"
                     ? t("lab.title")
@@ -638,7 +533,7 @@ export default function App() {
                       : t("experiment.title")}
               </h1>
               <p>
-                {page === "overview"
+                {page === "sessions" ? (locale === "ko" ? "저장된 세션을 선택해 장애 설정과 측정 결과를 확인하세요." : "Select a saved session to inspect fault settings and measured results.") : page === "overview"
                   ? t("overview.description")
                   : page === "lab"
                     ? t("lab.description")
@@ -656,6 +551,84 @@ export default function App() {
             </span>
           </div>}
 
+          {page === "sessions" && <section className="sessions-view">
+              <section className="panel">
+                <div className="panel-header">
+                  <div>
+                    <span className="eyebrow">
+                      {t("overview.investigations")}
+                    </span>
+                    <h2>{locale === "ko" ? "저장된 세션" : "Saved sessions"}</h2>
+                  </div>
+                  <span className="tag">{loading ? t("shell.connecting") : `${sessions.length} ${locale === "ko" ? "개 세션" : "sessions"}`}</span>
+                </div>
+                {sessions.length ? (
+                  <div
+                    className="table-scroll"
+                    role="region"
+                    aria-label={pageName("sessions")}
+                    tabIndex={0}
+                  >
+                    <table>
+                      <caption className="sr-only">
+                        {pageName("sessions")}
+                      </caption>
+                      <thead>
+                        <tr>
+                          <th scope="col">{t("common.session")}</th>
+                          <th scope="col">{t("common.scenario")}</th>
+                          <th scope="col">{t("common.status")}</th>
+                          <th scope="col">{t("common.created")}</th>
+                          <th scope="col">{t("common.action")}</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {sessions.map((session) => (
+                          <tr key={session.id} className={selectedId === session.id ? "selected-session-row" : ""}>
+                            <td>
+                              <strong
+                                className="session-name"
+                                id={`session-${session.id}`}
+                                title={session.name}
+                              >
+                                {session.name}
+                              </strong>
+                              <small className="mono">
+                                {session.id.slice(0, 8)}
+                              </small>
+                            </td>
+                            <td>{scenarioName(session.scenario)}</td>
+                            <td>
+                              <Status value={session.status} />
+                            </td>
+                            <td>{date(session.createdAt)}</td>
+                            <td className="session-row-actions">
+                              <button className="text-button" disabled={busy} aria-pressed={selectedId===session.id} aria-describedby={`session-${session.id}`} onClick={()=>setSelectedId(session.id)}>{selectedId===session.id ? (locale==="ko"?"선택됨":"Selected") : (locale==="ko"?"선택":"Select")}</button>
+                              <button
+                                className="text-button"
+                                disabled={busy}
+                                aria-describedby={`session-${session.id}`}
+                                onClick={() => {
+                                  setSelectedId(session.id);
+                                  setPage("evidence");
+                                }}
+                              >
+                                {t("common.inspect")}
+                              </button>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                ) : (
+                  <Empty title={t("overview.emptyTitle")}>
+                    {t("overview.emptyDescription")}
+                  </Empty>
+                )}
+              </section>
+            {detail && <section className="panel selected-session-summary"><div><span className="eyebrow">{locale==="ko"?"선택한 세션":"Selected session"}</span><h2>{detail.session.name}</h2><p className="mono">{detail.session.id}</p></div><dl><div><dt>{locale==="ko"?"수집된 근거":"Saved evidence"}</dt><dd>{detail.evidence.length}</dd></div><div><dt>{locale==="ko"?"저장된 비교":"Saved comparisons"}</dt><dd>{detail.experiments.length}</dd></div><div><dt>{locale==="ko"?"RCA 보고서":"RCA report"}</dt><dd>{detail.report ? (locale==="ko"?"저장됨":"Saved") : (locale==="ko"?"없음":"None")}</dd></div></dl></section>}
+          </section>}
           {page === "overview" && (
             <>
               <div className="overview-state">
@@ -800,100 +773,15 @@ export default function App() {
                       </div>
                     </li>
                   </ol>
-                  <button
-                    className="button primary"
-                    onClick={() => setPage("lab")}
-                  >
-                    {t("overview.openLab")}
-                    <span>→</span>
-                  </button>
+
                 </section>
               </div>
-              <section className="panel">
-                <div className="panel-header">
-                  <div>
-                    <span className="eyebrow">
-                      {t("overview.investigations")}
-                    </span>
-                    <h2>{t("overview.recentSessions")}</h2>
-                  </div>
-                  <button
-                    className="button ghost compact"
-                    onClick={() => setPage("lab")}
-                  >
-                    {t("overview.newSession")}
-                  </button>
-                </div>
-                {sessions.length ? (
-                  <div
-                    className="table-scroll"
-                    role="region"
-                    aria-label={t("overview.recentSessions")}
-                    tabIndex={0}
-                  >
-                    <table>
-                      <caption className="sr-only">
-                        {t("overview.recentSessions")}
-                      </caption>
-                      <thead>
-                        <tr>
-                          <th scope="col">{t("common.session")}</th>
-                          <th scope="col">{t("common.scenario")}</th>
-                          <th scope="col">{t("common.status")}</th>
-                          <th scope="col">{t("common.created")}</th>
-                          <th scope="col">{t("common.action")}</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {sessions.map((session) => (
-                          <tr key={session.id}>
-                            <td>
-                              <strong
-                                className="session-name"
-                                id={`session-${session.id}`}
-                                title={session.name}
-                              >
-                                {session.name}
-                              </strong>
-                              <small className="mono">
-                                {session.id.slice(0, 8)}
-                              </small>
-                            </td>
-                            <td>{scenarioName(session.scenario)}</td>
-                            <td>
-                              <Status value={session.status} />
-                            </td>
-                            <td>{date(session.createdAt)}</td>
-                            <td>
-                              <button
-                                className="text-button"
-                                disabled={busy}
-                                aria-describedby={`session-${session.id}`}
-                                onClick={() => {
-                                  setSelectedId(session.id);
-                                  setPage("evidence");
-                                }}
-                              >
-                                {t("common.inspect")}
-                              </button>
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                ) : (
-                  <Empty title={t("overview.emptyTitle")}>
-                    {t("overview.emptyDescription")}
-                  </Empty>
-                )}
-              </section>
+
             </>
           )}
 
-          {page === "lab" && <p className="lab-runtime-note">{locale === "ko" ? "실제 장애 실험 대상: Java / Spring Boot 로컬 서비스. 언어별 연습 프로젝트는 이 서버와 별개입니다." : "Actual fault target: local Java / Spring Boot services. Language practice projects are separate from this server."}</p>}
-          {page === "lab" && (
-            <>
+          {page === "lab" && <p className="lab-runtime-note">{locale === "ko" ? "실제 장애 실험 대상: IncidentLens 자체 Java / Spring Boot 데모 서비스. 사용자 프로젝트 연동은 구현되지 않았습니다." : "Actual fault target: IncidentLens’s own Java / Spring Boot demo services. User-project integration is not implemented."}</p>}
+          <section hidden={page !== "lab"} className="lab-view">
               <section className="lab-guide" aria-labelledby="lab-guide-title">
                 <h2 id="lab-guide-title">{t("lab.guideTitle")}</h2>
                 <ol>
@@ -925,7 +813,6 @@ export default function App() {
                     <span className="eyebrow">{t("lab.faultControl")}</span>
                     <h2>{t("lab.selectedIncident")}</h2>
                   </div>
-                  {selection}
                 </div>
                 {detail ? (
                   <FaultControl
@@ -959,13 +846,11 @@ export default function App() {
                   </Empty>
                 )}
               </section>
-            </>
-          )}
+          </section>
 
           {page === "evidence" && (
             <>
               <div className="toolbar">
-                {selection}
                 <div className="toolbar-actions">
                   <label className="phase-select">
                     {t("evidence.phase")}
@@ -1116,9 +1001,7 @@ export default function App() {
             </>
           )}
 
-          {page === "comparison" && (
-            <>
-              <div className="toolbar">{selection}</div>
+          <section hidden={page !== "comparison"} className="comparison-view">
               {detail ? (
                 <>
                   <ExperimentSetup
@@ -1167,15 +1050,13 @@ export default function App() {
                   </Empty>
                 </section>
               )}
-            </>
-          )}
+          </section>
           <footer className="page-footer">
             <span>IncidentLens</span>
             {t("shell.footer")}
           </footer>
         </div>
-      </main>
-    </div>
+    </ToolLayout>
   );
 }
 

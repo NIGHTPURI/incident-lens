@@ -51,7 +51,7 @@ describe("UI language preference", () => {
       "ko",
     );
     expect(document.documentElement).toHaveAttribute("lang", "ko");
-    expect(document.title).toBe("IncidentLens · 백엔드 학습실");
+    expect(document.title).toBe("IncidentLens · 장애·부하 테스트");
     expect(description.content).toBe(dictionaries.ko["shell.description"]);
   });
 
@@ -66,7 +66,7 @@ describe("UI language preference", () => {
       screen.getByRole("combobox", { name: "Select language" }),
     ).toHaveValue("en");
     expect(document.documentElement).toHaveAttribute("lang", "en");
-    expect(document.title).toBe("IncidentLens · Backend Learning");
+    expect(document.title).toBe("IncidentLens · Fault and Load Testing");
   });
 
   it("switches immediately and preserves the selection after remounting", () => {

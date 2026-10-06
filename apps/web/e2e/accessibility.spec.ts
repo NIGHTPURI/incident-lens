@@ -78,6 +78,14 @@ test("keyboard navigation has visible focus and service health remains readable 
   await expectVisibleFocus(skip);
 
   // Walk the actual tab order through the dark sidebar and the language control.
+  const mobile = await page.locator(".menu-toggle").isVisible();
+  if (mobile) {
+    await page.keyboard.press("Tab");
+    await expectVisibleFocus(page.locator(".menu-toggle"));
+    await page.keyboard.press("Enter");
+    await expect(page.getByRole("dialog")).toBeVisible();
+    await expect(page.locator(".menu-close")).toBeFocused();
+  }
   const reached = new Set<string>();
   for (let index = 0; index < 30; index += 1) {
     await page.keyboard.press("Tab");
@@ -91,11 +99,20 @@ test("keyboard navigation has visible focus and service health remains readable 
           : "other",
     );
     reached.add(kind);
-    if (kind === "language") break;
+    if (kind === "language" || (mobile && [...reached].filter(item => item.startsWith("nav:")).length === 7)) break;
   }
   expect([...reached].filter((item) => item.startsWith("nav:"))).toHaveLength(
-    8,
+    7,
   );
+  if (mobile) {
+    await page.keyboard.press("Escape");
+    await expectVisibleFocus(page.locator(".menu-toggle"));
+    for (let i = 0; i < 8; i++) {
+      await page.keyboard.press("Tab");
+      await expectVisibleFocus(page.locator(":focus"));
+      if (await page.locator(".language-select").evaluate(el => el === document.activeElement)) { reached.add("language"); break; }
+    }
+  }
   expect(reached.has("language")).toBe(true);
   await page.keyboard.press("ArrowDown");
   await page.keyboard.press("Enter");
@@ -128,9 +145,14 @@ test("keyboard navigation has visible focus and service health remains readable 
   const evidenceNavigation = page
     .locator(".sidebar nav")
     .getByRole("button", { name: "Evidence & RCA", exact: true });
+  if (mobile) await page.locator(".menu-toggle").click();
   await evidenceNavigation.focus();
   await evidenceNavigation.press("Enter");
-  await expect(evidenceNavigation).toHaveAttribute("aria-current", "page");
+  await expect(page.locator(".tool-sidebar .nav-item[aria-current=page]")).toContainText("Evidence & RCA");
+  if (mobile) {
+    await expect(page.locator(".menu-toggle")).toHaveAttribute("aria-expanded", "false");
+    await expect(page.locator(".menu-toggle")).toBeFocused();
+  }
   await expect(
     page.getByRole("heading", { name: "Follow the evidence." }),
   ).toBeVisible();

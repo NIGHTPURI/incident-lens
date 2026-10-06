@@ -6,11 +6,11 @@
 
 | 방식 | 실행 명령 | 서비스 / 제한 |
 |---|---|---|
-| 학습만 | `cd apps/web`, `npm ci`, `npm run dev -- --host 127.0.0.1 --port 5173 --mode learning` | Docker 불필요. 실험 API 프록시 차단. 네 언어 수업·기술 사전·브라우저 기록만 사용 |
+| 화면만 | `cd apps/web`, `npm ci`, `npm run dev -- --host 127.0.0.1 --port 5173 --mode ui` | Docker 불필요. 실험 API 프록시 차단. 실험 화면·관련 기술 설명만 사용; 일반 학습 과정은 별도 비공개 프로젝트 |
 | 기본 실험실 | `bash scripts/dev-up.sh` / `./scripts/dev-up.ps1` | 기본 7개. Java/Spring 장애 제어, 내장 계측, 무료 규칙 RCA. k6는 터미널에서 명시적으로 실행 |
 | 관측 포함 | `bash scripts/dev-up.sh --observability` / `./scripts/dev-up.ps1 -Observability` | 기본 7개 + Prometheus, Grafana, Loki, Tempo, Collector. 상세 지표·로그·분산 추적 |
 
-학습만 모드는 기존 컨테이너를 종료하지 않습니다. 관측 모드에서 기본 모드로 바꿔도 관측 컨테이너를 자동 삭제하지 않습니다. 필요하면 사용자가 `docker compose --profile observability stop prometheus grafana loki tempo otel-collector`로 다섯 개만 중지합니다. 설치·관리자/보안 설정 변경이나 Docker 재시작 전에 기존 서비스에 미치는 영향을 확인하세요.
+화면만 모드는 기존 컨테이너를 종료하지 않습니다. 관측 모드에서 기본 모드로 바꿔도 관측 컨테이너를 자동 삭제하지 않습니다. 필요하면 사용자가 `docker compose --profile observability stop prometheus grafana loki tempo otel-collector`로 다섯 개만 중지합니다. 설치·관리자/보안 설정 변경이나 Docker 재시작 전에 기존 서비스에 미치는 영향을 확인하세요.
 
 ## 먼저 확인할 명령
 

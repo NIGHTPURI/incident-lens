@@ -1,50 +1,19 @@
-# IncidentLens web client
+# IncidentLens 웹 클라이언트
 
-React, TypeScript and Vite provide four equivalent 15-stage language tracks, shared technology guides, PC execution guidance and the existing incident dashboard. Unified landing opens at `/`; `?view=learn` opens the language introduction/current lesson, `?view=technology` the dictionary, and `?view=settings` the browser-only PC setup plan; `?view=lab` opens the expert fault controls, and `?embed=1` hides the local navigation for a host site's menu. The new lesson code is in `src/learning/`: bilingual content and code references in `content.ts`, interactions in `LearningLab.tsx`, and layout tokens in `src/styles.css`.
+[한국어 기본 문서](../../README.md) · [English](../../README.en.md)
+
+React·TypeScript·Vite 기반 장애·부하 테스트 UI입니다. 잠금 파일의 도구 요구사항은 Node.js 22.12 이상의 22.x 또는 24 이상입니다. 기본 실험 세션 목록 `/` 또는 `?view=sessions`, 장애 설정 `?view=lab`, 근거·RCA `?view=evidence`, 전후 비교 `?view=comparison`, 기술 설명 `?view=technology`, PC 준비안 `?view=settings`를 제공합니다. 로고는 세션 목록으로 돌아가며 모든 탭에 공통 왼쪽 메뉴가 유지됩니다. 모바일은 접이식 메뉴를 제공합니다. 기존 홈·랜딩 주소는 세션 목록으로 연결하며 직접 URL·새로고침·history·embed를 지원합니다. 일반 학습 과정은 이 앱에 포함하지 않습니다. 이전 `?view=learn`은 비공개 저장소 분리 안내입니다.
 
 ```bash
 npm ci
-npm run dev
-```
-
-The development server runs at **http://localhost:5173** and proxies `/api` to the local `CONTROL_PLANE_PORT` from repository `.env` (default 8080). To use another **local** control-plane port, set `INCIDENTLENS_API_TARGET=http://127.0.0.1:18080` when starting Vite. The production Nginx container proxies `/api` to `control-plane:8080`.
-
-Lessons are readable without backend services. The screen checks local service connectivity before enabling experiment controls. It never starts a fault or k6 on navigation, reload, or language change. Creating a session, changing a fault, collecting evidence, generating RCA and preparing a comparison use the existing `api.ts` methods. The displayed Bash command starts k6 **in a terminal**; the existing PowerShell command remains available on the comparison page. The runner owns BEFORE (fault active), AFTER (fault disabled), recovery and cleanup. Missing measurements remain unavailable rather than zero.
-
-## Development checks
-
-```bash
-npm run typecheck
-npm test -- --run
+npm run dev -- --host 127.0.0.1 --port 5173
+npm test
 npm run build
-npx playwright install chromium
 npm run test:browser
 ```
 
-Vitest covers API and response errors, evidence/RCA presentation, stale read protection, language dictionaries, and complete bilingual lesson content with real source links. Playwright checks the learning path, flow and keyboard interaction, Korean/English persistence, desktop/laptop/mobile layout, folded mobile help, embedded mode, explicit controls for all four faults, and the original dashboard workflow. Browser API fixtures test UI behavior and are **not performance measurements**. Backend and local k6 validation are recorded in [the repository verification record](../../docs/LEARNING_VERIFICATION_2026-10-03.md).
+API 프록시는 저장소 루트 `.env`의 `CONTROL_PLANE_PORT`를 읽습니다. 실험 서버 없이 UI만 보려면 dev 명령에 `--mode ui`를 추가하세요. API는 503으로 차단하며 가짜 결과를 만들지 않습니다. Windows에서는 필요하면 `npm.cmd`를 사용합니다. Playwright Chromium 설치가 필요한 경우 도구 설치를 확인하세요.
 
-To capture the new screen from a locally running Vite app and backend, start Vite on port 4174:
+`src/lab-guides/`는 데모의 DB·캐시·메시징·관측·부하·RCA 설명입니다. 화면 이동과 PC 준비안 선택은 서버나 Docker를 변경하지 않습니다. 실험 동작은 사용자의 명시적 버튼/터미널 실행만 처리합니다. locale와 테마를 브라우저에 저장하며 기존 세션 선택 키·학습 기록을 지우지 않습니다. 새 실행 OS 키는 기존 학습 OS 키에서 한 번 복사하고 독립적으로 저장합니다.
 
-```bash
-INCIDENTLENS_API_TARGET=http://127.0.0.1:18080 npm run dev -- --host 127.0.0.1 --port 4174
-```
-
-In another terminal in `apps/web`, run `node scripts/capture-learning.mjs`.
-
-The script only reads the page and saves Korean/English desktop/mobile images plus `screenshots/learning-capture.json`. It creates no session or traffic. The self-hosted subset of Noto Sans KR under `public/fonts/` keeps Korean legible even when the browser system has no CJK font; its OFL license is included.
-
-The older completed-incident capture remains available with `node scripts/capture-live.mjs http://localhost:3000 <session-uuid>`. It reads an existing session and checks citations without creating traffic.
-
-## Translation and original evidence
-
-`src/i18n/translations.ts` contains typed Korean/English dashboard dictionaries. `src/learning/content.ts` and the local `copy` map in `LearningLab.tsx` cover lesson text, flow, questions, hints, controls and accessibility names. TypeScript checks dictionary key parity; the content test rejects blanks and broken source paths. `I18nProvider.tsx` stores the choice in `incidentlens.locale` and updates the document language and metadata. Lesson position, predictions and reflection use separate localStorage keys. Language switching does not reset form state or mutate an API.
-
-Raw evidence explanations, generated RCA text, server diagnostics, user session names and source code retain their original language. The lesson labels a report's original language as a script-based estimate; UI switching does not translate stored reports. Technical identifiers and machine phase values remain stable. **BEFORE means active fault; AFTER means disabled fault.** A completed comparison must be read with workload, units, cache state and missing-data limits in mind.
-
-The dashboard protects against late overview/detail responses with revision and selected-session checks. Action buttons disable during a pending operation; the underlying API uses bounded requests and reports errors. The optional LLM's 65,536-byte HTTP receive limit, cancellation and rule fallback live in the backend and are tested there.
-
-## Learning-only mode and current captures
-
-Use `npm run dev -- --host 127.0.0.1 --port 5173 --mode learning` to block experiment API connections while leaving existing Docker services running. PC setup choices never change .env or Docker. Changed host ports require recreation; container ports remain fixed. Remote proxy targets are rejected.
-
-[README.md](../../README.md) is the Korean default; [README.en.md](../../README.en.md) is English. Their fresh `pc-setup-{ko,en}-{landing,learning,lab}.png` screenshots have matched 1440×1000/light/Windows/Java settings. `screenshots/pc-setup-capture.json` records capture time and hashes. Captures show UI and the current local saved test session, not a new benchmark or invented measurements. Old capture files remain dated artifacts.
+현재 README 캡처는 `screenshots/navigation-{ko,en}-{sessions,lab,technology}.png`이며 같은 크기의 실제 최신 한영 화면입니다. 캡처 메타데이터와 [탐색 UI 검증](../../docs/NAVIGATION_VALIDATION.md)을 참고하세요. API fixture 브라우저 테스트는 실측 성능 결과가 아닙니다.

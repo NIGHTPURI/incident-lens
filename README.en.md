@@ -2,69 +2,83 @@
 
 [한국어](README.md) · [English](README.en.md)
 
-IncidentLens is a local backend learning lab. Follow a request and its data through real code, predict what a fault will change, run a scoped experiment, inspect evidence, remove the fault, and compare recovery. The lessons work without services; measurements require the local stack. There is no account or paid API requirement.
+A local tool for **backend fault reproduction, load testing, observability, before/after comparison and evidence-based root-cause analysis**. Apply a fault to a session, measure changes under a defined workload, disable it and compare recovery. Free rule-based RCA saves reports that separate observations, hypotheses and uncertainty.
 
-The unified home opens **Backend Learning, Free lab and Technology guides**. All four languages share introduction → Start learning → 15-stage lessons. Changing language returns to its introduction; Continue learning restores that language’s last stage. The logo opens unified home; a separate learning-home control opens the introduction. A sun/moon button toggles a persistent light/dark theme.
+Targets are currently **the Java / Spring Boot demo services in this repository**. Arbitrary user-project discovery, connection and automatic analysis are not implemented. User-project integration is a future plan, outside this split. Remote fault experiments are unsupported.
 
-![English unified landing](apps/web/screenshots/pc-setup-en-landing.png)
-![English learning introduction and shared contents](apps/web/screenshots/pc-setup-en-learning.png)
-![English free lab](apps/web/screenshots/pc-setup-en-lab.png)
+![English experiment session list](apps/web/screenshots/navigation-en-sessions.png)
+![English fault setup](apps/web/screenshots/navigation-en-lab.png)
+![English experiment technology guides](apps/web/screenshots/navigation-en-technology.png)
 
-These are new, actual English browser captures of this code (1440×1000, light theme, Windows/PowerShell, Java selected). The saved local test session is a real record; screenshots are not new workload measurements or performance comparisons. Older UI captures are not reused as new results.
+These are new English browser captures from this source. The Korean document uses separate Korean captures. All are 1440×1000, light theme. Screens illustrate the interface, not performance or production results. Saved sessions shown are actual local verification records; no example measurements were inserted.
 
-## Learning path
+## Experiment views and navigation
 
-1. **Request and response:** HTTP/API and Spring Boot accept, validate and answer requests. An order response does not mean the worker has finished.
-2. **Database and transactions:** MySQL persists orders. A transaction saves the order and outbox event together.
-3. **Cache:** Redis serves repeated catalog reads; learn hits, misses, fallback and explicit bypass.
-4. **Asynchronous work:** Kafka separates intake from the demo worker. Docker runs isolated components and k6 reproduces a specified workload.
-5. **Outbox and deduplication:** the relay publishes after the DB commit; Kafka acknowledgement can precede a failed outbox update, so duplicate delivery remains possible. The worker deduplicates the event effect. This is not an end-to-end exactly-once guarantee.
-6. **Diagnosis and recovery:** metrics show trends, logs record events, traces show spans, and RCA separates observations from hypotheses. The rule-based report is the default; a compatible LLM is optional.
+Opening `/` or `?view=sessions` shows saved **experiment sessions**. The logo returns to this view. There is no separate home, landing or start page. Legacy `?view=home`, `?view=landing`, `?view=start`, `/home`, `/landing` and `/start` open the session list.
 
-Each technology explains the problem, an analogy, actual behavior, why it was chosen, its alternatives, failure symptoms, and the relevant code. Select a node or arrow in either flow to inspect its role and failure boundary. The IncidentLens logo returns to unified home; the separate learning-home control opens its introduction; **Continue learning** restores the last lesson. Predictions, selected scenario and session, and the home/lesson view persist across refreshes. The right panel contains written hints, not an AI chat.
+The shared left menu lists Experiment sessions → Fault setup → Load & comparison → Observability → Evidence & RCA → Technology guides → PC setup. Every tool tab retains the same list and current location; mobile uses a collapsible drawer. The selected session remains available across tabs and reloads. Existing `?view=lab`, `?view=comparison`, `?view=overview`, `?view=evidence`, `?view=technology` and `?view=settings` links, history and direct embed entry remain supported.
 
-## System flow
+Navigation never applies/disables faults, starts load, generates reports or clears records. Active-fault warnings remain across tabs. Unsubmitted fault/load inputs survive tab changes, but are not persisted across reloads. Actual experiments require explicit buttons and terminal commands.
 
-```mermaid
-flowchart LR
-  Browser -->|GET /api/catalog| API[Spring demo-api]
-  API -->|hit / miss| Redis
-  API -->|miss / bypass| Catalog[(MySQL catalog)]
-  Browser -->|POST /api/orders + Idempotency-Key| API
-  API -->|one transaction| Orders[(MySQL order + outbox)]
-  Orders --> Relay[Outbox relay]
-  Relay --> Kafka
-  Kafka --> Worker[demo-worker]
-  Worker --> WorkerDB[(MySQL processing record)]
-  Web[React learning lab] --> Control[control-plane]
-  Control -->|scoped fault, evidence, experiment, RCA| API
-  Control --> Worker
+## Fault injection versus load testing
+
+**Fault injection** configures delay or bypass in a session's request/processing path. **Load testing** uses k6 to send actual requests for a chosen user count and duration. Setting a fault does not start load. Navigation never runs experiments.
+
+| Scenario | Actual demo behavior | Relevant evidence |
+|---|---|---|
+| `DOWNSTREAM_LATENCY` | Delay the simulated inventory check in the order path | HTTP latency/errors and related events |
+| `DATABASE_DEGRADATION` | Use an inefficient catalog DB-query path | DB operations/query p95 and HTTP latency |
+| `CACHE_DEGRADATION` | Bypass Redis catalog caching and request coalescing | Cache hit rate, DB operations and HTTP latency |
+| `KAFKA_SLOWDOWN` | Delay worker handling before its database transaction | Consumer lag, processing latency and backlog |
+
+The tool does not destroy network infrastructure or actual database/Kafka processes. Fault ownership and request headers restrict experiments to a session, only one fault can be active, and it expires after 15 minutes. The UI shows an active-fault warning and explicit disable/return actions. See [actual demo failure boundaries](docs/DEMO_BACKEND.md).
+
+## Run → measure → recover → inspect the report
+
+1. Check local service health. Select a saved record in the initial experiment session list, or create a session for a chosen scenario in Fault setup.
+2. Explicitly set the fault and send requests. Collect evidence for the chosen BEFORE/AFTER window. Use the terminal runner below for an automatic comparison.
+3. The runner verifies a matched local target and idle telemetry, applies the fault, runs BEFORE load and saves evidence/rule-based RCA. It disables the fault and repeats the same load in AFTER. BEFORE means the **fault-active interval**, not a healthy baseline.
+4. Inspect saved evidence/RCA and comparisons. Reload to fetch the same session again. Failed runs are not presented as completed benchmarks.
+
+```bash
+VUS=2 DURATION_SECONDS=10 bash scripts/demo-compare.sh --scenario CACHE_DEGRADATION
 ```
 
-The worker demonstrates follow-up processing; it does **not** charge a card or arrange shipping. A single local MySQL instance hosts separate service databases. Faults are scoped to an incident ID, one is active at a time, and they expire after 15 minutes. [Architecture and failure boundaries](ARCHITECTURE.md) · [API reference](docs/API.md).
+```powershell
+.\scripts\demo-compare.ps1 -Scenario CACHE_DEGRADATION -Vus 2 -DurationSeconds 10
+```
 
+Bash requires Docker, `curl` and `jq`. k6 runs in a one-off Compose container. Summary JSON stays in ignored local `artifacts/`; sessions, evidence and reports persist in the database. On failure/interruption the runner rechecks the original local instance and attempts cleanup. If cleanup fails, inspect that session manually. Stop a runner with Ctrl+C and verify no active fault remains.
+
+## Local execution
+
+Use Git, a local Docker Engine/Desktop and Docker Compose. `.env.example` contains local demo defaults. Rule-based RCA requires no account or paid LLM key. Preserve an existing `.env`. Check existing-container impact before installing tools, changing administrator/security settings or restarting Docker.
+
+From the repository root:
+
+```bash
+bash scripts/dev-up.sh
+bash scripts/dev-status.sh
+```
+
+```powershell
+.\scripts\dev-up.ps1
+.\scripts\dev-status.ps1
+```
+
+Default web: **http://127.0.0.1:3000**; API documentation: **http://127.0.0.1:8080/swagger-ui/index.html**. If ports changed, use the actual addresses printed by `dev-status`. Core has seven services: web, control-plane, demo-api, demo-worker, MySQL, Redis and Kafka. `bash scripts/dev-up.sh --observability` or `.\scripts\dev-up.ps1 -Observability` adds Prometheus, Grafana, Loki, Tempo and OpenTelemetry Collector. Initial downloads/builds take additional time.
 
 ## PC-specific execution setup
 
-The [PC setup screen](http://localhost:3000/?view=settings) saves a browser-only plan. Choosing options does not modify Docker, `.env` or workload. Apply commands yourself. Resolve conflicts through host-port settings rather than stopping unrelated processes.
+`?view=settings` stores only a **browser plan** for shell, ports and workload. It does not apply Docker or `.env` changes. The browser cannot inspect Docker/WSL readiness, reserved ports, RAM or disk; use actual terminal output. See [readiness commands, resources and application steps](docs/PC_SETUP.md).
 
-| Mode | Required components | Limits |
-|---|---|---|
-| Learning only | Node.js 22+, web development server | Lessons, guides and browser notes; experiment API blocked, no faults, evidence, RCA or k6 comparison |
-| Core lab | Docker/Compose; web, control-plane, demo-api, demo-worker, MySQL, Redis, Kafka | Scoped faults, in-process telemetry, free rule RCA; terminal k6 comparison; no searchable logs, traces or Grafana |
-| With observability | Core seven plus Prometheus, Grafana, Loki, Tempo, Collector | Extra dashboards, logs and traces; additional memory, disk and startup time |
+| Mode | Capabilities and limits |
+|---|---|
+| UI only | Node.js 22.x starting at 22.12, or 24+, and a web development server. Read the session list/interface/guides; no API connection, faults, evidence, RCA or comparison |
+| Core lab | Seven services: demo faults, in-process telemetry, rule RCA and terminal k6 comparison |
+| With observability | Core plus five tools for metrics, logs and traces; extra resources/preparation |
 
-Run learning only without stopping existing Docker services:
-
-```bash
-cd apps/web
-npm ci
-npm run dev -- --host 127.0.0.1 --port 5173 --mode learning
-```
-
-Open `http://127.0.0.1:5173`. This mode blocks the experiment API proxy. Confirm missing-tool installation or administrator/security changes before applying them; on Windows, check Docker Desktop integration for the current WSL distribution.
-
-Copy `.env.example` only if `.env` does not already exist. All host bindings remain on `127.0.0.1`:
+UI-only commands: `cd apps/web`, `npm ci`, `npm run dev -- --host 127.0.0.1 --port 5173 --mode ui`. Legacy `--mode learning` remains an API-blocking compatibility alias; it does not provide the removed courses.
 
 | Variable | Default host port | Fixed container port |
 |---|---:|---:|
@@ -75,69 +89,36 @@ Copy `.env.example` only if `.env` does not already exist. All host bindings rem
 | `PROMETHEUS_PORT` | 9090 | 9090 |
 | `GRAFANA_PORT` | 3001 | 3000 |
 
-For example, `CONTROL_PLANE_PORT=18080` leaves internal `control-plane:8080` and `demo-api:8081` addresses unchanged. `bash scripts/dev-status.sh` or `./scripts/dev-status.ps1` uses actual bindings for status and URLs; Vite reads `CONTROL_PLANE_PORT` from repository `.env`. Apply changed ports/environment with `dev-up` to recreate affected containers. `docker compose restart` alone does not reread `.env`. Reducing profiles does not automatically delete existing observability containers.
+Bindings use `127.0.0.1`. Choose free host ports in `.env` instead of killing existing processes. Internal service ports stay unchanged. Vite reads the same root `.env` `CONTROL_PLANE_PORT`. Changed environment, ports or profiles require `dev-up` to recreate affected containers; `restart` alone does not read new `.env` values.
 
-Default load is **2 VUs for 10 seconds per phase**; allowed values are 1–50 VUs and 5–300 seconds. Begin small and inspect errors, backlog and `docker stats`. Allowed maxima do not guarantee PC capacity. [PC setup guidance](docs/PC_SETUP.md) lists fixed memory caps and resource commands. Roughly 6/8 GB available to Docker are planning estimates, not measured minimum specifications or verified low-spec operation.
+Fixed memory limits sum to 3.75 GiB core or 6.25 GiB with observability. These are neither measured use nor minimum requirements. Allow extra room for the OS, Docker, builds and other containers. No verified low-spec success/minimum RAM is claimed. Default load is 2 VUs for 10 seconds per phase; supported bounds are 1–50 VUs and 5–300 seconds, not a capacity guarantee. Start small and inspect `docker stats`, errors and backlog.
 
-The runner verifies a local Docker context, actual bindings, responding instance and matching internal fault/k6 targets before creating sessions, setting faults or starting load. Changing only `CONTROL_URL` cannot enable remote experiments. New comparisons store configuration, load, controlled-run windows and measured elapsed seconds. Missing historical values are never backfilled. Different PCs are not equivalent benchmark conditions.
+## Safe stopping and preserved data
 
-## Run locally
+Disable active faults and finish comparisons, then run `docker compose --profile observability stop` from the root. Start again with `dev-up`. With unchanged configuration, `docker compose --profile observability start` can restart stopped containers.
 
-Requires Docker Engine/Desktop with Compose. From the repository root:
+`bash scripts/dev-down.sh` or `.\scripts\dev-down.ps1` removes containers/networks while preserving named volumes. Data resets, volume pruning and system pruning are unnecessary. Switching to core does not automatically delete observability containers. Keep credentials, local diagnostics and experiment records out of Git.
 
-```bash
-bash scripts/dev-up.sh
-```
+## Implemented scope and limits
 
-Open **http://localhost:3000** (or `WEB_PORT` from your local `.env`). Read a lesson, write a prediction, select one of the four faults, and create a session. The site shows service connectivity before enabling controls. `bash scripts/dev-down.sh` preserves named volumes. The first build downloads images and dependencies. For traces, searchable logs and Grafana, start with `bash scripts/dev-up.sh --observability`; these tools are optional for the core lesson.
+- Demo sessions/faults/evidence/comparisons, persisted rule-based RCA and related technology explanations are implemented. RCA is a hypothesis, not a confirmed cause or calibrated probability. Missing evidence remains unavailable.
+- Core telemetry differs from optional observability tools. Rule RCA is default; an external compatible LLM is optional only when explicitly configured. No paid LLM calls were used in this verification.
+- The runner checks Compose bindings, the control-plane instance and matched internal fault/k6 targets. Changing only `CONTROL_URL` or using remote Docker causes rejection before execution.
+- New experiments record configuration, workload and measurement windows. A configuration hash does not equalize hardware, traffic or cache warmth. Different PCs are not equivalent benchmark conditions.
+- User-project integration is a **future plan**. Discovery, automatic analysis and remote fault injection are absent. Public deployment, production claims and low-spec performance validation are outside this work.
 
-For frontend development while the backend stack is running:
+## Learning extraction
 
-```bash
-cd apps/web
-npm ci
-npm run dev
-```
+General Java/Python/JavaScript·TypeScript/C# courses, progress, quizzes and examples moved to the **private** `NIGHTPURI/backend-learning` repository. Access requires an invited account; it is not a publicly available learning service. Database, cache, messaging, observability, load and RCA explanations needed to interpret experiments remain here.
 
-Open **http://localhost:5173**. `INCIDENTLENS_API_TARGET=http://127.0.0.1:18080 npm run dev` can point Vite's `/api` proxy at a different local control-plane port. With no backend, the lessons still render and the experiment controls explain that results are unavailable. `?view=lab` opens the existing expert incident lab directly. `?embed=1` hides IncidentLens navigation so a host menu can frame the module.
+Legacy `?view=learn` displays a migration notice without deleting browser records. Existing experiment direct links and session selections remain supported. Changed origins do not automatically transfer learning progress. [README.ko.md](README.ko.md) remains a compatibility entry point.
 
-## Four controlled faults
+## Verification and code
 
-| Fault | Scoped change | Evidence to check |
-|---|---|---|
-| Downstream delay | Delays a simulated inventory lookup during catalog reads; above 1,500 ms it times out | Request p95, timeout event, inventory span |
-| Database degradation | Uses a less efficient catalog query **and bypasses cache** | DB query duration, logical DB loads, request p95 |
-| Worker slowdown | Delays each order event before the worker transaction | Kafka consumer lag, processing events, retries |
-| Cache bypass | Skips Redis reads and request coalescing for catalog lists | Cache hit rate, DB loads, request p95 |
+The original split results remain in [split verification](docs/SPLIT_VALIDATION.md). For this navigation change, 44 web unit tests, 57 browser tests, 85 backend unit tests and 19 integration tests passed. A live cache fault/load run verified saved evidence/RCA, recovery and reload. The original MySQL connection failures, datasource fix, reruns and new screenshots are recorded separately in [navigation verification](docs/NAVIGATION_VALIDATION.md). Previous integrated-project test counts are not relabelled as current results. Browser API fixtures are not performance measurements. Full observability startup and low-spec testing are separate from this core-stack verification.
 
-The browser can create a session, enable/disable its fault, collect evidence, request RCA and prepare an experiment. **k6 runs in a terminal, never in the browser.** For a complete measured BEFORE/AFTER cycle, use the displayed command or, for example:
+Frontend: in `apps/web`, run `npm ci`, `npm test`, `npm run build`, `npm run test:browser`. Java 21 backend: `./gradlew build integrationTest --no-daemon` from root (integration requires Docker). [Architecture](ARCHITECTURE.md) · [API](docs/API.md) · [Operations](docs/OPERATIONS.md) · [Security](docs/SECURITY.md) · [Web development](apps/web/README.md).
 
-```bash
-SCENARIO=CACHE_DEGRADATION VUS=2 DURATION_SECONDS=10 bash scripts/demo-compare.sh
-```
+## Request and control boundaries
 
-The Bash runner requires `curl`, `jq` and Docker. It checks service health and an idle backlog, runs BEFORE with the fault active, generates RCA, disables the fault, then runs the same workload for AFTER. It has a cleanup trap. A PowerShell equivalent is `./scripts/demo-compare.ps1 -Scenario CACHE_DEGRADATION -Vus 2 -DurationSeconds 10`. Check the saved experiment in the **Experiments** view and the report in **Evidence & RCA** after refreshing. Never treat absent telemetry as zero or as proof of health. Compare workload settings, cache warmth, backlog and other traffic before attributing a change to one cause; the DB fault also bypasses cache.
-
-## Language and evidence
-
-Use **한국어 / English** in the header. Both languages cover lessons, diagrams, questions, hints, controls, errors and the existing dashboard. Switching languages keeps the lesson, inputs and selected experiment. Raw logs, source code, and previously generated RCA reports keep their original language; changing the UI does not translate them. Saved evidence carries its source, window, value and unit when available. RCA reports separate the observed evidence IDs, suspected cause, impact, actions and uncertainties. The optional compatible LLM response is limited to **65,536 bytes while receiving**; oversized or timed-out requests are cancelled and the rule-based report remains available. [HTTP boundary verification](docs/RCA_HTTP_VERIFICATION_2026-10-03.md).
-
-## Verification and limits
-
-The redesigned UI is covered by TypeScript/build, Vitest, and Playwright checks for lesson navigation, language persistence, desktop/mobile layout, keyboard controls, disconnected state and explicit fault actions. Java tests cover request, persistence and RCA boundaries. Current run details and limits: [final UI and PC setup verification](docs/VALIDATION_20261006_UI.md). Earlier measured experiments remain dated evidence: [2026-10-01 publication audit](docs/PUBLICATION_AUDIT_2026-10-01.md) and [2026-10-03 RCA live verification](docs/RCA_LIVE_VERIFICATION_2026-10-03.md). Screenshots are local UI captures; browser fixture tests are not benchmark data.
-
-The lab is a teaching service, not a production load or reliability claim. Shared lag gauges may include unrelated traffic; sampling windows and cache temperature can change comparisons. The optional Grafana/Tempo/Loki stack adds detail but does not replace checking the core evidence. The demo worker has no real payment or shipping integration.
-
-## Project map
-
-`apps/demo-api` contains catalog, orders and outbox; `apps/demo-worker` consumes events; `apps/control-plane` owns sessions, faults, evidence, comparisons and RCA; `apps/web` is the learning UI and expert dashboard. `loadtest/` holds k6 workloads, `scripts/` local runners, `infra/` container configuration, and `docs/` design and verification records. See [web development notes](apps/web/README.md) and [operations](docs/OPERATIONS.md) if present.
-
-## Backend Learning completion
-
-The left curriculum (mobile drawer) covers Java, Python, JavaScript/TypeScript and C#. Each path connects language basics, HTTP/API, durable transactions, identity/access, tests, operations, caching, duplicate handling, async work and recovery. Runnable intro/advanced projects and fixed dependencies are in [language paths](examples/language-paths/README.md); compiled TypeScript runs from `advanced/javascript/server.mts`. [Outcome map](docs/BACKEND_LANGUAGE_PARITY.md) and [actual validation](docs/VALIDATION_20261005.md) distinguish authored content, execution and remaining limits.
-
-Learning progress, language/OS/theme and self-review persist independently. Learning and free-lab session selections have separate storage keys; route history works through back/refresh. Navigation does not enable/disable faults or regenerate reports. Actual active faults retain their global warning. RCA selects BEFORE rows before limiting to 500, while general evidence still displays AFTER; report citations are restored within their session.
-
-Local preview: `cd apps/web && npm ci && npm run dev -- --host 127.0.0.1 --port 5173`, then open `http://127.0.0.1:5173`. Choose UI language, OS and programming language; start the first lesson, record practice evidence, visit the technology guide, then explicitly enter the free lab when ready. Its backend proxy defaults to `http://127.0.0.1:8080`; reading lessons works while the lab is offline. Existing local Docker data need not be changed to read or test lessons.
-
-Prior-PC deployment and database recovery records are dated evidence, not current-PC ports or history: [deployment record](docs/MAIN_LOCAL_DEPLOYMENT_20261006.md), [recovery record](docs/LOCAL_BACKEND_RECOVERY_20261006.md).
+`apps/control-plane` owns sessions, faults, evidence, reports and comparisons. `apps/demo-api` handles catalog/orders and a transactional outbox; `apps/demo-worker` processes published events. `apps/web` is the experiment interface, `loadtest/` holds k6 workloads, `scripts/` local runners/target verification, and `infra/` container/observability configuration. Control-plane requests are separate from demo workload traffic. The worker simulates follow-up work, not payments/shipping; Kafka acceptance does not prove worker completion.

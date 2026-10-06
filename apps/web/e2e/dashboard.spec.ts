@@ -1,3 +1,4 @@
+import { navigate } from './navigation';
 import { expect, test } from "@playwright/test";
 
 test.beforeEach(async ({ page }) => {
@@ -107,11 +108,11 @@ test("a developer can create a fault session, inspect evidence, and prepare a re
     await route.fulfill({ json: data });
   });
 
-  await page.goto("/?view=overview");
+  await page.goto("/?view=sessions");
   await expect(
     page.getByText("Your first investigation starts here"),
   ).toBeVisible();
-  await page.getByRole("button", { name: "Open incident lab" }).click();
+  await navigate(page, "Fault setup");
   await page.getByLabel("Session name").fill(session.name);
   await page.getByRole("button", { name: "Create session" }).click();
   await page.getByRole("button", { name: "Enable fault" }).click();
@@ -119,7 +120,7 @@ test("a developer can create a fault session, inspect evidence, and prepare a re
     page.getByText("Fault injection is active · Downstream latency"),
   ).toBeVisible();
 
-  await page.getByRole("button", { name: "Evidence & RCA" }).click();
+  await navigate(page, "Evidence & RCA");
   await page.getByRole("button", { name: "Collect evidence" }).click();
   await expect(
     page.getByText(
@@ -137,7 +138,7 @@ test("a developer can create a fault session, inspect evidence, and prepare a re
     page.getByText("Fault injection is active · Downstream latency"),
   ).not.toBeVisible();
 
-  await page.getByRole("button", { name: "Experiments" }).click();
+  await navigate(page, "Load & comparison");
   await page.getByRole("button", { name: "Create experiment" }).click();
   await expect(
     page.getByText(
@@ -156,8 +157,8 @@ test("a developer can create a fault session, inspect evidence, and prepare a re
     page.viewportSize()!.width,
   );
   expect(noHorizontalOverflow).toBe(true);
-  await page.getByRole("button", { name: "Overview", exact: true }).click();
-  await expect(page.getByRole("button", { name: "Inspect" })).toBeVisible();
+  await navigate(page, "Experiment sessions");
+  await expect(page.getByRole("button", { name: "Inspect →" })).toBeVisible();
   expect(
     await page.evaluate(
       (width) => document.documentElement.scrollWidth <= width,
@@ -173,9 +174,6 @@ test("the actual empty dashboard remains usable when the control plane is unavai
   await page.goto("/?view=overview");
   await expect(
     page.getByRole("heading", { name: "Understand what changed." }),
-  ).toBeVisible();
-  await expect(
-    page.getByText("Your first investigation starts here"),
   ).toBeVisible();
   await expect(page.getByText("Waiting for telemetry")).toBeVisible();
   await expect(page.getByRole("alert")).toBeVisible();

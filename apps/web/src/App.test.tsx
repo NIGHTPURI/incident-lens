@@ -39,13 +39,12 @@ describe("incident dashboard", () => {
     vi.spyOn(api, "overview").mockResolvedValue(emptyOverview);
     vi.spyOn(api, "sessions").mockResolvedValue([]);
     render(<App />);
-    fireEvent.click(screen.getByRole("button", { name: "Overview" }));
+    fireEvent.click(screen.getByRole("button", { name: "Observability" }));
     await screen.findByText("demo-api");
     expect(screen.getAllByText("Unavailable")).toHaveLength(5);
-    expect(
-      screen.getByText("Your first investigation starts here"),
-    ).toBeInTheDocument();
     expect(screen.getByText("up")).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "Experiment sessions" }));
+    expect(screen.getByRole("heading", { name: "Your first investigation starts here" })).toBeInTheDocument();
   });
 
   it("keeps a prominent active-fault warning and sends the disable action to its owning session", async () => {
@@ -77,7 +76,7 @@ describe("incident dashboard", () => {
     );
     vi.spyOn(api, "sessions").mockResolvedValue([]);
     render(<App />);
-    fireEvent.click(screen.getByRole("button", { name: "Overview" }));
+    fireEvent.click(screen.getByRole("button", { name: "Observability" }));
     expect(await screen.findByRole("alert")).toHaveTextContent(
       "Unable to reach the control plane.",
     );
@@ -91,7 +90,7 @@ describe("incident dashboard", () => {
     const overview = vi.spyOn(api, "overview").mockResolvedValue(emptyOverview);
     const sessions = vi.spyOn(api, "sessions").mockResolvedValue([]);
     render(<App />);
-    fireEvent.click(screen.getByRole("button", { name: "개요" }));
+    fireEvent.click(screen.getByRole("button", { name: "관측" }));
     await screen.findByText("demo-api");
     expect(
       screen.getByRole("heading", {
@@ -99,7 +98,7 @@ describe("incident dashboard", () => {
       }),
     ).toBeInTheDocument();
     expect(screen.getAllByText("확인 불가")).toHaveLength(5);
-    fireEvent.click(screen.getAllByRole("button", { name: "자유실험실" })[0]);
+    fireEvent.click(screen.getAllByRole("button", { name: "장애 설정" })[0]);
     fireEvent.change(screen.getByLabelText("세션 이름"), {
       target: { value: "내 실험 이름" },
     });
@@ -135,7 +134,7 @@ describe("incident dashboard", () => {
     );
     vi.spyOn(api, "sessions").mockResolvedValue([]);
     render(<App />);
-    fireEvent.click(screen.getByRole("button", { name: "개요" }));
+    fireEvent.click(screen.getByRole("button", { name: "관측" }));
     expect(await screen.findByRole("alert")).toHaveTextContent(
       `서버 응답: ${detail}`,
     );
@@ -154,7 +153,7 @@ describe("incident dashboard", () => {
     );
     vi.spyOn(api, "sessions").mockResolvedValue([]);
     render(<App />);
-    fireEvent.click(screen.getByRole("button", { name: "개요" }));
+    fireEvent.click(screen.getByRole("button", { name: "관측" }));
     expect(await screen.findByRole("alert")).toHaveTextContent(
       "요청에 실패했습니다 (502).",
     );

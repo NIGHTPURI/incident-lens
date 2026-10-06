@@ -1,0 +1,24 @@
+import {expect,test} from '@playwright/test';
+const names=['실험 세션','장애 설정','부하 · 전후 비교','관측','근거 · RCA','기술 설명','PC 실행 설정'];
+const sessions=['one','two'].map(id=>({id,name:`Saved browser fixture ${id}`,scenario:'DOWNSTREAM_LATENCY',status:'CREATED',createdAt:'2026-10-06T00:00:00Z',updatedAt:'2026-10-06T00:00:00Z'}));
+async function setup(page:import('@playwright/test').Page){
+ const writes:string[]=[];await page.route('**/api/**',r=>{const p=new URL(r.request().url()).pathname;if(r.request().method()!=='GET')writes.push(r.request().method()+' '+p);return r.fulfill({json:p==='/api/overview'?{services:[{name:'redis',status:'UP'}],metrics:{requestCount:0,errorCount:0,p95Ms:null,kafkaLag:0,cacheHitRate:null},activeFault:{sessionId:'two',scenario:'DOWNSTREAM_LATENCY',enabled:true,parameter:100,expiresAt:'2099-01-01T00:00:00Z'}}:p==='/api/sessions'?sessions:p==='/api/runtime'?{profile:'core',hostPorts:{web:19300}}:{session:sessions.find(x=>p.endsWith(x.id)),evidence:[],activations:[],experiments:[],report:null}})});
+ await page.addInitScript(()=>{if(!localStorage.getItem('seeded')){localStorage.setItem('seeded','1');localStorage.setItem('incidentlens.lab.session','two');localStorage.setItem('incidentlens.theme.v1','light');}});return writes;
+}
+async function navigate(page:import('@playwright/test').Page,name:string){if(await page.locator('.menu-toggle').isVisible())await page.getByRole('button',{name:'탐색 메뉴 열기'}).click();await page.locator('.tool-sidebar').getByRole('button',{name,exact:true}).click();}
+test('sessions first, same navigation on every tab, saved selection and active fault survive reload without writes',async({page})=>{
+ const writes=await setup(page);await page.goto('/');await expect(page.getByRole('heading',{name:'실험 세션',level:1})).toBeVisible();await expect(page.getByLabel('장애 세션')).toHaveValue('two');
+ for(const name of names){await navigate(page,name);await expect(page.locator('.tool-current-location strong')).toHaveText(name);expect(await page.locator('.tool-sidebar .nav-item').allTextContents()).toEqual(names.map((n,i)=>['≡','⌁','⇄','◫','◇','▤','⚙'][i]+n));await expect(page.locator('.fault-banner')).toBeVisible();await expect(page.getByLabel('장애 세션')).toHaveValue('two');await expect(page.locator('.tool-sidebar .nav-item[aria-current="page"]')).toHaveText(new RegExp(name.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')));expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);}
+ await page.reload();await expect(page.getByLabel('장애 세션')).toHaveValue('two');expect(writes).toEqual([]);await expect(page.locator('.primary-navigation')).toHaveCount(0);await expect(page.locator('.unified-landing')).toHaveCount(0);
+});
+test('old entry URLs, logo, history and direct links route correctly',async({page})=>{
+ const writes=await setup(page);for(const url of ['/?view=landing','/?view=home','/landing','/home']){await page.goto(url);await expect(page).toHaveURL(/view=sessions/);await expect(page.getByRole('heading',{name:'실험 세션',level:1})).toBeVisible();}
+ await navigate(page,'근거 · RCA');await page.reload();await expect(page.locator('.tool-current-location strong')).toHaveText('근거 · RCA');await navigate(page,'기술 설명');await page.goBack();await expect(page.locator('.tool-current-location strong')).toHaveText('근거 · RCA');
+ if(await page.locator('.menu-toggle').isVisible())await page.locator('.tool-mobile-brand').click();else await page.locator('.tool-sidebar .brand').click();await expect(page.getByRole('heading',{name:'실험 세션',level:1})).toBeVisible();expect(writes).toEqual([]);
+});
+test('fault and workload drafts survive navigation; mobile drawer closes with Escape and restores focus',async({page})=>{
+ const writes=await setup(page);await page.goto('/?view=lab');await page.getByLabel('세션 이름').fill('Unsubmitted session');await navigate(page,'부하 · 전후 비교');
+ const vus=page.getByLabel('가상 사용자 수');await vus.fill('3');await navigate(page,'기술 설명');await navigate(page,'장애 설정');await expect(page.getByLabel('세션 이름')).toHaveValue('Unsubmitted session');await navigate(page,'부하 · 전후 비교');await expect(vus).toHaveValue('3');
+ if(await page.locator('.menu-toggle').isVisible()){const toggle=page.getByRole('button',{name:'탐색 메뉴 열기'});await toggle.click();await expect(page.getByRole('dialog')).toBeVisible();await page.keyboard.press('Escape');await expect(toggle).toBeFocused();await expect(toggle).toHaveAttribute('aria-expanded','false');}
+ await page.locator('.theme-toggle').click();await expect(page.locator('html')).toHaveAttribute('data-theme','dark');await navigate(page,'실험 세션');await page.reload();await expect(page.locator('html')).toHaveAttribute('data-theme','dark');await page.locator('.language-select').selectOption('en');await expect(page.locator('.tool-current-location strong')).toHaveText('Experiment sessions');expect(writes).toEqual([]);
+});
