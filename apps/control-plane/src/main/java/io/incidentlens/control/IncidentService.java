@@ -75,12 +75,18 @@ class IncidentService {
     }
     public Models.Experiment experiment(String id) { return view(experiments.findById(id).orElseThrow(ApiFailure::missing)); }
     @Transactional
-    public Map<String, Object> start(String id, Models.Phase phase) {
+    public Map<String, Object> start(String id, Models.Phase phase) { return start(id, phase, null); }
+    @Transactional
+    public Map<String, Object> start(String id, Models.Phase phase, Models.ExecutionConfiguration configuration) {
         var lock = acquireLab();
         if (lock.running()) throw ApiFailure.conflict("A workload run already holds the lab; complete it or disable its fault to abort");
         var experiment = experiments.findById(id).orElseThrow(ApiFailure::missing);
         String expected = phase == Models.Phase.BEFORE ? "CREATED" : "BEFORE_COMPLETE";
         if (!expected.equals(experiment.status)) throw ApiFailure.conflict("Run sequence must be CREATED → BEFORE → AFTER; completed runs cannot be overwritten");
+        if (phase == Models.Phase.AFTER) {
+            Models.ExecutionConfiguration previous = experiment.configurationJson == null ? null : json.read(experiment.configurationJson, Models.ExecutionConfiguration.class);
+            if (!Objects.equals(previous, configuration)) throw ApiFailure.conflict("Execution configuration changed between BEFORE and AFTER. Start a fresh experiment.");
+        }
         validateFault(experiment, phase);
         for (var snapshot : telemetry.snapshots(experiment.sessionId, phase.name())) {
             if (!snapshot.available()) throw new ApiFailure(org.springframework.http.HttpStatus.SERVICE_UNAVAILABLE,
@@ -92,6 +98,10 @@ class IncidentService {
             }
         }
         experiment.status = phase.name() + "_RUNNING"; experiment.runStartedAt = Instant.now();
+        if (phase == Models.Phase.BEFORE) {
+            experiment.configurationJson = configuration == null ? null : json.write(configuration);
+            experiment.beforeStartedAt = experiment.runStartedAt;
+        } else experiment.afterStartedAt = experiment.runStartedAt;
         lock.experimentId = id; lock.phase = phase.name(); lock.leaseUntil = Instant.now().plusSeconds(experiment.durationSeconds + 180);
         return Map.of("phase", phase, "startedAt", experiment.runStartedAt);
     }
@@ -117,8 +127,8 @@ class IncidentService {
                 default -> { }
             }
         }
-        if (phase == Models.Phase.BEFORE) { experiment.beforeJson = json.write(metrics); experiment.status = "BEFORE_COMPLETE"; }
-        else { experiment.afterJson = json.write(metrics); experiment.status = "COMPLETE"; }
+        if (phase == Models.Phase.BEFORE) { experiment.beforeJson = json.write(metrics); experiment.beforeEndedAt = Instant.now(); experiment.status = "BEFORE_COMPLETE"; }
+        else { experiment.afterJson = json.write(metrics); experiment.afterEndedAt = Instant.now(); experiment.status = "COMPLETE"; }
         lock.clear();
         return view(experiment);
     }
@@ -160,7 +170,10 @@ class IncidentService {
     }
     Models.Experiment view(ExperimentEntity entity) {
         return new Models.Experiment(entity.id, entity.sessionId, entity.status, new Models.Workload(entity.vus, entity.durationSeconds),
-            json.metrics(entity.beforeJson), json.metrics(entity.afterJson), entity.createdAt);
+            json.metrics(entity.beforeJson), json.metrics(entity.afterJson), entity.createdAt,
+            new Models.ExecutionRecord(entity.configurationJson == null ? null : json.read(entity.configurationJson, Models.ExecutionConfiguration.class),
+                entity.beforeStartedAt == null ? null : new Models.MeasurementWindow(entity.beforeStartedAt, entity.beforeEndedAt),
+                entity.afterStartedAt == null ? null : new Models.MeasurementWindow(entity.afterStartedAt, entity.afterEndedAt)));
     }
     public Models.Overview overview() {
         List<TelemetryClient.Snapshot> snapshots = telemetry.snapshots("ALL", "ALL");

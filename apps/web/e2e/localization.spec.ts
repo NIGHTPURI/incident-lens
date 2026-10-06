@@ -176,7 +176,7 @@ test("Korean default and English switching localize every populated view and per
       ).toHaveValue(session.id);
     }
     const korean = locale === "ko";
-    const nav = page.locator("nav");
+    const nav = page.locator(".sidebar nav");
     await nav
       .getByRole("button", { name: korean ? "개요" : "Overview", exact: true })
       .click();
@@ -424,14 +424,14 @@ test("offline errors and empty states render in Korean and switch to English wit
   ).toBeVisible();
   await expectContainedLayout(page);
   await page
-    .locator("nav")
+    .locator(".sidebar nav")
     .getByRole("button", { name: "자유실험실", exact: true })
     .click();
   await expect(
     page.getByText("세션을 만들어 시작하세요", { exact: true }),
   ).toBeVisible();
   await page
-    .locator("nav")
+    .locator(".sidebar nav")
     .getByRole("button", { name: "증거 및 RCA", exact: true })
     .click();
   await expect(
@@ -444,7 +444,7 @@ test("offline errors and empty states render in Korean and switch to English wit
     page.getByRole("button", { name: "RCA 생성", exact: true }),
   ).toBeDisabled();
   await page
-    .locator("nav")
+    .locator(".sidebar nav")
     .getByRole("button", { name: "실험 비교", exact: true })
     .click();
   await expect(

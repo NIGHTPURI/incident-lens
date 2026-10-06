@@ -23,9 +23,9 @@ export const checks = {
 type CheckId = keyof typeof checks;
 const key = "incidentlens.curriculum.checks.v1";
 type Answers = Partial<Record<CheckId, { choice: number; submitted: boolean }>>;
-function readAnswers(): Answers {
+function readAnswers(storageKey: string): Answers {
   try {
-    const value = JSON.parse(localStorage.getItem(key) ?? "{}");
+    const value = JSON.parse(localStorage.getItem(storageKey) ?? "{}");
     if (!value || typeof value !== "object") return {};
     return Object.fromEntries(Object.entries(value).filter(([id, raw]) => {
       const answer = raw as Answers[CheckId];
@@ -33,18 +33,23 @@ function readAnswers(): Answers {
     }));
   } catch { return {}; }
 }
-export default function KnowledgeCheck({ stage }: { stage: string }) {
+export default function KnowledgeCheck({ stage, language = "java" }: { stage: string; language?: string }) {
+  const storageKey = language === "java" ? key : `incidentlens.curriculum.checks.${language}.v1`;
   const { locale } = useI18n();
-  const [answers, setAnswers] = useState(readAnswers);
+  const [answers, setAnswers] = useState(() => readAnswers(storageKey));
   const [saved, setSaved] = useState(true);
   const id = stage as CheckId;
-  const check = checks[id];
+  const check = language !== "java" && id === "spring" ? {
+    question: t("HTTP 입력 처리와 업무 규칙을 나누는 이유는?", "Why separate HTTP input handling from business rules?"),
+    options: [t("입력 검증과 업무 로직을 각각 검사하기 위해", "To check validation and business rules separately"), t("DB 트랜잭션을 없애기 위해", "To remove DB transactions")], correct: 0,
+    explanation: t("Python 핸들러, Node.js 라우트, ASP.NET Core 엔드포인트의 입력 경계와 서비스 규칙은 별도로 검사합니다.", "Check the input boundary of Python handlers, Node.js routes and ASP.NET Core endpoints separately from service rules."),
+  } : checks[id];
   if (!check) return null;
   const answer = answers[id];
   const correct = answer?.choice === check.correct;
   function update(choice: number, submitted: boolean) {
     const next = { ...answers, [id]: { choice, submitted } }; setAnswers(next);
-    try { localStorage.setItem(key, JSON.stringify(next)); setSaved(true); } catch { setSaved(false); }
+    try { localStorage.setItem(storageKey, JSON.stringify(next)); setSaved(true); } catch { setSaved(false); }
   }
   return <section className="knowledge-check" aria-labelledby={`check-heading-${id}`}>
     <h2 id={`check-heading-${id}`}>{t("짧은 개념 확인", "Quick concept check")[locale]}</h2>

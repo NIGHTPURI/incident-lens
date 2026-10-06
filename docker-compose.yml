@@ -95,6 +95,13 @@ services:
     environment:
       <<: *app-environment
       SERVER_PORT: 8080
+      INCIDENTLENS_PROFILE: ${INCIDENTLENS_PROFILE:-core}
+      CONTROL_PLANE_PORT: ${CONTROL_PLANE_PORT:-8080}
+      DEMO_API_PORT: ${DEMO_API_PORT:-8081}
+      DEMO_WORKER_PORT: ${DEMO_WORKER_PORT:-8082}
+      WEB_PORT: ${WEB_PORT:-3000}
+      PROMETHEUS_PORT: ${PROMETHEUS_PORT:-9090}
+      GRAFANA_PORT: ${GRAFANA_PORT:-3001}
       DB_URL: jdbc:mysql://mysql:3306/control_plane?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
       DEMO_API_URL: http://demo-api:8081
       DEMO_WORKER_URL: http://demo-worker:8082
@@ -102,7 +109,7 @@ services:
       RCA_API_KEY: ${RCA_API_KEY:-}
       RCA_MODEL: ${RCA_MODEL:-}
       OTEL_SERVICE_NAME: control-plane
-    ports: [127.0.0.1:8080:8080]
+    ports: ['127.0.0.1:${CONTROL_PLANE_PORT:-8080}:8080']
 
   demo-api:
     <<: *app
@@ -112,7 +119,7 @@ services:
       SERVER_PORT: 8081
       DB_URL: jdbc:mysql://mysql:3306/demo_api?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
       OTEL_SERVICE_NAME: demo-api
-    ports: [127.0.0.1:8081:8081]
+    ports: ['127.0.0.1:${DEMO_API_PORT:-8081}:8081']
 
   demo-worker:
     <<: *app
@@ -122,7 +129,7 @@ services:
       SERVER_PORT: 8082
       DB_URL: jdbc:mysql://mysql:3306/demo_worker?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
       OTEL_SERVICE_NAME: demo-worker
-    ports: [127.0.0.1:8082:8082]
+    ports: ['127.0.0.1:${DEMO_WORKER_PORT:-8082}:8082']
 
   web:
     build: {context: apps/web, dockerfile: Dockerfile}

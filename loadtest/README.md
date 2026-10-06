@@ -21,3 +21,7 @@ The scripts disable their fault in `finally`/`trap` even when workload execution
 Saved UI experiments can be run with `./scripts/demo-compare.ps1 -SessionId <id> -ExperimentId <id>` or `bash scripts/demo-compare.sh --session-id <id> --experiment-id <id>`. The script reads the persisted workload settings and rejects a mismatched session or an experiment that is no longer `CREATED` before touching fault state.
 
 Custom summary implementation follows the [k6 handleSummary contract](https://grafana.com/docs/k6/latest/results-output/end-of-test/custom-summary/).
+
+## Local configuration guard
+
+Default comparison and baseline load is 2 VUs for 10 seconds; bounds are 1–50 VUs and 5–300 seconds. Runners resolve the actual Compose control-plane host binding and require local Docker context, matched control/demo/worker/k6 targets and runtime instance identity. Merely changing CONTROL_URL cannot redirect the workload. Missing identity APIs or stale settings fail before session/fault/load writes. Use [PC setup](../docs/PC_SETUP.md) to resolve conflicts. New comparisons persist execution configuration and time windows; baseline configuration is saved as an artifact, not as a stored experiment. Other-PC measurements are not equivalent conditions.

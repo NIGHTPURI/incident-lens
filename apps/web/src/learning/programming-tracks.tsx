@@ -32,7 +32,7 @@ type Starter = {
   frameworks: Copy; runtime: Copy; windowsCheck: string; linuxCheck: string; windowsSetup: string; linuxSetup: string;
   sources: { label: Copy; url: string }[];
 };
-const starters: Record<Exclude<CodeLanguage, "java">, Starter> = {
+export const starters: Record<Exclude<CodeLanguage, "java">, Starter> = {
   python: {
     what: both("Python은 들여쓰기로 코드 블록을 구분하는 프로그래밍 언어입니다. Python 인터프리터가 .py 파일을 읽어 실행합니다.", "Python is a programming language that uses indentation to group statements. Its interpreter runs .py files."),
     why: both("읽기 쉬운 문법으로 자동화, 데이터 처리, 웹 API를 만들 때 자주 선택합니다. 이 선택은 운영체제나 화면 언어와 별개입니다.", "Its readable syntax is useful for automation, data work and web APIs. This choice is independent of your operating system and UI language."),

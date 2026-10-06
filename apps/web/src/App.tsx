@@ -3,6 +3,10 @@ import type { FormEvent, ReactNode } from "react";
 import { api, ApiError } from "./api";
 import * as format from "./format";
 import { useI18n } from "./i18n/I18nProvider";
+import PcSettings from "./PcSettings";
+import ExecutionDetails from "./ExecutionDetails";
+import Landing from "./Landing";
+import { readCodeLanguage, type CodeLanguage } from "./learning/programming-tracks";
 import LearningLab from "./learning/LearningLab";
 import ThemeSelector, { useThemePreference } from "./theme";
 import type { TranslationKey } from "./i18n/translations";
@@ -59,15 +63,15 @@ const scenarios: {
   },
 ];
 
-type Page = "learn" | "overview" | "lab" | "evidence" | "comparison";
+type Page = "settings" | "landing" | "technology" | "learn" | "overview" | "lab" | "evidence" | "comparison";
 type LearningView = "home" | "lesson";
 type SessionScope = "learning" | "lab";
 const learningViewKey = "incidentlens.learning.view";
 const learningSessionKey = "incidentlens.learning.session";
 const labSessionKey = "incidentlens.lab.session";
-const sessionKey = (scope: SessionScope) => scope === "learning" ? learningSessionKey : labSessionKey;
+const sessionKey = (scope: SessionScope, language: CodeLanguage = "java") => scope === "learning" ? (language === "java" ? learningSessionKey : `${learningSessionKey}.${language}.v1`) : labSessionKey;
 function readSessionScope(page: Page): SessionScope {
-  return page === "learn" || ((page === "evidence" || page === "comparison") &&
+  return page === "learn" || page === "technology" || ((page === "evidence" || page === "comparison") &&
     new URLSearchParams(window.location.search).get("context") === "learning") ? "learning" : "lab";
 }
 function readLearningView(): LearningView {
@@ -80,6 +84,9 @@ function readLearningView(): LearningView {
   }
 }
 const pages: { id: Page; label: TranslationKey; symbol: string }[] = [
+  { id: "settings", label: "shell.home", symbol: "⚙" },
+  { id: "landing", label: "shell.home", symbol: "⌂" },
+  { id: "technology", label: "nav.learn", symbol: "◇" },
   { id: "learn", label: "nav.learn", symbol: "◈" },
   { id: "overview", label: "nav.overview", symbol: "◫" },
   { id: "lab", label: "nav.lab", symbol: "⌁" },
@@ -238,8 +245,9 @@ export default function App() {
   } = usePresentation();
   const [page, setPageState] = useState<Page>(() => {
     const requested = new URLSearchParams(window.location.search).get("view");
-    return pages.some((item) => item.id === requested) ? requested as Page : "learn";
+    return pages.some((item) => item.id === requested) ? requested as Page : new URLSearchParams(window.location.search).get("embed") === "1" ? "learn" : "landing";
   });
+  const [learningCodeLanguage, setLearningCodeLanguage] = useState<CodeLanguage>(() => { try { return readCodeLanguage(localStorage); } catch { return "java"; } });
   const [learningView, setLearningView] = useState<LearningView>(readLearningView);
   const [sessionScope, setSessionScope] = useState<SessionScope>(() => readSessionScope(page));
   const [overview, setOverview] = useState<Overview | null>(null);
@@ -268,11 +276,11 @@ export default function App() {
     setNotice("");
     setError(null);
   }
-  function navigate(next: Page, push: boolean, nextScope: SessionScope = next === "learn" ? "learning" : "lab") {
+  function navigate(next: Page, push: boolean, nextScope: SessionScope = (next === "learn" || next === "technology") ? "learning" : "lab") {
     invalidateFeedback();
     if (sessionScope !== nextScope) {
       let remembered = "";
-      try { remembered = localStorage.getItem(sessionKey(nextScope)) ?? ""; } catch { /* Storage is optional. */ }
+      try { remembered = localStorage.getItem(sessionKey(nextScope, learningCodeLanguage)) ?? ""; } catch { /* Storage is optional. */ }
       setSelectedId(remembered);
     }
     setSessionScope(nextScope);
@@ -289,7 +297,7 @@ export default function App() {
   useEffect(() => {
     const back = () => {
       const requested = new URLSearchParams(window.location.search).get("view");
-      const next = pages.some(item => item.id === requested) ? requested as Page : "learn";
+      const next = pages.some(item => item.id === requested) ? requested as Page : new URLSearchParams(window.location.search).get("embed") === "1" ? "learn" : "landing";
       navigate(next, false, readSessionScope(next));
     };
     window.addEventListener("popstate", back);
@@ -300,10 +308,23 @@ export default function App() {
     selectedIdRef.current = next;
     setSelectedIdState(next);
   }
+  useEffect(() => {
+    const change = (event: Event) => {
+      const language = (event as CustomEvent<CodeLanguage>).detail;
+      setLearningCodeLanguage(language);
+      if (sessionScope === "learning") {
+        let id = "";
+        try { id = localStorage.getItem(sessionKey("learning", language)) ?? ""; } catch { /* Optional storage. */ }
+        setSelectedId(id);
+      }
+    };
+    window.addEventListener("incidentlens-language-change", change);
+    return () => window.removeEventListener("incidentlens-language-change", change);
+  }, [sessionScope]);
   useEffect(() => () => { feedbackRevision.current++; operationRevision.current++; }, []);
   const overviewRevision = useRef(0);
   const detailRevision = useRef(0);
-  const displayedError = error ?? (page === "learn" ? null : detailError ?? overviewError);
+  const displayedError = error ?? ((page === "learn" || page === "technology" || page === "landing" || page === "settings") ? null : detailError ?? overviewError);
 
   const refresh = useCallback(async () => {
     const revision = ++overviewRevision.current;
@@ -354,14 +375,14 @@ export default function App() {
   useEffect(() => {
     if (!selectedId && sessions.length) {
       let remembered = "";
-      try { remembered = localStorage.getItem(sessionKey(sessionScope)) ?? ""; } catch { /* Storage is optional. */ }
-      setSelectedId(sessions.find((session) => session.id === remembered)?.id ?? sessions[0].id);
+      try { remembered = localStorage.getItem(sessionKey(sessionScope, learningCodeLanguage)) ?? ""; } catch { /* Storage is optional. */ }
+      setSelectedId(sessions.find((session) => session.id === remembered)?.id ?? (sessionScope === "lab" ? sessions[0].id : ""));
     }
-  }, [sessions, selectedId, sessionScope]);
+  }, [sessions, selectedId, sessionScope, learningCodeLanguage]);
   useEffect(() => {
     if (!selectedId) return;
-    try { localStorage.setItem(sessionKey(sessionScope), selectedId); } catch { /* Storage is optional. */ }
-  }, [selectedId, sessionScope]);
+    try { localStorage.setItem(sessionKey(sessionScope, learningCodeLanguage), selectedId); } catch { /* Storage is optional. */ }
+  }, [selectedId, sessionScope, learningCodeLanguage]);
   useEffect(() => {
     if (!selectedId) return;
     setDetail(null);
@@ -425,9 +446,12 @@ export default function App() {
   function changeLearningView(view: LearningView) {
     invalidateFeedback();
     setLearningView(view);
+    if (view === "lesson" && page === "technology") setPage("learn");
     try { localStorage.setItem(learningViewKey, view); } catch { /* Storage is optional. */ }
   }
   function goLearningHome() {
+    window.dispatchEvent(new Event("incidentlens-learning-home"));
+    try { localStorage.setItem("incidentlens.learning.mode", "curriculum"); } catch { /* Optional storage. */ }
     changeLearningView("home");
     setPage("learn");
     document.documentElement.scrollTop = 0;
@@ -464,9 +488,12 @@ export default function App() {
   );
   const currentPage = pages.find((item) => item.id === page)!;
 
+  const learningPage = page === "learn" || page === "technology";
+  const standalone = learningPage || page === "landing" || page === "settings";
+  const pageName = (id: Page) => id === "settings" ? (locale === "ko" ? "PC 실행 설정" : "PC setup") : id === "technology" ? (locale === "ko" ? "기술 사전" : "Technology guides") : id === "landing" ? (locale === "ko" ? "시작" : "Home") : t(pages.find(p => p.id === id)!.label);
   const embedded = new URLSearchParams(window.location.search).get("embed") === "1";
   return (
-    <div className={`app-shell ${page === "learn" ? "learning-mode" : ""} ${embedded ? "embedded-mode" : ""}`}>
+    <div className={`app-shell ${standalone ? "learning-mode" : ""} ${page === "landing" ? "landing-mode" : ""} ${embedded ? "embedded-mode" : ""}`}>
       <a className="skip-link" href="#main-content">
         {t("shell.skipToContent")}
       </a>
@@ -476,7 +503,7 @@ export default function App() {
           href="#"
           onClick={(event) => {
             event.preventDefault();
-            goLearningHome();
+            setPage("landing");
           }}
           aria-label={t("shell.home")}
         >
@@ -488,7 +515,7 @@ export default function App() {
         </a>
         <span className="nav-label">{t("shell.workspace").toUpperCase()}</span>
         <nav aria-label={t("shell.navigation")}>
-          {pages.map((item) => (
+          {[...pages].sort((a, b) => (a.id === "lab" ? -1 : b.id === "lab" ? 1 : 0)).map((item) => (
             <button
               key={item.id}
               className={`nav-item ${page === item.id ? "selected" : ""}`}
@@ -496,7 +523,7 @@ export default function App() {
               onClick={() => setPage(item.id)}
             >
               <span aria-hidden="true">{item.symbol}</span>
-              {t(item.label)}
+              {pageName(item.id)}
             </button>
           ))}
         </nav>
@@ -518,49 +545,18 @@ export default function App() {
       </aside>
 
       <main>
-        {page === "learn" && !embedded ? (
-          <header className="learning-topbar">
-            <button className="learning-brand" aria-label={t("shell.home")} onClick={goLearningHome}>IncidentLens <span>/{t("nav.learn")}</span></button>
-            <nav aria-label={t("shell.navigation")}>
-              <ThemeSelector {...theme} />
-              <button onClick={() => setPage("lab")}>{t("learning.freeExperiment")}</button>
-              <select className="language-select" aria-label={t("language.label")} value={locale} onChange={(event) => setLocale(event.target.value === "en" ? "en" : "ko")}><option value="ko">{t("language.korean")}</option><option value="en">{t("language.english")}</option></select>
-            </nav>
-          </header>
-        ) : page !== "learn" && (
-        <header className="topbar">
-          <span className="breadcrumb">
-            {t("shell.workspace")}
-            <span>/</span> {t(currentPage.label)}
-          </span>
-          <div className="topbar-right">
-            <ThemeSelector {...theme} />
-            <select
-              className="language-select"
-              aria-label={t("language.label")}
-              value={locale}
-              onChange={(event) =>
-                setLocale(event.target.value === "en" ? "en" : "ko")
-              }
-            >
-              <option value="ko">{t("language.korean")}</option>
-              <option value="en">{t("language.english")}</option>
-            </select>
-            <span className="local-tag">{t("shell.localEnvironment")}</span>
-            <button
-              className="button ghost compact"
-              onClick={() => {
-                void refresh();
-              }}
-              disabled={busy || loading}
-              aria-label={t("shell.refreshLabel")}
-            >
-              {t("shell.refresh")}
-            </button>
-          </div>
-        </header>
-        )}
+        {!embedded && <header className="learning-topbar unified-topbar">
+          <button className="learning-brand" aria-label={locale === "ko" ? "IncidentLens 통합 홈" : "IncidentLens home"} onClick={() => setPage("landing")}><span className="brand-mark" aria-hidden="true">iL</span>IncidentLens</button>
+          <nav className="primary-navigation" aria-label={t("shell.navigation")}>
+            <button aria-current={page === "lab" ? "page" : undefined} onClick={() => setPage("lab")}>{locale === "ko" ? "자유실험실" : "Free lab"}</button>
+            <button aria-current={page === "learn" ? "page" : undefined} onClick={goLearningHome}>{locale === "ko" ? "백엔드 학습" : "Backend Learning"}</button>
+            <button aria-current={page === "technology" ? "page" : undefined} onClick={() => setPage("technology")}>{locale === "ko" ? "기술 사전" : "Technology guides"}</button>
+            <button aria-current={page === "settings" ? "page" : undefined} onClick={() => setPage("settings")}>{locale === "ko" ? "PC 실행 설정" : "PC setup"}</button>
+          </nav>
+          <div className="topbar-preferences"><ThemeSelector {...theme} /><select className="language-select" aria-label={t("language.label")} value={locale} onChange={e => setLocale(e.target.value === "en" ? "en" : "ko")}><option value="ko">한국어</option><option value="en">English</option></select></div>
+        </header>}
         <div className="page-content" id="main-content" tabIndex={-1}>
+          {!["landing", "learn", "technology", "settings"].includes(page) && <button className="text-button" aria-label={t("shell.refreshLabel")} onClick={() => { void refresh(); if (selectedId) void refreshDetail(selectedId); }}>{t("shell.refresh")}</button>}
           {active && (
             <div className="fault-banner" role="status">
               <span className="warning-icon">!</span>
@@ -577,6 +573,7 @@ export default function App() {
                   })}
                 </span>
               </div>
+              <button className="button ghost" onClick={() => { setPage("lab"); setSelectedId(active.sessionId); }}>{locale === "ko" ? "활성 실험으로 이동" : "Return to active experiment"}</button>
               <button
                 className="button warning"
                 disabled={busy}
@@ -603,7 +600,12 @@ export default function App() {
               {t(notice)}
             </div>
           )}
-          {page === "learn" && <LearningLab
+          {page === "settings" && <PcSettings />}
+          {page === "landing" && <Landing onSettings={() => setPage("settings")} onNavigate={next => { if (next === "learn") goLearningHome(); else setPage(next); }} />}
+          {learningPage && <LearningLab
+            area={page === "technology" ? "technology" : "path"}
+            onAreaChange={area => setPage(area === "technology" ? "technology" : "learn")}
+            onLanding={() => setPage("landing")}
             view={learningView}
             onViewChange={changeLearningView}
             onContextChange={invalidateFeedback}
@@ -621,7 +623,7 @@ export default function App() {
             onPrepare={(id, workload) => { void action(() => api.createExperiment(id, workload), "notice.experimentCreated"); }}
             onNavigate={(next) => navigate(next, true, next === "lab" ? "lab" : "learning")}
           />}
-          {page !== "learn" && <div className="page-heading">
+          {!standalone && <div className="page-heading">
             <div>
               <span className="eyebrow">
                 INCIDENTLENS / {t(currentPage.label).toUpperCase()}
@@ -889,6 +891,7 @@ export default function App() {
             </>
           )}
 
+          {page === "lab" && <p className="lab-runtime-note">{locale === "ko" ? "실제 장애 실험 대상: Java / Spring Boot 로컬 서비스. 언어별 연습 프로젝트는 이 서버와 별개입니다." : "Actual fault target: local Java / Spring Boot services. Language practice projects are separate from this server."}</p>}
           {page === "lab" && (
             <>
               <section className="lab-guide" aria-labelledby="lab-guide-title">
@@ -1442,7 +1445,7 @@ function ExperimentSetup({
 }) {
   const { t, scenarioName } = usePresentation();
   const [vus, setVus] = useState(2);
-  const [duration, setDuration] = useState(20);
+  const [duration, setDuration] = useState(10);
   if (detail.experiments.length > 0)
     return (
       <div className="experiment-guidance">{t("experiment.existing")}</div>
@@ -1612,6 +1615,7 @@ export function ExperimentCard({
           {t("experiment.created", { date: date(experiment.createdAt) })}
         </span>
       </div>
+      <ExecutionDetails experiment={experiment} />
       {experiment.status === "CREATED" && (
         <div className="command-panel">
           <div>

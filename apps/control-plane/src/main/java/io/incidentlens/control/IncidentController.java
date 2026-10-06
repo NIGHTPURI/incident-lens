@@ -12,7 +12,9 @@ import java.util.*;
 @Validated
 class IncidentController {
     private final IncidentService incidents;
-    IncidentController(IncidentService incidents) { this.incidents = incidents; }
+    private final RuntimeConfiguration runtime;
+    IncidentController(IncidentService incidents, RuntimeConfiguration runtime) { this.incidents = incidents; this.runtime = runtime; }
+    @GetMapping("/runtime") Map<String, Object> runtime() { return runtime.view(); }
     @GetMapping("/overview") Models.Overview overview() { return incidents.overview(); }
     @GetMapping("/sessions") List<Models.Session> list(@RequestParam(defaultValue = "0") @Min(0) int page,
                 @RequestParam(defaultValue = "50") @Min(1) @Max(100) int size) { return incidents.list(page, size); }
@@ -26,7 +28,7 @@ class IncidentController {
     @PostMapping("/sessions/{id}/experiments") @ResponseStatus(HttpStatus.CREATED)
     Models.Experiment createExperiment(@PathVariable String id, @Valid @RequestBody Models.Workload workload) { return incidents.createExperiment(id, workload); }
     @GetMapping("/experiments/{id}") Models.Experiment experiment(@PathVariable String id) { return incidents.experiment(id); }
-    @PostMapping("/experiments/{id}/runs") Map<String, Object> start(@PathVariable String id, @Valid @RequestBody Models.StartRun run) { return incidents.start(id, run.phase()); }
+    @PostMapping("/experiments/{id}/runs") Map<String, Object> start(@PathVariable String id, @Valid @RequestBody Models.StartRun run) { runtime.validate(run.configuration()); return incidents.start(id, run.phase(), run.configuration()); }
     @PostMapping("/experiments/{id}/runs/{phase}/complete") Models.Experiment complete(@PathVariable String id, @PathVariable Models.Phase phase,
             @Valid @RequestBody Models.CompleteRun input) { return incidents.complete(id, phase, input); }
 }

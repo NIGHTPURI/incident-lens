@@ -99,7 +99,9 @@ jobs:
         run: docker compose build
       - name: Verify PowerShell experiment protocol and cleanup
         shell: pwsh
-        run: ./scripts/tests/compare-protocol.tests.ps1
+        run: |
+          ./scripts/test-local-target.ps1
+          ./scripts/tests/compare-protocol.tests.ps1
       - name: Run complete degraded / recovered smoke experiment
         run: |
           docker compose up -d --wait --wait-timeout 600

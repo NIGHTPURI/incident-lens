@@ -1,5 +1,6 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
+import { readTrack } from "./track-state";
 import Curriculum from "./Curriculum";
 import { chapters, roadmap } from "./curriculum";
 import { progressKey, readProgress } from "./progress";
@@ -49,22 +50,22 @@ describe("beginner curriculum", () => {
   it("supports keyboard tabs and separates read state from practice evidence", () => {
     const context = mount();
     fireEvent.keyDown(screen.getByRole("tab", { name: "Concept" }), { key: "ArrowRight" });
-    expect(screen.getByRole("tab", { name: "Minimal example" })).toHaveFocus();
-    fireEvent.click(screen.getByRole("tab", { name: "Independent practice" }));
+    expect(screen.getByRole("tab", { name: "Examples" })).toHaveFocus();
+    fireEvent.click(screen.getByRole("tab", { name: "Self-review" }));
     fireEvent.change(screen.getByLabelText("My execution and verification record"), { target: { value: "I tested the path and recorded output" } });
     fireEvent.click(screen.getByRole("button", { name: "Next lesson" }));
-    expect(readProgress(localStorage).read).toEqual([]);
-    expect(readProgress(localStorage).evidence.tools).toContain("recorded output");
-    expect(readProgress(localStorage).stage).toBe("java");
+    expect(readTrack(localStorage, "java").read).toEqual([]);
+    expect(readTrack(localStorage, "java").evidence.tools).toContain("recorded output");
+    expect(readTrack(localStorage, "java").stage).toBe("basics");
     expect(context).toHaveBeenCalled();
   });
   it("keeps advanced simulation limits visible on every tab without awarding mastery", () => {
     localStorage.setItem(progressKey, JSON.stringify({ version: 1, stage: "messaging" }));
     mount();
     expect(screen.getByTestId("chapter-scope")).toHaveTextContent("no Kafka cluster");
-    fireEvent.click(screen.getByRole("tab", { name: "Independent practice" }));
+    fireEvent.click(screen.getByRole("tab", { name: "Self-review" }));
     expect(screen.getByTestId("chapter-scope")).toHaveTextContent("real H2 transactions");
     expect(screen.getByLabelText("My execution and verification record")).toHaveValue("");
-    expect(readProgress(localStorage).read).toEqual([]);
+    expect(readTrack(localStorage, "java").read).toEqual([]);
   });
 });

@@ -41,6 +41,7 @@ export interface Report {
 }
 
 export interface Metrics {
+  durationSeconds?: number;
   requestCount: number | null;
   errorCount: number | null;
   throughput: number | null;
@@ -66,6 +67,11 @@ export interface Experiment {
   before: Metrics | null;
   after: Metrics | null;
   createdAt: string;
+  execution?: {
+    configuration: { profile: string; pcLabel: string; labInstanceId: string; configurationHash: string; hostPorts: Record<string,number>; memoryLimitsMiB: Record<string,number> } | null;
+    before: {startedAt: string; endedAt: string | null} | null;
+    after: {startedAt: string; endedAt: string | null} | null;
+  };
 }
 
 export interface SessionDetail {

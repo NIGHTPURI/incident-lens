@@ -63,10 +63,11 @@ async function mount() {
 }
 async function click(name: string) {
   await act(async () => {
-    fireEvent.click(screen.getByRole("button", { name }));
+    fireEvent.click(screen.getAllByRole("button", { name })[0]);
   });
 }
 beforeEach(() => {
+  localStorage.setItem("incidentlens.learning.session", "session-a");
   vi.useFakeTimers();
   localStorage.setItem(LOCALE_STORAGE_KEY, "en");
   vi.spyOn(api, "overview").mockResolvedValue(overview);
@@ -232,7 +233,7 @@ describe("transient operation feedback scope", () => {
   const success = "Evidence collected from the observation window.";
   async function collectScreen() { await mount(); await click("Evidence & RCA"); }
   async function learning() {
-    await act(async () => { fireEvent.click(document.querySelector('.sidebar .nav-item')!); });
+    await act(async () => { fireEvent.click(document.querySelector('.primary-navigation button:nth-child(2)')!); });
   }
   it("removes a completed notice on navigation and does not restore it on return", async () => {
     vi.spyOn(api, "collect").mockResolvedValue([]);
@@ -269,10 +270,10 @@ describe("transient operation feedback scope", () => {
     vi.mocked(api.overview).mockResolvedValue({ ...overview,
       services: [{ name: "redis", status: "UP" }],
       activeFault: { sessionId: "session-a", scenario: "DOWNSTREAM_LATENCY", enabled: true, parameter: 100, expiresAt: "2026-10-04T00:00:00Z" } });
-    await mount(); await learning(); await click("Start first lesson");
+    await mount(); await learning(); await click("Start learning");
     const warning = document.querySelector(".fault-banner");
     expect(warning).toBeInTheDocument();
-    await click("Next lesson"); await act(async () => fireEvent.click(screen.getByRole("tab", { name: "Flow" })));
+    await click("Next lesson"); await act(async () => fireEvent.click(screen.getByRole("tab", { name: "Flow & notes" })));
     expect(document.querySelector(".fault-banner")).toHaveTextContent(warning!.textContent!);
     await act(async () => fireEvent.change(screen.getByLabelText("Learning OS / shell"), { target: { value: "windows" } }));
     expect(document.querySelector(".fault-banner")).toHaveTextContent(warning!.textContent!);

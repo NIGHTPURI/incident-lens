@@ -97,7 +97,7 @@ export const technologyGuides: Guide[] = [
   ...additionalGuides,
 ];
 
-export function TechnologyGuide({ id, locale, onStage }: { id: string; locale: Locale; onStage: (id: string) => void }) {
+export function TechnologyGuide({ id, locale, onStage, languageName = "Java" }: { id: string; locale: Locale; onStage: (id: string) => void; languageName?: string }) {
   const guide = technologyGuides.find(item => item.id === id)!;
   const t = (copy: Copy) => copy[locale];
   const label = (ko: string, en: string) => locale === "ko" ? ko : en;
@@ -106,7 +106,7 @@ export function TechnologyGuide({ id, locale, onStage }: { id: string; locale: L
     <section aria-labelledby="tech-need"><h2 id="tech-need" tabIndex={-1}>{label("왜 필요한가", "Why it appears")}</h2><h3>{label("무엇인가 · 왜 사용하는가", "What it is & why to use it")}</h3><p>{t(guide.purpose)}</p><h3>{label("등장한 문제", "The problem it addresses")}</h3><p>{t(guide.problem)}</p><p>{t(guide.oldWay)}</p><div className="learning-box"><strong>{label("하지 않는 일", "What it does not do")}</strong><p>{t(guide.boundary)}</p></div></section>
     <section aria-labelledby="tech-flow"><h2 id="tech-flow" tabIndex={-1}>{label("작동 흐름", "How it works")}</h2><p className="technology-flow">{t(guide.flow)}</p></section>
     <section aria-labelledby="tech-example"><h2 id="tech-example" tabIndex={-1}>{label("작은 예시", "Small example")}</h2><pre><code>{guide.example}</code></pre><p>{t(guide.exampleNote)}</p></section>
-    <section aria-labelledby="tech-lab"><h2 id="tech-lab" tabIndex={-1}>{label("이 실험실에서", "In this lab")}</h2><p>{t(guide.inLab)}</p><h3>{label("실험과 증거", "Experiment and evidence")}</h3><p>{t(guide.observe)}</p>{guide.stage && <button className="learn-secondary" onClick={() => onStage(guide.stage!)}>{label("관련 Java 수업 열기", "Open related Java lesson")} ↗</button>}</section>
+    <section aria-labelledby="tech-lab"><h2 id="tech-lab" tabIndex={-1}>{label("이 실험실에서", "In this lab")}</h2><p>{t(guide.inLab)}</p><h3>{label("실험과 증거", "Experiment and evidence")}</h3><p>{t(guide.observe)}</p>{guide.stage && <button className="learn-secondary" onClick={() => onStage(guide.stage!)}>{label(`관련 ${languageName} 수업 열기`, `Open related ${languageName} lesson`)} ↗</button>}</section>
     <section aria-labelledby="tech-failure"><h2 id="tech-failure" tabIndex={-1}>{label("실패와 선택", "Failure & tradeoffs")}</h2><p>{t(guide.diagnose)}</p><p>{t(guide.alternatives)}</p></section>
     <section aria-labelledby="tech-practice"><h2 id="tech-practice" tabIndex={-1}>{label("직접 익히기", "Practice")}</h2><h3>{label("안내 실습", "Guided")}</h3><p>{t(guide.guided)}</p><h3>{label("독립 과제", "Independent")}</h3><p>{t(guide.independent)}</p><p>{label("이 화면은 실습 결과를 저장·채점하지 않습니다.", "This page does not save or grade your result.")}</p><a href={guide.source} target="_blank" rel="noreferrer">{label("참고 자료", "Reference")} ↗</a></section>
   </article>;

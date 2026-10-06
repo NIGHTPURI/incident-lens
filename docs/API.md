@@ -1,6 +1,6 @@
 # API quick reference
 
-Control-plane base: `http://localhost:8080`; demo API: `http://localhost:8081`. Swagger UI and `/v3/api-docs` describe generated schemas. Errors use `application/problem+json` with safe `status/detail`; malformed/invalid input400, missing resource404, state/idempotency conflict409, oversized JSON413, unavailable dependency503. Initial order/session/experiment creation201; repeated identical order200.
+Control-plane base: `http://127.0.0.1:${CONTROL_PLANE_PORT}` (default 8080); demo API: `http://127.0.0.1:${DEMO_API_PORT}` (default 8081). These are host-port variables; use dev-status to print actual URLs. Swagger UI and `/v3/api-docs` describe generated schemas. Errors use `application/problem+json` with safe `status/detail`; malformed/invalid input400, missing resource404, state/idempotency conflict409, oversized JSON413, unavailable dependency503. Initial order/session/experiment creation201; repeated identical order200.
 
 ## Create and inspect an incident
 
@@ -30,6 +30,7 @@ Both calls identify the same order; a changed quantity with that key conflicts. 
 
 | Method and route | Purpose |
 |---|---|
+| `GET /api/runtime` | Declared server profile, host ports, responding instance; not PC hardware detection |
 | `GET /api/overview` | Service endpoint connectivity, bounded aggregate diagnostic metrics, actual fault state |
 | `GET /api/sessions?page=0&size=50` | Newest sessions; maximum page size 100 |
 | `POST /api/sessions` | `{name,scenario}`; four scenario enum values in README |
@@ -64,3 +65,9 @@ Completion JSON:
 These numbers illustrate the schema only; they are not project benchmark results. Scripts produce this object from actual k6 output. Null/missing numeric fields must be rejected rather than interpreted as zero.
 
 Traffic headers: `X-Incident-Id`, `X-Experiment-Phase` (`BEFORE` or `AFTER`), optional `X-Correlation-Id`. Context is sanitized and bounded. W3C trace context is propagated when the agent is enabled. An unscoped baseline is useful for warm-up but is not a stored experiment.
+
+## Execution configuration and timing
+
+New runners submit `configuration` alongside `phase` at run start. The typed configuration includes a SHA-256 hash of actual container images/memory limits/host ports, local instance, profile, optional PC label, canonical control/workload targets and host ports. The receiving instance/declared settings must match; AFTER must use the same configuration as BEFORE. Old clients without configuration retain an explicitly unknown value. New runners refuse unavailable identity APIs and mismatched local targets before any session/fault/load writes.
+
+Experiment responses include `execution.configuration` and BEFORE/AFTER `startedAt` / `endedAt` controlled-run windows. Metrics retain actual k6 `durationSeconds`, including graceful completion. Controlled windows include runner/collection overhead and are not exact first/last business-request timestamps. Nullable V2 columns preserve historical rows without fabricated timing/configuration. No CPU/RAM equivalence across PCs is implied.

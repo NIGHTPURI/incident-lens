@@ -5,6 +5,7 @@ import { I18nProvider } from "./i18n/I18nProvider";
 import "./styles.css";
 import "./theme.css";
 import "./learning-sidebar.css";
+import "./unified-learning.css";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
