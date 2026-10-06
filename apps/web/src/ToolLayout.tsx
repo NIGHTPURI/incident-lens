@@ -31,7 +31,7 @@ export default function ToolLayout({page,items,onNavigate,preferences,sessionCon
       </aside>
     </>}
     <main>
-      {!embedded&&<header className="tool-topbar"><button ref={toggle} className="menu-toggle" aria-controls="tool-navigation" aria-expanded={open} aria-label={label('탐색 메뉴 열기','Open navigation')} onClick={()=>setOpen(!open)}><span aria-hidden="true">☰</span></button><button className="tool-mobile-brand" onClick={()=>navigate('sessions')} aria-label={label('IncidentLens 실험 세션','IncidentLens experiment sessions')}>IncidentLens</button><div className="tool-current-location"><span>{label('현재 위치','Current view')}</span><strong>{current}</strong></div><div className="tool-selected-session">{sessionControl}</div><div className="topbar-preferences">{preferences}</div></header>}
+      {!embedded&&<header className="tool-topbar"><div className="tool-topbar-inner"><button ref={toggle} className="menu-toggle" aria-controls="tool-navigation" aria-expanded={open} aria-label={label('탐색 메뉴 열기','Open navigation')} onClick={()=>setOpen(!open)}><span aria-hidden="true">☰</span></button><button className="tool-mobile-brand" onClick={()=>navigate('sessions')} aria-label={label('IncidentLens 실험 세션','IncidentLens experiment sessions')}>IncidentLens</button><div className="tool-selected-session">{sessionControl}</div><div className="tool-current-location"><span>{label('현재 위치','Current view')}</span><strong>{current}</strong></div><div className="topbar-preferences">{preferences}</div></div></header>}
       {children}
     </main>
   </div>;
