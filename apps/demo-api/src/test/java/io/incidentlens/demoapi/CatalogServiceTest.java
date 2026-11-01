@@ -82,6 +82,26 @@ class CatalogServiceTest {
         try (var context = RequestContext.install(RequestContext.from("s", "BEFORE", "test"))) { service.find("books"); }
         verify(repository).find("books", true); verifyNoInteractions(values);
     }
+    @Test void ownerlessDatabaseFaultCannotChangeAnUnrelatedRequest() throws Exception {
+        when(faults.current()).thenReturn(new FaultState(null, FaultState.Scenario.DATABASE_DEGRADATION,
+                true, 0, Instant.now().plusSeconds(60)));
+        var service = service();
+        try (var context = RequestContext.install(RequestContext.from("unrelated", "BEFORE", "test"))) {
+            assertThat(service.find("books")).containsExactlyElementsOf(products);
+        }
+        verify(repository).find("books", false);
+        verify(repository, never()).find("books", true);
+    }
+    @Test void ownerlessCacheFaultCannotBypassAHealthyCache() throws Exception {
+        when(faults.current()).thenReturn(new FaultState(null, FaultState.Scenario.CACHE_DEGRADATION,
+                true, 0, Instant.now().plusSeconds(60)));
+        when(values.get(anyString())).thenReturn(new ObjectMapper().writeValueAsString(products));
+        var service = service();
+        try (var context = RequestContext.install(RequestContext.from("unrelated", "BEFORE", "test"))) {
+            assertThat(service.find("books")).containsExactlyElementsOf(products);
+        }
+        verifyNoInteractions(repository);
+    }
     @Test void boundedDownstreamDelayIsObservableAndCanRecover() throws Exception {
         when(faults.current()).thenReturn(new FaultState("s", FaultState.Scenario.DOWNSTREAM_LATENCY, true, 40, Instant.now().plusSeconds(60)));
         var service = service();

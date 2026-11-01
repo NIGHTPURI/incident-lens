@@ -16,7 +16,10 @@ public class FaultStore {
     public FaultState current() {
         try {
             String json = redis.opsForValue().get(KEY);
-            return json == null ? FaultState.inactive() : mapper.readValue(json, FaultState.class);
+            if (json == null) return FaultState.inactive();
+            FaultState state = mapper.readValue(json, FaultState.class);
+            if (state == null) throw new IllegalArgumentException("Fault state must be an object");
+            return state;
         } catch (Exception ex) {
             meters.counter("incidentlens.fault.read.failures").increment();
             return FaultState.inactive();
